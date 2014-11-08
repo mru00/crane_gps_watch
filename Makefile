@@ -8,4 +8,4 @@ crane_gps_watch_client:
 
 
 %: %.cpp
-	$(LINK.cpp) $^ $(LOADLIBES) $(LDLIBS) -o $@ -lxml2
+	$(LINK.cpp) $^ $(LOADLIBES) $(LDLIBS) -o $@ -lxml2  -lpthread

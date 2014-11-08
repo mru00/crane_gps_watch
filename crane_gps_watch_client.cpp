@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <algorithm>
+#include <thread>
 
 #include <cassert> 
 #include <ctime> 
@@ -181,6 +182,7 @@ class SerialLink {
         fd = ::open (devicename.c_str(), O_RDWR);
         if (fd == -1) {
             perror("failed to open serial device");
+            throw std::runtime_error("failed to open serial port");
         }
 
         // http://trainingkits.gweb.io/serial-linux.html
@@ -191,19 +193,32 @@ class SerialLink {
         cfsetispeed(&options, B115200);
         cfsetospeed(&options, B115200);
         cfmakeraw(&options);
-
-        options.c_cflag &= ~PARENB;
-        options.c_cflag &= ~CSTOPB;
-        options.c_cflag &= ~CSIZE;
-        options.c_cflag |= CS8;
         options.c_cc[VMIN] = 0;
-        options.c_cc[VTIME] = 10;
-        options.c_cflag |= (CLOCAL | CREAD);
+        options.c_cc[VTIME] = 50;
 
         if(tcsetattr(fd, TCSANOW, &options)!= 0) {
             std::cerr << "error!" <<std::endl;
+            throw std::runtime_error("failed to open serial port");
         }
     }
+
+
+    void readBulkMemory(unsigned addr, WatchMemoryBlock::mem_it_t& it) {
+
+        unsigned readSize = 0x80;
+        unsigned rcount = 0x1000 / readSize;
+
+        //std::thread tx(&SerialLink::sendReadCommands, *this, readSize, rcount, addr);
+        sendReadCommands(readSize, rcount, addr);
+
+        for (unsigned nbyte = 0; nbyte < rcount; nbyte++) {
+            receiveReadMem(it);
+            it += readSize;
+        }
+
+        //tx.join();
+    }
+
 
     void readMemory(unsigned addr, unsigned count, WatchMemoryBlock::mem_it_t& it) {
         unsigned char opcode;
@@ -232,6 +247,33 @@ class SerialLink {
     }
 
   private:
+
+
+    void sendReadCommands(unsigned readSize,unsigned rcount, unsigned addr) {
+      std::cerr << "in thread" << fd ;
+        for (unsigned nbyte = 0; nbyte < rcount; nbyte++) {
+            sendReadMemCommand(addr + nbyte*readSize, readSize);
+            std::this_thread::yield();
+        }
+    }
+
+
+    void sendReadMemCommand(unsigned addr, unsigned count) {
+        std::vector<unsigned char> tx(8);
+        std::vector<unsigned char>::iterator tx_it = tx.begin();
+        tx[0] = addr ;
+        tx[1] = addr >> 8;
+        tx[2] = addr >> 16;
+        tx[3] = count;
+        sendCommand(0x12, tx);
+        std::cerr << ".";
+    }
+    void receiveReadMem(WatchMemoryBlock::mem_it_t& it) {
+        unsigned char opcode;
+        std::vector<unsigned char> rx;
+        receiveReply(opcode, rx);
+        std::copy(rx.begin(), rx.end(), it);
+    }
 
     void sendCommand(unsigned char opcode, std::vector<unsigned char> payload) {
         assert (fd != -1);
@@ -573,9 +615,14 @@ class Watch {
         for (unsigned block = 0; block < b.count; block++) {
             unsigned block_start = (b.id+block)*b.blockSize;
             br.onReadBlock(b.id+block, block_start);
-            for (unsigned nbyte = 0; nbyte < rcount; nbyte++) {
-                sl.readMemory(block_start + nbyte*readSize, readSize, mem_it);
-                mem_it += readSize;
+            if (1) {
+                for (unsigned nbyte = 0; nbyte < rcount; nbyte++) {
+                    sl.readMemory(block_start + nbyte*readSize, readSize, mem_it);
+                    mem_it += readSize;
+                }
+            }
+            else {
+                sl.readBulkMemory(block_start, mem_it);
             }
         }
         //b.dump();
