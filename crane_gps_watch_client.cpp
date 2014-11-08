@@ -1,18 +1,28 @@
+// Copyright (C) 2014 mru@sisyphus.teil.cc
+//
+// linux client for crane gps watch, runtastic gps watch.
+//
+
+
 #include <ostream>
 #include <iostream>
 #include <vector>
 #include <stack>
 #include <memory>
-#include <cassert>
 #include <iomanip>
 #include <stdexcept>
 #include <sstream>
 #include <algorithm>
 
+#include <cassert> 
+#include <ctime> 
+#include <climits>
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <termios.h>
+#include <stdio.h>
 
 
 #include <libxml/encoding.h>
@@ -114,7 +124,6 @@ struct WorkoutInfo {
     double speed_avg;
     double speed_max;
     double calories;
-    //std::vector<SampleInfo> samples;
 };
 
 struct WatchInfo {
@@ -125,7 +134,6 @@ struct WatchInfo {
     std::vector<std::string> path_names;
     std::vector<std::string> profile_names;
     std::string version;
-    //std::vector<WorkoutInfo> workouts;
 };
 
 
@@ -281,13 +289,15 @@ class SerialLink {
     unsigned char read() {
         assert(fd!=-1);
         unsigned char val;
-        ::read(fd, &val, 1);
+        ssize_t n = ::read(fd, &val, 1);
+        assert(n == 1);
         return val;
     }
 
     void read(std::vector<unsigned char>& buf) {
         assert(fd!=-1);
-        ::read(fd, &buf[0], buf.size());
+        ssize_t n = ::read(fd, &buf[0], buf.size());
+        assert( (size_t)n == buf.size());
     }
 
     unsigned short checksum(unsigned char opcode, std::vector<unsigned char> payload) {
@@ -309,6 +319,8 @@ class Callback {
     virtual void onWorkout(const WorkoutInfo &) = 0;
     virtual void onWorkoutEnd(const WorkoutInfo &) = 0;
     virtual void onSample(const SampleInfo &) = 0;
+    virtual void onReadBlocks(int id, int count) = 0;
+    virtual void onReadBlock(int id, int addr) = 0;
 };
 
 class Broadcaster : public Callback {
@@ -330,6 +342,12 @@ class Broadcaster : public Callback {
     }
     virtual void onSample(const SampleInfo &i) {
         for (auto c : recipients) c->onSample(i);
+    }
+    virtual void onReadBlocks(int id, int count) {
+        for (auto c : recipients) c->onReadBlocks(id, count);
+    }
+    virtual void onReadBlock(int id, int addr) {
+        for (auto c : recipients) c->onReadBlock(id, addr);
     }
   private:
     std::vector<Callback*> recipients;
@@ -442,26 +460,36 @@ class Watch {
     }
     void parseWO(WorkoutInfo& wo, int first, int count) {
         
-        std::cerr << "read block " << std::dec << first << " plus " << count << std::endl;
         WatchMemoryBlock cb(first, count);
         readBlock(cb);
 
         WatchMemoryBlock::mem_it_t it = cb.memory.begin();
 
-        wo.nsamples = *it++;
+        wo.nsamples = *it++;  // [0..1]
         wo.nsamples+= *it++ << 8;
 
-        it++; // unknown
+        wo.lapcount = *it++;  // [2]
 
+        // [3..8]
         std::vector<unsigned char> reverse_time(6);
-        std::reverse_copy(it, it +6, reverse_time.begin());
+        std::reverse_copy(it+3, it +3+6, reverse_time.begin());
         parseGpsTime(wo.start_time, reverse_time.begin());
         it += 6;
 
-        it += 3; // total workout time
-        it += 4; // km
-        it += 2; // speed avg
-        it += 2; // speed max
+        it += 3; // total workout time [9..12]
+        it += 1; // profile [15]
+
+        it = cb.memory.begin() + 16;
+        it += 4; // km [16..19]
+        it += 2; // speed avg [20..21]
+        it += 2; // speed max [22..23]
+        it += 8; // ? [24..32]
+        
+        it = cb.memory.begin() + 32;
+        wo.calories = *it++; // [32..33]
+        wo.calories+= *it++ << 8;
+
+        br.onWorkout(wo);
 
         it = cb.memory.begin() + 0x1000;
         GpsTime t;
@@ -504,11 +532,12 @@ class Watch {
     void parseBlock0() {
         sl.open("/dev/ttyUSB0");
 
-        std::cout << "version: " << sl.readVersion() << std::endl;
+        std::string version = sl.readVersion();
         WatchMemoryBlock mb(0, 1);
         readBlock(mb);
         WatchInfo wi;
 
+        wi.version = version;
         br.onWatch(wi);
 
         WatchMemoryBlock::mem_it_t mem_it = mb.memory.begin();
@@ -525,7 +554,6 @@ class Watch {
                 cur = *mem_it++;
             }
             WorkoutInfo wo;
-            br.onWorkout(wo);
             parseWO(wo, first, 1+cur-first);
             br.onWorkoutEnd(wo);
             mem_it ++;
@@ -539,11 +567,12 @@ class Watch {
         const unsigned readSize = 0x80;
         const unsigned rcount = b.blockSize / readSize;
         
+        br.onReadBlocks(b.id, b.count);
 
         WatchMemoryBlock::mem_it_t mem_it = b.memory.begin();
         for (unsigned block = 0; block < b.count; block++) {
             unsigned block_start = (b.id+block)*b.blockSize;
-            std::cerr << "reading block " << block << "from " << std::hex << block_start << " / " << ( mem_it - b.memory.begin() ) << std::endl;
+            br.onReadBlock(b.id+block, block_start);
             for (unsigned nbyte = 0; nbyte < rcount; nbyte++) {
                 sl.readMemory(block_start + nbyte*readSize, readSize, mem_it);
                 mem_it += readSize;
@@ -558,12 +587,19 @@ class Watch {
 };
 
 
+std::string format_xml_exception(int code) {
+    std::ostringstream ss;
+    ss << "XML error #" << code;
+    return ss.str();
+}
+
 class XmlFileWriter {
   public:
     XmlFileWriter(std::string filename) {
         LIBXML_TEST_VERSION;
-        w = xmlNewTextWriterFilename(filename.c_str(), 0);
-        if (w == nullptr) throw std::runtime_error("error");
+        std::cerr << filename << std::endl;
+        w = xmlNewTextWriterFilename((filename).c_str(), 0);
+        if (w == nullptr) throw std::runtime_error("Failed to create XML writer");
         xmlTextWriterSetIndent(w, 1);
     }
 
@@ -574,20 +610,20 @@ class XmlFileWriter {
     void startDocument(const std::string& encoding = "UTF-8") {
         int rc;
         rc = xmlTextWriterStartDocument(w, NULL, encoding.c_str(), NULL);
-        if (rc < 0) throw std::runtime_error("error");
+        if (rc < 0) throw std::runtime_error(format_xml_exception(rc));
     }
 
     void startElement(const std::string& name) {
         int rc;
         rc = xmlTextWriterStartElement(w, BAD_CAST name.c_str());
-        if (rc < 0) throw std::runtime_error("error");
+        if (rc < 0) throw std::runtime_error("Error XML");
         stack.push(name);
     }
 
     void writeAttribute(const std::string& name, const std::string& value) {
         int rc;
         rc = xmlTextWriterWriteAttribute(w, BAD_CAST name.c_str(), BAD_CAST value.c_str());
-        if (rc < 0) throw std::runtime_error("error");
+        if (rc < 0) throw std::runtime_error("Error XML");
     }
 
     void writeElement(const std::string& name, const std::string& value) {
@@ -606,6 +642,12 @@ class XmlFileWriter {
         stack.pop();
     }
 
+    void endDocument() {
+        int rc;
+        rc = xmlTextWriterEndDocument(w);
+        if (rc < 0) throw std::runtime_error(format_xml_exception(rc));
+    }
+
 
   private:
     xmlTextWriterPtr w;
@@ -616,12 +658,15 @@ class XmlFileWriter {
 class TcxWriter : public Callback{
   public:
     TcxWriter(std::string filename) :writer(filename) {
+        std::cerr<<"writing to " <<filename<<std::endl;
         writer.startDocument();
     }
     virtual ~TcxWriter() {
+        writer.endDocument();
     }
     virtual void onWatch(const WatchInfo &) {
         writer.startElement("TrainingCenterDatabase");
+        writer.writeAttribute("xmlns", "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2");
         writer.startElement("Activities");
 
 
@@ -632,12 +677,17 @@ class TcxWriter : public Callback{
     }
     virtual void onWorkout(const WorkoutInfo &i)  {
         writer.startElement("Activity");
-        writer.writeElement("Id", "sss");
+        writer.writeAttribute("Sport", "Other");
+        writer.writeElement("Id", i.start_time);
         writer.startElement("Lap");
         writer.writeAttribute("StartTime", i.start_time);
         writer.writeElement("TotalTimeSeconds", "0");
         writer.writeElement("DistanceMeters", "0");
-        writer.writeElement("Calories", "0");
+          {
+            std::ostringstream ss;
+            ss<<i.calories/100.0;
+            writer.writeElement("Calories", ss.str());
+          }
         writer.writeElement("Itensity", "Active");
         writer.writeElement("TriggerMethod", "Manual");
         writer.startElement("Track");
@@ -667,6 +717,8 @@ class TcxWriter : public Callback{
         writer.endElement("Trackpoint");
     }
 
+    virtual void onReadBlocks(int id, int count) {}
+    virtual void onReadBlock(int id, int addr) {}
 
   private:
     XmlFileWriter writer;
@@ -675,8 +727,8 @@ class TcxWriter : public Callback{
 class DebugWriter : public Callback {
 
   public:
-    virtual void onWatch(const WatchInfo &) {
-        std::cout << "watch info" << std::endl;
+    virtual void onWatch(const WatchInfo &i) {
+        std::cout << "watch version: " << i.version << std::endl;
     }
     virtual void onWatchEnd(const WatchInfo &) {
         std::cout << "watch end" << std::endl;
@@ -688,28 +740,41 @@ class DebugWriter : public Callback {
         std::cout << "workout end" << std::endl;
     }
     virtual void onSample(const SampleInfo &i) {
-        std::cout << "sample info: " <<  (int)i.fb << " = " << i.time 
+        /*std::cout << "sample info: " <<  (int)i.fb << " = " << i.time 
           << " hr: " << (int)i.hr 
           << " lon: " << i.lon
           << " lat: " << i.lat
           << " ele: " << i.ele
           << std::endl;
+          */
     }
-  private:
-    GpsTime t;
+    virtual void onReadBlocks(int id, int count) {
+        std::cout << "reading block #" << id << " + " << count << std::endl;
+    }
+    virtual void onReadBlock(int id, int addr) {
+        std::cout << "reading block #" << std::dec << id << " from 0x"<< std::hex << addr << std::endl;
+    }
 };
+
+
+std::string format_date_filename() {
+    auto t = std::time(nullptr);
+    auto tm = *std::localtime(&t);
+    char buffer[PATH_MAX];
+    std::strftime(buffer, PATH_MAX, "%Y-%m-%d_%I-%M-%S", &tm);
+    return buffer;
+}
 
 
 int main() {
 
-    TcxWriter w("out.tcx");
+    TcxWriter w( format_date_filename() + ".tcx");
     DebugWriter d;
 
     Watch i;
     i.addRecipient(&w);
     i.addRecipient(&d);
     i.parse();
-
 
     return 0;
 }
