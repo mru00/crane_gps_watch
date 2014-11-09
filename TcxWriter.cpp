@@ -117,6 +117,7 @@ void TcxWriter::onWatchEnd(const WatchInfo &) {
     writer.endElement("TrainingCenterDatabase");
 }
 void TcxWriter::onWorkout(const WorkoutInfo &i)  {
+    current_wo = i;
     writer.startElement("Activity");
     writer.writeAttribute("Sport", "Other");
     writer.writeElement("Id", i.start_time);
@@ -126,7 +127,7 @@ void TcxWriter::onWorkout(const WorkoutInfo &i)  {
     writer.writeElement("DistanceMeters", "0");
       {
         std::ostringstream ss;
-        ss<< i.calories/100;
+        ss<< (int)(i.calories/100);
         writer.writeElement("Calories", ss.str());
       }
     writer.writeElement("Intensity", "Active");
@@ -135,6 +136,7 @@ void TcxWriter::onWorkout(const WorkoutInfo &i)  {
 }
 void TcxWriter::onWorkoutEnd(const WorkoutInfo &)  { 
     writer.endElement("Track");
+    writer.writeElement("Notes", current_wo.start_time);
     writer.endElement("Lap");
     writer.endElement("Activity");
 }

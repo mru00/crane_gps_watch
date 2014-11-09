@@ -50,4 +50,5 @@ class TcxWriter : public Callback{
   private:
     XmlFileWriter writer;
     std::string filename;
+    WorkoutInfo current_wo;
 };
