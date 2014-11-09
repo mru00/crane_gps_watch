@@ -23,15 +23,8 @@ std::ostream& operator<<(std::ostream&, const GpsTime&);
 
 struct GpsLocation {
     int loc;
-    GpsLocation& operator += (const GpsLocation& other) {
-        loc += other.loc;
-        return *this;
-    }
-    operator const std::string() const {
-        std::ostringstream ss;
-        ss << (*this);
-        return ss.str();
-    }
+    GpsLocation& operator += (const GpsLocation& other);
+    operator const std::string() const;
 };
 
 struct GpsTimeUpd {
@@ -40,51 +33,21 @@ struct GpsTimeUpd {
 
 struct GpsEle {
     unsigned short ele;
-    GpsEle& operator += (const GpsEle& other) {
-        ele += other.ele;
-        return *this;
-    }
-    operator std::string() const {
-        std::ostringstream ss;
-        ss << (*this);
-        return ss.str();
-    }
+    GpsEle& operator += (const GpsEle& other);
+    operator std::string() const;
 };
 
 struct GpsTime {
     unsigned char YY, MM, DD, hh, mm, ss;
-    GpsTime& operator=(const GpsTimeUpd& other) {
-        mm = other.mm;
-        ss = other.ss;
-        return *this;
-    }
-    operator std::string() const {
-        std::ostringstream ss;
-        ss << (*this);
-        return ss.str();
-    }
+    GpsTime& operator=(const GpsTimeUpd& other);
+    operator std::string() const;
 };
 
-std::ostream& operator<< (std::ostream& s, const GpsLocation& l) {
-    s << std::setprecision(15) << l.loc / 10000000.0;
-    return s;
-}
+std::ostream& operator<< (std::ostream& s, const GpsLocation& l);
 
-std::ostream& operator<< (std::ostream& s, const GpsEle& l) {
-    s << l.ele;
-    return s;
-}
+std::ostream& operator<< (std::ostream& s, const GpsEle& l);
 
-std::ostream& operator<< (std::ostream& s, const GpsTime& t) {
-    s << std::dec
-      << "20" << (int)t.YY << "-"  
-      << std::setfill('0') << std::setw(2) << (int)t.MM << "-" 
-      << std::setfill('0') << std::setw(2) << (int)t.DD << "T" 
-      << std::setfill('0') << std::setw(2) << (int)t.hh << ":" 
-      << std::setfill('0') << std::setw(2) << (int)t.mm << ":" 
-      << std::setfill('0') << std::setw(2) << (int)t.ss << "Z";
-    return s;
-}
+std::ostream& operator<< (std::ostream& s, const GpsTime& t);
 
 struct SampleInfo {
     SampleInfo() {}

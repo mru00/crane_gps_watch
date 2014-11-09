@@ -28,6 +28,7 @@ int main(int argc, char** argv) {
 
     int c;
 
+    std::string device = "/dev/ttyUSB0";
     std::string output_fn = format_date_filename() + ".tcx";
     opterr = 0;
 
@@ -35,6 +36,7 @@ int main(int argc, char** argv) {
         static struct option long_options[] = {
               {"help", no_argument, 0, 'h'},
               {"output", required_argument, 0, 'f'},
+              {"device", required_argument, 0, 'd'},
               {0, 0, 0, 0}
         };
 
@@ -46,6 +48,9 @@ int main(int argc, char** argv) {
           case 'h':
             std::cerr << "help" << std::endl;
             exit (0);
+          case 'd':
+            device = optarg;
+            break;
           case 'f':
             output_fn = optarg;
             break;
@@ -55,10 +60,12 @@ int main(int argc, char** argv) {
         }
     }
 
+
+    Watch i(device);
+
     TcxWriter w(output_fn);
     DebugWriter d;
 
-    Watch i;
     i.addRecipient(&w);
     i.addRecipient(&d);
     i.parse();
