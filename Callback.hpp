@@ -20,6 +20,8 @@ class Callback {
     virtual void onWatchEnd(const WatchInfo &) = 0;
     virtual void onWorkout(const WorkoutInfo &) = 0;
     virtual void onWorkoutEnd(const WorkoutInfo &) = 0;
+    virtual void onTrack(const TrackInfo&) = 0;
+    virtual void onTrackEnd(const TrackInfo&) = 0;
     virtual void onSample(const SampleInfo &) = 0;
     virtual void onReadBlocks(int id, int count) = 0;
     virtual void onReadBlock(int id, int addr) = 0;
@@ -41,6 +43,12 @@ class Broadcaster : public Callback {
     }
     virtual void onWorkoutEnd(const WorkoutInfo &i) {
         for (auto c : recipients) c->onWorkoutEnd(i);
+    }
+    virtual void onTrack(const TrackInfo &i) {
+        for (auto c : recipients) c->onTrack(i);
+    }
+    virtual void onTrackEnd(const TrackInfo &i) {
+        for (auto c : recipients) c->onTrackEnd(i);
     }
     virtual void onSample(const SampleInfo &i) {
         for (auto c : recipients) c->onSample(i);

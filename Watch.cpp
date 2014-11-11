@@ -56,11 +56,13 @@ void Watch::parseSample(SampleInfo& si, WatchMemoryBlock::mem_it_t& it) {
 
     auto type = *it;
     si.fb = type;
+    si.sb = *(it+1);
     switch (type) {
       case 0x00: 
           {
             si.type = SampleInfo::Full;
             si.hr = *(it+24);
+            si.fix = si.sb;
             parseGpsTime(si.time, it+2);
             parseGpsLocation(si.lon, it+8);
             parseGpsLocation(si.lat, it+12);
@@ -72,6 +74,7 @@ void Watch::parseSample(SampleInfo& si, WatchMemoryBlock::mem_it_t& it) {
           {
             si.type = SampleInfo::Diff;
             si.hr = *(it+20);
+            si.fix = si.sb;
             parseGpsTimeUpd(si.time_upd, it+2);
             parseGpsLocation(si.lon, it+4);
             parseGpsLocation(si.lat, it+8);
@@ -83,6 +86,7 @@ void Watch::parseSample(SampleInfo& si, WatchMemoryBlock::mem_it_t& it) {
           {
             si.type = SampleInfo::TimeOnly;
             si.hr = 0;
+            si.fix = 0;
             parseGpsTimeUpd(si.time_upd, it+1);
             it += 3;
             break;
@@ -91,6 +95,7 @@ void Watch::parseSample(SampleInfo& si, WatchMemoryBlock::mem_it_t& it) {
           {
             si.type = SampleInfo::HrOnly;
             si.hr = *(it+7);
+            si.fix = 0;
             parseGpsTime(si.time, it+1);
             it += 8;
             break;
@@ -99,6 +104,7 @@ void Watch::parseSample(SampleInfo& si, WatchMemoryBlock::mem_it_t& it) {
           {
             si.type = SampleInfo::None;
             si.hr = *(it+24);
+            si.fix = si.sb;
             parseGpsTime(si.time, it+2);
             parseGpsLocation(si.lon, it+8);
             parseGpsLocation(si.lat, it+12);
@@ -152,6 +158,7 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
     br.onWorkout(wo);
 
     it = cb.memory.begin() + 0x1000;
+    bool track_active = false;
     GpsTime t;
     GpsLocation lon;
     GpsLocation lat;
@@ -159,6 +166,15 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
     for (unsigned i =0; i< wo.nsamples;i++) {
         SampleInfo si;
         parseSample(si, it);
+
+        // assumptions:
+        //if (si.type == SampleInfo::Full)
+        //  assert (si.fix != 0);
+        if (si.type == SampleInfo::Diff)
+          assert(si.fix == 0);
+
+
+
         if (si.type == SampleInfo::Full || si.type == SampleInfo::HrOnly) {
             t = si.time;
         }
@@ -168,6 +184,8 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
         else if (si.type == SampleInfo::End) {
             break;
         }
+
+
 
         if (si.type == SampleInfo::Full) {
             lon = si.lon;
@@ -179,14 +197,36 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
             si.lat = (lat += si.lat);
             si.ele = (ele += si.ele);
         }
+        else if (si.type == SampleInfo::None && si.fix != 0) {
+            lon = si.lon;
+            lat = si.lat;
+            ele = si.ele;
+        }
         else {
-            si.lon.loc = 0;
-            si.lat.loc = 0;
-            si.ele.ele = 0;
+            si.lon.loc = lon.loc = 0;
+            si.lat.loc = lat.loc = 0;
+            si.ele.ele = ele.ele = 0;
         }
 
+        if (track_active && si.type == SampleInfo::None) {
+            track_active = false;
+            TrackInfo i;
+            br.onTrackEnd(i);
+        }
+
+        if (!track_active && si.type == SampleInfo::None) {
+            TrackInfo t;
+            br.onTrack(t);
+            track_active = true;
+        }
         br.onSample(si);
 
+    }
+
+    if (track_active) {
+
+        TrackInfo i;
+        br.onTrackEnd(i);
     }
 }
 void Watch::parseBlock0() {
@@ -205,7 +245,7 @@ void Watch::parseBlock0() {
     unsigned char first;
     mem_it += 0x100;
     for (;;) {
-        first = *mem_it++;
+        cur = first = *mem_it++;
         if (first == 0xff) {
             break;
         }

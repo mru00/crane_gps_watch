@@ -19,13 +19,22 @@ class DebugWriter : public Callback {
         std::cout << "watch end" << std::endl;
     }
     virtual void onWorkout(const WorkoutInfo &i)  {
-        std::cout << "workout info t=" << i.start_time << std::endl;
+        std::cout << " workout info t=" << i.start_time << std::endl;
     }
     virtual void onWorkoutEnd(const WorkoutInfo &)  {
-        std::cout << "workout end" << std::endl;
+        std::cout << " workout end" << std::endl;
+    }
+    virtual void onTrack(const TrackInfo &i)  {
+        std::cout << "  track info " << std::endl;
+    }
+    virtual void onTrackEnd(const TrackInfo &)  {
+        std::cout << "  track end" << std::endl;
     }
     virtual void onSample(const SampleInfo &i) {
-        std::cout << "sample info: " <<  (int)i.fb << " = " << i.time 
+        std::cout << "   sample info: " 
+          << " fb: " << (int)i.fb
+          << " fix: " << (int)i.fix
+          << " time: " << i.time 
           << " hr: " << (int)i.hr 
           << " lon: " << i.lon
           << " lat: " << i.lat

@@ -10,6 +10,7 @@
 #include <cassert>
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
 
 #include <libxml/encoding.h>
@@ -36,6 +37,7 @@ XmlFileWriter::~XmlFileWriter() {
 }
 
 void XmlFileWriter::open(const std::string& filename) {
+    std::cerr << "XmlFileWriter: writing file to " << filename << std::endl;
     w = xmlNewTextWriterFilename((filename).c_str(), 0);
     if (w == nullptr) throw std::runtime_error("Failed to create XML writer");
     xmlTextWriterSetIndent(w, 1);
@@ -95,28 +97,42 @@ void XmlFileWriter::writeElement(const std::string& name, const std::string& val
 
 
 
-TcxWriter::TcxWriter(std::string filename) : filename(filename) {
-    std::cerr << "TcxWriter: writing tcx file to " << filename << std::endl;
+TcxWriter::TcxWriter(std::string filename, bool split_by_track) : filename(filename), split_by_track(split_by_track) {
 }
 TcxWriter::~TcxWriter() {
     if (writer.isOpen()) {
+        // XXX shouldn't happen
         writer.endDocument();
     }
 }
 void TcxWriter::onWatch(const WatchInfo &) {
-    writer.open(filename);
-    writer.startDocument();
-    writer.startElement("TrainingCenterDatabase");
-    writer.writeAttribute("xmlns", "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2");
-    writer.startElement("Activities");
-
-
+    if (!split_by_track) {
+        writer.open(filename);
+        writer.startDocument();
+        writer.startElement("TrainingCenterDatabase");
+        writer.writeAttribute("xmlns", "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2");
+        writer.startElement("Activities");
+    }
 }
 void TcxWriter::onWatchEnd(const WatchInfo &) {
-    writer.endElement("Activities");
-    writer.endElement("TrainingCenterDatabase");
+    if (!split_by_track) {
+        writer.endElement("Activities");
+        writer.endElement("TrainingCenterDatabase");
+        writer.endDocument();
+    } 
 }
 void TcxWriter::onWorkout(const WorkoutInfo &i)  {
+    if (split_by_track) {
+        std::string fn = i.start_time;
+        fn += ".tcx";
+        std::replace(fn.begin(), fn.end(), ':', '_');
+        writer.open(fn);
+        writer.startDocument();
+        writer.startElement("TrainingCenterDatabase");
+        writer.writeAttribute("xmlns", "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2");
+        writer.startElement("Activities");
+    }
+
     current_wo = i;
     writer.startElement("Activity");
     writer.writeAttribute("Sport", "Other");
@@ -132,13 +148,23 @@ void TcxWriter::onWorkout(const WorkoutInfo &i)  {
       }
     writer.writeElement("Intensity", "Active");
     writer.writeElement("TriggerMethod", "Manual");
-    writer.startElement("Track");
 }
 void TcxWriter::onWorkoutEnd(const WorkoutInfo &)  { 
-    writer.endElement("Track");
     writer.writeElement("Notes", current_wo.start_time);
     writer.endElement("Lap");
     writer.endElement("Activity");
+
+    if (split_by_track) {
+        writer.endElement("Activities");
+        writer.endElement("TrainingCenterDatabase");
+        writer.endDocument();
+    }
+}
+void TcxWriter::onTrack(const TrackInfo&) {
+    writer.startElement("Track");
+}
+void TcxWriter::onTrackEnd(const TrackInfo&) {
+    writer.endElement("Track");
 }
 void TcxWriter::onSample(const SampleInfo &i) { 
     writer.startElement("Trackpoint");

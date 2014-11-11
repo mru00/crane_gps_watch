@@ -51,13 +51,21 @@ std::ostream& operator<< (std::ostream& s, const GpsTime& t);
 
 struct SampleInfo {
     SampleInfo() {}
-    enum { Full, None, Diff, HrOnly, TimeOnly, End } type;
+    enum { 
+        Full = 0x00, 
+        Diff = 0x01, 
+        TimeOnly = 0x02, 
+        HrOnly = 0x03, 
+        None = 0x80, 
+        End = 0xff 
+    } type;
     GpsTime time;
     GpsTimeUpd time_upd;
     GpsLocation lon, lat;
     GpsEle ele;
     unsigned char hr;
-    unsigned char fb;
+    unsigned char fix;
+    unsigned char fb, sb;
 };
 
 struct WorkoutInfo {
@@ -70,6 +78,9 @@ struct WorkoutInfo {
     double speed_avg;
     double speed_max;
     double calories;
+};
+
+struct TrackInfo {
 };
 
 struct WatchInfo {

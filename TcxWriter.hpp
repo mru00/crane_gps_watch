@@ -37,12 +37,14 @@ class XmlFileWriter {
 
 class TcxWriter : public Callback{
   public:
-    TcxWriter(std::string filename);
+    TcxWriter(std::string filename, bool split_by_track);
     virtual ~TcxWriter();
     virtual void onWatch(const WatchInfo &);
     virtual void onWatchEnd(const WatchInfo &);
     virtual void onWorkout(const WorkoutInfo &i) ;
     virtual void onWorkoutEnd(const WorkoutInfo &);
+    virtual void onTrack(const TrackInfo&);
+    virtual void onTrackEnd(const TrackInfo&);
     virtual void onSample(const SampleInfo &i); 
     virtual void onReadBlocks(int id, int count);
     virtual void onReadBlock(int id, int addr);
@@ -51,4 +53,5 @@ class TcxWriter : public Callback{
     XmlFileWriter writer;
     std::string filename;
     WorkoutInfo current_wo;
+    bool split_by_track;
 };

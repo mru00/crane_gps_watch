@@ -23,9 +23,9 @@ std::string format_date_filename() {
     return buffer;
 }
 
-
 int main(int argc, char** argv) {
 
+    bool split_by_track = false;
     int c;
 
     std::string device = "/dev/ttyUSB0";
@@ -37,6 +37,7 @@ int main(int argc, char** argv) {
               {"help", no_argument, 0, 'h'},
               {"output", required_argument, 0, 'f'},
               {"device", required_argument, 0, 'd'},
+              {"split", no_argument, 0, 's'},
               {0, 0, 0, 0}
         };
 
@@ -51,6 +52,9 @@ int main(int argc, char** argv) {
           case 'd':
             device = optarg;
             break;
+          case 's':
+            split_by_track = true;
+            break;
           case 'f':
             output_fn = optarg;
             break;
@@ -63,7 +67,7 @@ int main(int argc, char** argv) {
 
     Watch i(device);
 
-    TcxWriter w(output_fn);
+    TcxWriter w(output_fn, split_by_track);
     DebugWriter d;
 
     i.addRecipient(&w);
