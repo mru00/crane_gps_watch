@@ -32,6 +32,8 @@ class DebugWriter : public Callback {
     }
     virtual void onSample(const SampleInfo &i) {
         std::cout << "   sample info: " 
+          << " idx_wo: " << (int)i.idx_wo
+          << " idx_track: " << (int)i.idx_track
           << " fb: " << (int)i.fb
           << " fix: " << (int)i.fix
           << " time: " << i.time 

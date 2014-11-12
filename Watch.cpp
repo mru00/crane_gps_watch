@@ -163,15 +163,19 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
     GpsLocation lon;
     GpsLocation lat;
     GpsEle ele;
+    unsigned idx_wo = 0;
+    unsigned idx_track = 0;
     for (unsigned i =0; i< wo.nsamples;i++) {
         SampleInfo si;
         parseSample(si, it);
+        idx_wo ++;
+        idx_track++;
 
         // assumptions:
         //if (si.type == SampleInfo::Full)
         //  assert (si.fix != 0);
-        if (si.type == SampleInfo::Diff)
-          assert(si.fix == 0);
+        //if (si.type == SampleInfo::Diff)
+        //  assert(si.fix == 0);
 
 
 
@@ -186,21 +190,23 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
         }
 
 
+        if (si.fix != 0) {
 
-        if (si.type == SampleInfo::Full) {
-            lon = si.lon;
-            lat = si.lat;
-            ele = si.ele;
-        }
-        else if (si.type == SampleInfo::Diff) {
-            si.lon = (lon += si.lon);
-            si.lat = (lat += si.lat);
-            si.ele = (ele += si.ele);
-        }
-        else if (si.type == SampleInfo::None && si.fix != 0) {
-            lon = si.lon;
-            lat = si.lat;
-            ele = si.ele;
+            if (si.type == SampleInfo::Full) {
+                lon = si.lon;
+                lat = si.lat;
+                ele = si.ele;
+            }
+            else if (si.type == SampleInfo::Diff) {
+                si.lon = (lon += si.lon);
+                si.lat = (lat += si.lat);
+                si.ele = (ele += si.ele);
+            }
+            else if (si.type == SampleInfo::None) {
+                lon = si.lon;
+                lat = si.lat;
+                ele = si.ele;
+            }
         }
         else {
             si.lon.loc = lon.loc = 0;
@@ -214,11 +220,16 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
             br.onTrackEnd(i);
         }
 
+
         if (!track_active) {
             TrackInfo t;
             br.onTrack(t);
             track_active = true;
+            idx_track = 1;
         }
+
+        si.idx_track = idx_track;
+        si.idx_wo = idx_wo;
         br.onSample(si);
 
     }

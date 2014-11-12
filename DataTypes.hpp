@@ -66,6 +66,7 @@ struct SampleInfo {
     unsigned char hr;
     unsigned char fix;
     unsigned char fb, sb;
+    unsigned idx_wo, idx_track;
 };
 
 struct WorkoutInfo {
