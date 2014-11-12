@@ -37,7 +37,7 @@ XmlFileWriter::~XmlFileWriter() {
 }
 
 void XmlFileWriter::open(const std::string& filename) {
-    std::cerr << "XmlFileWriter: writing file to " << filename << std::endl;
+    std::cerr << "XmlFileWriter: writing to " << filename << std::endl;
     w = xmlNewTextWriterFilename((filename).c_str(), 0);
     if (w == nullptr) throw std::runtime_error("Failed to create XML writer");
     xmlTextWriterSetIndent(w, 1);

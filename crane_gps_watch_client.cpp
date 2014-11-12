@@ -26,6 +26,7 @@ std::string format_date_filename() {
 int main(int argc, char** argv) {
 
     bool split_by_track = false;
+    bool show_debug = false;
     int c;
 
     std::string device = "/dev/ttyUSB0";
@@ -38,6 +39,7 @@ int main(int argc, char** argv) {
               {"output", required_argument, 0, 'f'},
               {"device", required_argument, 0, 'd'},
               {"split", no_argument, 0, 's'},
+              {"verbose", no_argument, 0, 'v'},
               {0, 0, 0, 0}
         };
 
@@ -58,6 +60,9 @@ int main(int argc, char** argv) {
           case 'f':
             output_fn = optarg;
             break;
+          case 'v':
+            show_debug = true;
+            break;
           default:
             std::cerr << "unknown option" << std::endl;
             exit(1);
@@ -71,7 +76,10 @@ int main(int argc, char** argv) {
     DebugWriter d;
 
     i.addRecipient(&w);
-    i.addRecipient(&d);
+    if (show_debug) {
+        i.addRecipient(&d);
+    }
+
     i.parse();
 
     return 0;

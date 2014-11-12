@@ -22,7 +22,7 @@ notify-send --expire-time=5000 --icon=gtk-dialog-error "failed to receive watch 
 sleep 3
 
 
-$client --split --device $1
+$client --split --device $1 --verbose
 
 
 if [[ -z "$(pgrep -f $tb)" ]]; then

@@ -214,7 +214,7 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
             br.onTrackEnd(i);
         }
 
-        if (!track_active && si.type == SampleInfo::None) {
+        if (!track_active) {
             TrackInfo t;
             br.onTrack(t);
             track_active = true;

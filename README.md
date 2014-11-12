@@ -4,7 +4,12 @@ Crane GPS Watch client v.0.1 (crane_gps_watch_client)
 Developer: Rudolf Mühlbauer <mru@sisyphus.teil.cc>
 
 Crane GPS Watch client is a client for downloading track files in tcx format
-from the GPS watch like Crane from Aldi store or GPS Nav II from Conrad store.
+from certain GPS watches.
+
+Supported Watches:
+* Crane GPS Watch from Aldi https://www.produktservice.info/20014414/20014414.html
+* Conrad GPS Nav II http://www.conrad.de/ce/de/product/372884/Multi-NAV-2-GPS-Pulsuhr-mit-Brustgurt-Schwarz
+* Runtastic Gps Watch https://www.runtastic.com/shop/en/runtastic-gps-watch-with-heart-rate-monitor
 
 
 This software is distributed under the GNU General Public License.
@@ -40,6 +45,7 @@ USAGE:
     [--output "filename"]            override default filename
     [--split]                        write file for each track
     [--device "/dev/tty..."]         override default device file
+    [--verbose]                      write debug output to console
 
 As default, the output file is written in the current working directory.
 The filename is created from the current time and date. Use the `--output` option
