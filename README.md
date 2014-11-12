@@ -8,7 +8,7 @@ Crane GPS Watch client is a client for downloading track files in tcx format
 from certain GPS watches.
 
 Supported Watches:
-* Crane GPS Watch from Aldi https://www.produktservice.info/20014414/20014414.html
+* Crane GPS Watch from Aldi/Hofer https://www.produktservice.info/20014414/20014414.html
 * Conrad GPS Nav II http://www.conrad.de/ce/de/product/372884/Multi-NAV-2-GPS-Pulsuhr-mit-Brustgurt-Schwarz
 * Runtastic Gps Watch https://www.runtastic.com/shop/en/runtastic-gps-watch-with-heart-rate-monitor
 
@@ -33,9 +33,14 @@ This program uses libxml2. Please install libxml2 before building Crane GPS Watc
 Crane GPS Watch client uses make to build:
 
 1. Download source code archive from githup repo:
-git clone git://github.com/mru00/crane_gps_watch
+
+ git clone https://github.com/mru00/crane_gps_watch.git
+
 2. cd to unpacking directory
-3. make
+3. build the software 
+
+ make
+
 
 Resulting binary file crane_gps_watch_client you can copy 
 to destination folder e.g. /usr/bin or /usr/local/bin.
