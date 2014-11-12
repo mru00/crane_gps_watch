@@ -207,6 +207,11 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
                 lat = si.lat;
                 ele = si.ele;
             }
+            else {
+                si.lon.loc = lon.loc = 0;
+                si.lat.loc = lat.loc = 0;
+                si.ele.ele = ele.ele = 0;
+            }
         }
         else {
             si.lon.loc = lon.loc = 0;
