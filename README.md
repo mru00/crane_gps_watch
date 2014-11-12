@@ -1,4 +1,5 @@
 Crane GPS Watch client v.0.1 (crane_gps_watch_client)
+=====================================================
 11 November 2014
 
 Developer: Rudolf Mühlbauer <mru@sisyphus.teil.cc>
@@ -24,6 +25,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details or file COPYING.
 
 
+Installation:
+-------------
+
 This program uses libxml2. Please install libxml2 before building Crane GPS Watch client.
 
 Crane GPS Watch client uses make to build:
@@ -38,6 +42,7 @@ to destination folder e.g. /usr/bin or /usr/local/bin.
 
 
 USAGE:
+------
 
 	crane_gps_watch_client --help      show the help screen
 
@@ -64,6 +69,20 @@ by means of gpsbabel or use tcx format as it is.
 Enjoy!
 
 Version History:
+----------------
 
 	0.1:	:initial release.
+
+
+
+
+See Also:
+---------
+
+"My Tourbook": http://mytourbook.sourceforge.net/mytourbook/
+works great with the tcx files.
+
+"Viking GPS data editor and analyzer" http://sourceforge.net/projects/viking/
+
+
 
