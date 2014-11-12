@@ -34,16 +34,16 @@ Crane GPS Watch client uses make to build:
 
 1. Download source code archive from githup repo:
 
- git clone https://github.com/mru00/crane_gps_watch.git
+  git clone https://github.com/mru00/crane_gps_watch.git
 
 2. cd to unpacking directory
 3. build the software 
 
- make
+  make
 
 
-Resulting binary file crane_gps_watch_client you can copy 
-to destination folder e.g. /usr/bin or /usr/local/bin.
+Resulting binary file `crane_gps_watch_client` you can copy 
+to destination folder e.g. `/usr/bin` or `/usr/local/bin`.
 
 
 USAGE:
