@@ -1,0 +1,5 @@
+language: cpp
+script:
+  - make -B
+before_install:
+  - sudo apt-get install libxml2-dev

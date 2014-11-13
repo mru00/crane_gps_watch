@@ -50,7 +50,9 @@ void Watch::parseGpsTime(GpsTime& t, WatchMemoryBlock::mem_it_t it) {
     t.hh = *it++;
     t.mm = *it++;
     t.ss = *it++;
-    //assert (t.YY == 14);
+#ifdef DEBUG
+    assert (t.YY == 14);
+#endif
 }
 void Watch::parseSample(SampleInfo& si, WatchMemoryBlock::mem_it_t& it) {
 
@@ -165,18 +167,25 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
     GpsEle ele;
     unsigned idx_wo = 0;
     unsigned idx_track = 0;
+    bool has_full_fix = false;
     for (unsigned i =0; i< wo.nsamples;i++) {
         SampleInfo si;
         parseSample(si, it);
         idx_wo ++;
         idx_track++;
 
+#ifdef DEBUG
         // assumptions:
+        
+        // this one does not hold:
         //if (si.type == SampleInfo::Full)
         //  assert (si.fix != 0);
+
+
+        // doesn't hold
         //if (si.type == SampleInfo::Diff)
         //  assert(si.fix == 0);
-
+#endif
 
 
         if (si.type == SampleInfo::Full || si.type == SampleInfo::HrOnly) {
@@ -191,11 +200,11 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
 
 
         if (si.fix != 0) {
-
             if (si.type == SampleInfo::Full) {
                 lon = si.lon;
                 lat = si.lat;
                 ele = si.ele;
+                has_full_fix = true;
             }
             else if (si.type == SampleInfo::Diff) {
                 si.lon = (lon += si.lon);
@@ -206,17 +215,21 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
                 lon = si.lon;
                 lat = si.lat;
                 ele = si.ele;
+                has_full_fix = true;
             }
             else {
-                si.lon.loc = lon.loc = 0;
-                si.lat.loc = lat.loc = 0;
-                si.ele.ele = ele.ele = 0;
+                has_full_fix = false;
             }
         }
         else {
+            has_full_fix = false;
+        }
+
+        if (!has_full_fix) {
             si.lon.loc = lon.loc = 0;
             si.lat.loc = lat.loc = 0;
             si.ele.ele = ele.ele = 0;
+            si.fix = 0;
         }
 
         if (track_active && si.type == SampleInfo::None) {
@@ -232,6 +245,16 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
             track_active = true;
             idx_track = 1;
         }
+
+#ifdef DEBUG
+
+
+        if (has_full_fix) {
+            //assert(int(si.lon)==14);
+        }
+
+
+#endif
 
         si.idx_track = idx_track;
         si.idx_wo = idx_wo;
