@@ -49,7 +49,10 @@ int main(int argc, char** argv) {
 
         switch (c) {
           case 'h':
-            std::cerr << "help" << std::endl;
+            std::cerr 
+              << "crane_gps_watch_client --help" <<std::endl
+              << std::endl 
+              << "crane_gps_watch_client [--output output-filename] [--device /dev/ttyUSB0] [--split] [--verbose]";
             exit (0);
           case 'd':
             device = optarg;
