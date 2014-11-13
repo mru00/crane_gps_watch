@@ -2,7 +2,11 @@ Crane GPS Watch client v.0.1 (crane_gps_watch_client)
 =====================================================
 11 November 2014
 
+
 Developer: Rudolf Mühlbauer <mru@sisyphus.teil.cc>
+
+[![Build Status](https://travis-ci.org/mru00/crane_gps_watch.svg)](https://travis-ci.org/mru00/crane_gps_watch)
+
 
 Crane GPS Watch client is a client for downloading track files in tcx format
 from certain GPS watches.
