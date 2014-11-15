@@ -98,6 +98,7 @@ am_crane_gps_watch_client_OBJECTS =  \
 	crane_gps_watch_client-ImageWriter.$(OBJEXT) \
 	crane_gps_watch_client-DebugWriter.$(OBJEXT) \
 	crane_gps_watch_client-DataTypes.$(OBJEXT) \
+	crane_gps_watch_client-MemoryBlock.$(OBJEXT) \
 	crane_gps_watch_client-ImageLink.$(OBJEXT) \
 	crane_gps_watch_client-SerialLink.$(OBJEXT) \
 	crane_gps_watch_client-TcxWriter.$(OBJEXT) \
@@ -202,7 +203,6 @@ EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 GREP = @GREP@
 HAVE_CXX11 = @HAVE_CXX11@
-HELP2MAN = @HELP2MAN@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -275,10 +275,10 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 crane_gps_watch_client_SOURCES = crane_gps_watch_client.cpp \
-                                 ImageWriter.cpp DebugWriter.cpp DataTypes.cpp ImageLink.cpp SerialLink.cpp TcxWriter.cpp Watch.cpp \
-                                 Callback.hpp DataTypes.hpp ImageWriter.hpp DebugWriter.hpp MemoryBlock.hpp ImageLink.hpp SerialLink.hpp TcxWriter.hpp Watch.hpp
+                                 ImageWriter.cpp DebugWriter.cpp DataTypes.cpp MemoryBlock.cpp ImageLink.cpp SerialLink.cpp TcxWriter.cpp Watch.cpp \
+                                 Callback.hpp ImageWriter.hpp DebugWriter.hpp DataTypes.hpp MemoryBlock.hpp ImageLink.hpp SerialLink.hpp TcxWriter.hpp Watch.hpp
 
-crane_gps_watch_client_CXXFLAGS = -Werror -Wall $(XML_CFLAGS) $(CXXFLAGS)
+crane_gps_watch_client_CXXFLAGS = -Werror -Wall $(XML_CFLAGS)
 crane_gps_watch_client_LDADD = $(XML_LIBS)
 MOSTLYCLEANFILES = *.tcx
 all: all-am
@@ -372,6 +372,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-DebugWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-ImageLink.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-ImageWriter.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-MemoryBlock.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-SerialLink.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-TcxWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-Watch.Po@am__quote@
@@ -446,6 +447,20 @@ crane_gps_watch_client-DataTypes.obj: DataTypes.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='DataTypes.cpp' object='crane_gps_watch_client-DataTypes.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -c -o crane_gps_watch_client-DataTypes.obj `if test -f 'DataTypes.cpp'; then $(CYGPATH_W) 'DataTypes.cpp'; else $(CYGPATH_W) '$(srcdir)/DataTypes.cpp'; fi`
+
+crane_gps_watch_client-MemoryBlock.o: MemoryBlock.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -MT crane_gps_watch_client-MemoryBlock.o -MD -MP -MF $(DEPDIR)/crane_gps_watch_client-MemoryBlock.Tpo -c -o crane_gps_watch_client-MemoryBlock.o `test -f 'MemoryBlock.cpp' || echo '$(srcdir)/'`MemoryBlock.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/crane_gps_watch_client-MemoryBlock.Tpo $(DEPDIR)/crane_gps_watch_client-MemoryBlock.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='MemoryBlock.cpp' object='crane_gps_watch_client-MemoryBlock.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -c -o crane_gps_watch_client-MemoryBlock.o `test -f 'MemoryBlock.cpp' || echo '$(srcdir)/'`MemoryBlock.cpp
+
+crane_gps_watch_client-MemoryBlock.obj: MemoryBlock.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -MT crane_gps_watch_client-MemoryBlock.obj -MD -MP -MF $(DEPDIR)/crane_gps_watch_client-MemoryBlock.Tpo -c -o crane_gps_watch_client-MemoryBlock.obj `if test -f 'MemoryBlock.cpp'; then $(CYGPATH_W) 'MemoryBlock.cpp'; else $(CYGPATH_W) '$(srcdir)/MemoryBlock.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/crane_gps_watch_client-MemoryBlock.Tpo $(DEPDIR)/crane_gps_watch_client-MemoryBlock.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='MemoryBlock.cpp' object='crane_gps_watch_client-MemoryBlock.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -c -o crane_gps_watch_client-MemoryBlock.obj `if test -f 'MemoryBlock.cpp'; then $(CYGPATH_W) 'MemoryBlock.cpp'; else $(CYGPATH_W) '$(srcdir)/MemoryBlock.cpp'; fi`
 
 crane_gps_watch_client-ImageLink.o: ImageLink.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -MT crane_gps_watch_client-ImageLink.o -MD -MP -MF $(DEPDIR)/crane_gps_watch_client-ImageLink.Tpo -c -o crane_gps_watch_client-ImageLink.o `test -f 'ImageLink.cpp' || echo '$(srcdir)/'`ImageLink.cpp

@@ -5,36 +5,16 @@
 
 #pragma once
 
-
-#include <iostream>
 #include <vector>
-#include <stdexcept>
-#include <sstream>
-#include <algorithm>
-
-
 
 class Watch;
 
 class WatchMemoryBlock {
   private:
-    WatchMemoryBlock(const unsigned id, const unsigned count) 
-      : id(id)
-        , count(count)
-        , memory(count*blockSize, 0) 
-    {
-    };
-
+    WatchMemoryBlock(const unsigned id, const unsigned count);
     WatchMemoryBlock(const WatchMemoryBlock&) = delete;
+    void dump();
 
-    void dump() {
-        std::cerr << "memory:" << memory.size()  <<std::endl;
-        mem_it_t it = memory.begin();
-        while (it != memory.end()) {
-            std::cerr << std::hex << (int)*it++ << ",";
-        }
-        std::cerr << std::endl;
-    }
   public:
     typedef unsigned char byte_t;
     typedef std::vector<byte_t> mem_t;

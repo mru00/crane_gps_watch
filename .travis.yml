@@ -9,7 +9,7 @@ before_install:
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get -qq update
 install:
-  - sudo apt-get -qq install libxml2-dev gcc-4.8 g++-4.8 libxml2-utils gnulib automake
+  - sudo apt-get -qq install libxml2-dev gcc-4.8 g++-4.8 libxml2-utils
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
   - g++ --version
   - automake --version

@@ -625,7 +625,6 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
-HELP2MAN
 EGREP
 GREP
 CXXCPP
@@ -2713,8 +2712,9 @@ ac_config_headers="$ac_config_headers config.h"
 ac_config_files="$ac_config_files Makefile src/Makefile test/Makefile"
 
 
-# requires automake 1.13 [https://autotools.io/autoconf/macros.html]
+# requires automake 1.13 [https://autotools.io/autoconf/macros.html] -- breaks travis-ci.org
 #AC_CONFIG_MACRO_DIR([m4])
+# this works with older versions:
 # ============================================================================
 #  http://www.gnu.org/software/autoconf-archive/ax_cxx_compile_stdcxx_11.html
 # ============================================================================
@@ -4684,10 +4684,6 @@ _ACEOF
 fi
 
 done
-
-
-
-HELP2MAN=${HELP2MAN-"${am_missing_run}help2man"}
 
 
 # doesn't work on travis-ci.org...

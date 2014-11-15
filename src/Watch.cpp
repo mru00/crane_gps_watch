@@ -6,6 +6,7 @@
 
 #include <ostream>
 #include <iostream>
+#include <algorithm>
 #include <vector>
 #include <iomanip>
 
