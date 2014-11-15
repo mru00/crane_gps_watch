@@ -1,5 +1,6 @@
 language: cpp
 script:
+  - autoreconf
   - ./configure
   - make 
   - make check
