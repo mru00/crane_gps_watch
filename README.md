@@ -53,6 +53,9 @@ Crane GPS Watch client uses make to build:
   make install
 
 
+
+Please also have a look at `.travis.yml`, which describes a full build for the Travis-ci.org CI platform.
+
 USAGE:
 ------
 

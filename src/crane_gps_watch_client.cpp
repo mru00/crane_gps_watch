@@ -8,6 +8,7 @@
 
 #include <getopt.h>
 
+#include "../config.h"
 
 #include "DataTypes.hpp"
 #include "Callback.hpp"
@@ -60,11 +61,13 @@ int main(int argc, char** argv) {
         switch (c) {
           case 'h':
             std::cerr <<
+              PACKAGE_STRING "\n"
               "crane_gps_watch_client --help\n"
               "\n"
               "crane_gps_watch_client [--output output-filename] [--device /dev/ttyUSB0 | --from_image image-file] [--to_image image-file] [--split] [--verbose]\n" 
               "\n"
-              "See https://github.com/mru00/crane_gps_watch for details"
+              "See README.md or https://github.com/mru00/crane_gps_watch for details\n"
+              "Send bugreports to " PACKAGE_BUGREPORT
               << std::endl;
             exit (0);
           case 'd':

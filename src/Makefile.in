@@ -85,7 +85,8 @@ subdir = src
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdcxx_11.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -202,6 +203,8 @@ ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 GREP = @GREP@
+HAVE_CXX11 = @HAVE_CXX11@
+HELP2MAN = @HELP2MAN@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -277,7 +280,7 @@ crane_gps_watch_client_SOURCES = crane_gps_watch_client.cpp \
                                  ImageWriter.cpp DebugWriter.cpp DataTypes.cpp ImageLink.cpp SerialLink.cpp TcxWriter.cpp Watch.cpp \
                                  Callback.hpp DataTypes.hpp ImageWriter.hpp DebugWriter.hpp MemoryBlock.hpp ImageLink.hpp SerialLink.hpp TcxWriter.hpp Watch.hpp
 
-crane_gps_watch_client_CXXFLAGS = -std=c++11 -Werror -Wall $(XML_CFLAGS) $(CXXFLAGS)
+crane_gps_watch_client_CXXFLAGS = -Werror -Wall $(XML_CFLAGS) $(CXXFLAGS)
 crane_gps_watch_client_LDADD = $(XML_LIBS)
 all: all-am
 
