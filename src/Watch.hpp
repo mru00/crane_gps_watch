@@ -7,7 +7,9 @@
 #ifndef __WATCH_HPP
 #define __WATCH_HPP
 
-#include "SerialLink.hpp"
+#include <memory>
+
+#include "DeviceInterface.hpp"
 #include "DataTypes.hpp"
 #include "MemoryBlock.hpp"
 #include "Callback.hpp"
@@ -16,9 +18,9 @@
 class Watch {
 
   public:
-    Watch(const std::string& device);
+    Watch(std::shared_ptr<DeviceInterface> device);
     void parse();
-    void addRecipient(Callback* c);
+    void addRecipient(std::shared_ptr<Callback> c);
   private:
 
     void parseGpsEle(GpsEle& l, WatchMemoryBlock::mem_it_t it);
@@ -31,9 +33,8 @@ class Watch {
     void readBlock(WatchMemoryBlock& b);
 
   private:
-    SerialLink sl;
     Broadcaster br;
-    std::string device;
+    std::shared_ptr<DeviceInterface> device;
 };
 
 

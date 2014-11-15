@@ -9,8 +9,8 @@
 #include <vector>
 #include <iomanip>
 
+#include <cassert>
 
-#include "SerialLink.hpp"
 #include "DataTypes.hpp"
 #include "MemoryBlock.hpp"
 #include "Callback.hpp"
@@ -18,14 +18,14 @@
 #include "Watch.hpp"
 
 
-Watch::Watch(const std::string& device) : device(device) {
+Watch::Watch(std::shared_ptr<DeviceInterface> device) : device(device) {
 }
 
 void Watch::parse() {
     parseBlock0();
 }
 
-void Watch::addRecipient(Callback* c) {
+void Watch::addRecipient(std::shared_ptr<Callback> c) {
     br.addRecipient(c);
 }
 
@@ -269,9 +269,8 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
     }
 }
 void Watch::parseBlock0() {
-    sl.open(device);
 
-    std::string version = sl.readVersion();
+    std::string version = device->readVersion();
     WatchMemoryBlock mb(0, 1);
     readBlock(mb);
     WatchInfo wi;
@@ -314,7 +313,7 @@ void Watch::readBlock(WatchMemoryBlock& b) {
         br.onReadBlock(b.id+block, block_start);
 
         for (unsigned nbyte = 0; nbyte < rcount; nbyte++) {
-            sl.readMemory(block_start + nbyte*readSize, readSize, &*mem_it);
+            device->readMemory(block_start + nbyte*readSize, readSize, &*mem_it);
             mem_it += readSize;
         }
     }

@@ -4,6 +4,8 @@
 //
 
 
+#include <memory>
+
 #include <getopt.h>
 
 
@@ -12,6 +14,8 @@
 #include "TcxWriter.hpp"
 #include "DebugWriter.hpp"
 #include "Watch.hpp"
+#include "SerialLink.hpp"
+#include "ImageLink.hpp"
 
 
 
@@ -29,7 +33,8 @@ int main(int argc, char** argv) {
     bool show_debug = false;
     int c;
 
-    std::string device = "/dev/ttyUSB0";
+    std::string from_image;
+    std::string device_fn = "/dev/ttyUSB0";
     std::string output_fn = format_date_filename() + ".tcx";
     opterr = 0;
 
@@ -38,6 +43,7 @@ int main(int argc, char** argv) {
               {"help", no_argument, 0, 'h'},
               {"output", required_argument, 0, 'f'},
               {"device", required_argument, 0, 'd'},
+              {"from_image", required_argument, 0, 'i'},
               {"split", no_argument, 0, 's'},
               {"verbose", no_argument, 0, 'v'},
               {0, 0, 0, 0}
@@ -58,13 +64,16 @@ int main(int argc, char** argv) {
               << std::endl;
             exit (0);
           case 'd':
-            device = optarg;
+            device_fn = optarg;
             break;
           case 's':
             split_by_track = true;
             break;
           case 'f':
             output_fn = optarg;
+            break;
+          case 'i':
+            from_image = optarg;
             break;
           case 'v':
             show_debug = true;
@@ -75,15 +84,19 @@ int main(int argc, char** argv) {
         }
     }
 
+    std::shared_ptr<DeviceInterface> device;
+    if (from_image != "") {
+        device = std::make_shared<ImageLink>(from_image);
+    }
+    else {
+        device = std::make_shared<SerialLink>(device_fn);
+    }
 
     Watch i(device);
 
-    TcxWriter w(output_fn, split_by_track);
-    DebugWriter d;
-
-    i.addRecipient(&w);
+    i.addRecipient(std::make_shared<TcxWriter>(output_fn, split_by_track));
     if (show_debug) {
-        i.addRecipient(&d);
+        i.addRecipient(std::make_shared<DebugWriter>());
     }
 
     i.parse();

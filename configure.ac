@@ -4,12 +4,10 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
                  Makefile
                  src/Makefile
+                 test/Makefile
                  ])
 
-
 PKG_CHECK_MODULES(XML, libxml-2.0 >= 2.4)
-
-
 
 AC_LANG([C++])
 AX_CXX_COMPILE_STDCXX_11

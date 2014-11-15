@@ -1,7 +1,8 @@
 language: cpp
 script:
-  - make -B
-  - ./crane_gps_watch_client --help
+  - ./configure
+  - make 
+  - make check
 before_install:
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update

@@ -6,6 +6,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 
 class WatchInfo;
@@ -30,7 +31,7 @@ class Callback {
 class Broadcaster : public Callback {
 
   public:
-    void addRecipient(Callback* c) { recipients.push_back(c); }
+    void addRecipient(std::shared_ptr<Callback> c) { recipients.push_back(c); }
 
     virtual void onWatch(const WatchInfo &i) { 
         for (auto c : recipients) c->onWatch(i);
@@ -60,6 +61,6 @@ class Broadcaster : public Callback {
         for (auto c : recipients) c->onReadBlock(id, addr);
     }
   private:
-    std::vector<Callback*> recipients;
+    std::vector<std::shared_ptr<Callback> > recipients;
 };
 
