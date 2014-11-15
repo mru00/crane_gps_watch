@@ -1,5 +1,6 @@
 language: cpp
 script:
+  - find
   - g++ --version
   - autoreconf -ivf
   - ./configure

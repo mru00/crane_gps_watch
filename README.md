@@ -17,6 +17,24 @@ Supported Watches:
 * [Runtastic Gps Watch](https://www.runtastic.com/shop/en/runtastic-gps-watch-with-heart-rate-monitor)
 
 
+I suspect that Latitude is the original manufacturer.
+As the watch is commonly rebranded, the following Watches might just work:
+
+Proably the same Watch:
+* [Latitude](http://latitude.com.hk/product.asp)
+* [Pyle Gps watch](http://www.pyleaudio.com/sku/PSWGP405BK/GPS-Watch-w-Coded-Heart-Rate-Transmission,-Navigation,-Speed,-Distance,-Workout-Memory,-Compass,--PC-link--(Black-Color))
+
+Please note that I (the developer) am not affiliated with any of the
+manufacturers listed. The protocol is implemented completely clean-room
+only by observing the behaviour of the watch, without any attempts to 
+infringe copyrighted material. The original software and firmware 
+was not reverse engineered in any way.
+
+
+All trademarks mentioned belong to their owners, third party brands, product names, trade names, corporate names and company names mentioned may be trademarks of their respective owners or registered trademarks of other companies and are used for purposes of explanation and to the owner's benefit, without implying a violation of copyright law.
+
+
+
 This software is distributed under the GNU General Public License.
 This program is free software: you can redistribute it and/or modify 
 it under the terms of the GNU General Public License as published 
@@ -28,8 +46,6 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
 See the GNU General Public License for more details or file COPYING.
 
-
-All trademarks mentioned belong to their owners, third party brands, product names, trade names, corporate names and company names mentioned may be trademarks of their respective owners or registered trademarks of other companies and are used for purposes of explanation and to the owner's benefit, without implying a violation of copyright law.
 
 
 Installation:
