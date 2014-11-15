@@ -1,8 +1,6 @@
 language: cpp
 script:
-  - find
-  - g++ --version
-  - autoreconf -ivf
+#- autoreconf -ivf
   - ./configure
   - make 
   - make check
@@ -12,4 +10,6 @@ before_install:
 install:
   - sudo apt-get -qq install libxml2-dev gcc-4.8 g++-4.8 libxml2-utils gnulib automake
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
+  - g++ --version
+  - automake --version
 
