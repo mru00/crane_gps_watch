@@ -1,4 +1,4 @@
-AC_INIT([crane_gps_watch_client], [0.2-dev], [mru@sisyphus.teil.cc])
+AC_INIT([crane_gps_watch_client], [0.2], [mru@sisyphus.teil.cc])
 AM_INIT_AUTOMAKE([-Wall -Werror])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
