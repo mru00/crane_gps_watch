@@ -8,13 +8,13 @@ Developer: Rudolf Mühlbauer <mru@sisyphus.teil.cc>
 [![Build Status](https://travis-ci.org/mru00/crane_gps_watch.svg)](https://travis-ci.org/mru00/crane_gps_watch)
 
 
-Crane GPS Watch client is a client for downloading track files in tcx format
-from certain GPS watches.
+Crane GPS Watch client is a client for downloading track files in [TCX  format](http://en.wikipedia.org/wiki/Training_Center_XML)
+from the following GPS watches.
 
 Supported Watches:
-* Crane GPS Watch from Aldi/Hofer https://www.produktservice.info/20014414/20014414.html
-* Conrad GPS Nav II http://www.conrad.de/ce/de/product/372884/Multi-NAV-2-GPS-Pulsuhr-mit-Brustgurt-Schwarz
-* Runtastic Gps Watch https://www.runtastic.com/shop/en/runtastic-gps-watch-with-heart-rate-monitor
+* [Crane GPS Watch from Aldi/Hofer](https://www.produktservice.info/20014414/20014414.html)
+* [Conrad GPS Nav II](http://www.conrad.de/ce/de/product/372884/Multi-NAV-2-GPS-Pulsuhr-mit-Brustgurt-Schwarz)
+* [Runtastic Gps Watch](https://www.runtastic.com/shop/en/runtastic-gps-watch-with-heart-rate-monitor)
 
 
 This software is distributed under the GNU General Public License.
@@ -41,20 +41,25 @@ Crane GPS Watch client uses make to build:
 
 1. Download source code archive from githup repo:
 
-  git clone https://github.com/mru00/crane_gps_watch.git
+    git clone https://github.com/mru00/crane_gps_watch.git
+
+or
+
+    wget https://github.com/mru00/crane_gps_watch/archive/master.zip
+    unzip master.zip
 
 2. cd to unpacking directory
 3. build the software 
 
-  ./configure && make
+    ./configure && make
 
 4. install
 
-  make install
+    make install
 
 
 
-Please also have a look at `.travis.yml`, which describes a full build for the Travis-ci.org CI platform.
+Please also have a look at `.travis.yml`, which describes a full build for the [Travis-ci](travis-ci.org) CI platform.
 
 USAGE:
 ------
@@ -73,15 +78,17 @@ As default, the output file is written in the current working directory.
 The filename is created from the current time and date. Use the `--output` option
 to specify a different filename.
 
-The `--device` option is used to specify the device file, default is '/dev/ttyUSB0'.
 
 `--split` makes the program write a single .tcx for every track currently stored on the watch.
 Default is to write a single .tcx file that contains all tracks. When this option is used, the `--output` option 
 is ignored. The files are written in the current directory. The filename is taken from the start time of the workout track.
 If a file already exists, it will be overwritten.
 
-Resulting track file in tcx format you can convert into gpx format 
-by means of gpsbabel or use tcx format as it is.
+The `--device` option is used to specify the device file, default is '/dev/ttyUSB0'.
+
+
+Resulting track file in TCX format you can convert into GPX format 
+by means of [gpsbabel](http://www.gpsbabel.org/) or use TCX format as it is.
 
 Enjoy!
 
@@ -95,11 +102,11 @@ Version History:
 
 See Also:
 ---------
+* "Gps Visualizer": http://www.gpsvisualizer.com/
+* "Sport route planner": http://www.sportrouteplanner.com/ 
+* "My Tourbook": http://mytourbook.sourceforge.net/mytourbook/ works great with the TCX files.
+* "Viking GPS data editor and analyzer" http://sourceforge.net/projects/viking/
 
-"My Tourbook": http://mytourbook.sourceforge.net/mytourbook/
-works great with the tcx files.
-
-"Viking GPS data editor and analyzer" http://sourceforge.net/projects/viking/
-
+* "Tcx files": http://en.wikipedia.org/wiki/Training_Center_XML
 
 
