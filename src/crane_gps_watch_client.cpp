@@ -13,6 +13,7 @@
 #include "Callback.hpp"
 #include "TcxWriter.hpp"
 #include "DebugWriter.hpp"
+#include "ImageWriter.hpp"
 #include "Watch.hpp"
 #include "SerialLink.hpp"
 #include "ImageLink.hpp"
@@ -35,6 +36,7 @@ int main(int argc, char** argv) {
     int c;
 
     std::string from_image;
+    std::string to_image;
     std::string device_fn = "/dev/ttyUSB0";
     std::string output_fn = format_date_filename() + ".tcx";
     opterr = 0;
@@ -45,6 +47,7 @@ int main(int argc, char** argv) {
               {"output", required_argument, 0, 'f'},
               {"device", required_argument, 0, 'd'},
               {"from_image", required_argument, 0, 'i'},
+              {"to_image", required_argument, 0, 't'},
               {"split", no_argument, 0, 's'},
               {"verbose", no_argument, 0, 'v'},
               {0, 0, 0, 0}
@@ -59,7 +62,7 @@ int main(int argc, char** argv) {
             std::cerr <<
               "crane_gps_watch_client --help\n"
               "\n"
-              "crane_gps_watch_client [--output output-filename] [--device /dev/ttyUSB0] [--split] [--verbose]\n" 
+              "crane_gps_watch_client [--output output-filename] [--device /dev/ttyUSB0 | --from_image image-file] [--to_image image-file] [--split] [--verbose]\n" 
               "\n"
               "See https://github.com/mru00/crane_gps_watch for details"
               << std::endl;
@@ -75,6 +78,9 @@ int main(int argc, char** argv) {
             break;
           case 'i':
             from_image = optarg;
+            break;
+          case 't':
+            to_image = optarg;
             break;
           case 'v':
             show_debug = true;
@@ -95,6 +101,9 @@ int main(int argc, char** argv) {
 
     Watch i(device);
 
+    if (to_image != "") {
+        i.addRecipient(std::make_shared<ImageWriter>(to_image));
+    }
     i.addRecipient(std::make_shared<TcxWriter>(output_fn, split_by_track));
     if (show_debug) {
         i.addRecipient(std::make_shared<DebugWriter>());

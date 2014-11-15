@@ -310,12 +310,13 @@ void Watch::readBlock(WatchMemoryBlock& b) {
     WatchMemoryBlock::mem_it_t mem_it = b.memory.begin();
     for (unsigned block = 0; block < b.count; block++) {
         unsigned block_start = (b.id+block)*b.blockSize;
-        br.onReadBlock(b.id+block, block_start);
 
+        unsigned char* block_begin = &* mem_it;
         for (unsigned nbyte = 0; nbyte < rcount; nbyte++) {
             device->readMemory(block_start + nbyte*readSize, readSize, &*mem_it);
             mem_it += readSize;
         }
+        br.onReadBlock(b.id+block, block_start, block_begin);
     }
     //b.dump();
 }

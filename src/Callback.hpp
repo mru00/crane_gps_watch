@@ -25,7 +25,7 @@ class Callback {
     virtual void onTrackEnd(const TrackInfo&) = 0;
     virtual void onSample(const SampleInfo &) = 0;
     virtual void onReadBlocks(int id, int count) = 0;
-    virtual void onReadBlock(int id, int addr) = 0;
+    virtual void onReadBlock(int id, int addr, unsigned char* data) = 0;
 };
 
 class Broadcaster : public Callback {
@@ -57,8 +57,8 @@ class Broadcaster : public Callback {
     virtual void onReadBlocks(int id, int count) {
         for (auto c : recipients) c->onReadBlocks(id, count);
     }
-    virtual void onReadBlock(int id, int addr) {
-        for (auto c : recipients) c->onReadBlock(id, addr);
+    virtual void onReadBlock(int id, int addr, unsigned char* data) {
+        for (auto c : recipients) c->onReadBlock(id, addr, data);
     }
   private:
     std::vector<std::shared_ptr<Callback> > recipients;

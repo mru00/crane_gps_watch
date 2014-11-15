@@ -96,6 +96,7 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_crane_gps_watch_client_OBJECTS =  \
 	crane_gps_watch_client-crane_gps_watch_client.$(OBJEXT) \
+	crane_gps_watch_client-ImageWriter.$(OBJEXT) \
 	crane_gps_watch_client-DebugWriter.$(OBJEXT) \
 	crane_gps_watch_client-DataTypes.$(OBJEXT) \
 	crane_gps_watch_client-ImageLink.$(OBJEXT) \
@@ -273,8 +274,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 crane_gps_watch_client_SOURCES = crane_gps_watch_client.cpp \
-                                 DebugWriter.cpp DataTypes.cpp ImageLink.cpp SerialLink.cpp TcxWriter.cpp Watch.cpp \
-                                 Callback.hpp DataTypes.hpp DebugWriter.hpp MemoryBlock.hpp ImageLink.hpp SerialLink.hpp TcxWriter.hpp Watch.hpp
+                                 ImageWriter.cpp DebugWriter.cpp DataTypes.cpp ImageLink.cpp SerialLink.cpp TcxWriter.cpp Watch.cpp \
+                                 Callback.hpp DataTypes.hpp ImageWriter.hpp DebugWriter.hpp MemoryBlock.hpp ImageLink.hpp SerialLink.hpp TcxWriter.hpp Watch.hpp
 
 crane_gps_watch_client_CXXFLAGS = -std=c++11 -Werror -Wall $(XML_CFLAGS) $(CXXFLAGS)
 crane_gps_watch_client_LDADD = $(XML_LIBS)
@@ -368,6 +369,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-DataTypes.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-DebugWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-ImageLink.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-ImageWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-SerialLink.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-TcxWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-Watch.Po@am__quote@
@@ -400,6 +402,20 @@ crane_gps_watch_client-crane_gps_watch_client.obj: crane_gps_watch_client.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='crane_gps_watch_client.cpp' object='crane_gps_watch_client-crane_gps_watch_client.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -c -o crane_gps_watch_client-crane_gps_watch_client.obj `if test -f 'crane_gps_watch_client.cpp'; then $(CYGPATH_W) 'crane_gps_watch_client.cpp'; else $(CYGPATH_W) '$(srcdir)/crane_gps_watch_client.cpp'; fi`
+
+crane_gps_watch_client-ImageWriter.o: ImageWriter.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -MT crane_gps_watch_client-ImageWriter.o -MD -MP -MF $(DEPDIR)/crane_gps_watch_client-ImageWriter.Tpo -c -o crane_gps_watch_client-ImageWriter.o `test -f 'ImageWriter.cpp' || echo '$(srcdir)/'`ImageWriter.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/crane_gps_watch_client-ImageWriter.Tpo $(DEPDIR)/crane_gps_watch_client-ImageWriter.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ImageWriter.cpp' object='crane_gps_watch_client-ImageWriter.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -c -o crane_gps_watch_client-ImageWriter.o `test -f 'ImageWriter.cpp' || echo '$(srcdir)/'`ImageWriter.cpp
+
+crane_gps_watch_client-ImageWriter.obj: ImageWriter.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -MT crane_gps_watch_client-ImageWriter.obj -MD -MP -MF $(DEPDIR)/crane_gps_watch_client-ImageWriter.Tpo -c -o crane_gps_watch_client-ImageWriter.obj `if test -f 'ImageWriter.cpp'; then $(CYGPATH_W) 'ImageWriter.cpp'; else $(CYGPATH_W) '$(srcdir)/ImageWriter.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/crane_gps_watch_client-ImageWriter.Tpo $(DEPDIR)/crane_gps_watch_client-ImageWriter.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ImageWriter.cpp' object='crane_gps_watch_client-ImageWriter.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -c -o crane_gps_watch_client-ImageWriter.obj `if test -f 'ImageWriter.cpp'; then $(CYGPATH_W) 'ImageWriter.cpp'; else $(CYGPATH_W) '$(srcdir)/ImageWriter.cpp'; fi`
 
 crane_gps_watch_client-DebugWriter.o: DebugWriter.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -MT crane_gps_watch_client-DebugWriter.o -MD -MP -MF $(DEPDIR)/crane_gps_watch_client-DebugWriter.Tpo -c -o crane_gps_watch_client-DebugWriter.o `test -f 'DebugWriter.cpp' || echo '$(srcdir)/'`DebugWriter.cpp

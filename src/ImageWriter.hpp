@@ -1,15 +1,19 @@
 // Copyright (C) 2014 mru@sisyphus.teil.cc
 //
-// linux client for crane gps watch, runtastic gps watch.
+//
 //
 
 #pragma once
 
+#include <fstream>
+
+
 #include "Callback.hpp"
 
-class DebugWriter : public Callback {
+class ImageWriter : public Callback {
 
   public:
+    ImageWriter(const std::string&);
     virtual void onWatch(const WatchInfo &i);
     virtual void onWatchEnd(const WatchInfo &);
     virtual void onWorkout(const WorkoutInfo &i);
@@ -18,5 +22,8 @@ class DebugWriter : public Callback {
     virtual void onTrackEnd(const TrackInfo &);
     virtual void onSample(const SampleInfo &i);
     virtual void onReadBlocks(int id, int count);
-    virtual void onReadBlock(int id, int addr, unsigned char*);
+    virtual void onReadBlock(int id, int addr, unsigned char* data);
+
+  private:
+    std::ofstream f;
 };

@@ -47,7 +47,7 @@ class TcxWriter : public Callback{
     virtual void onTrackEnd(const TrackInfo&);
     virtual void onSample(const SampleInfo &i); 
     virtual void onReadBlocks(int id, int count);
-    virtual void onReadBlock(int id, int addr);
+    virtual void onReadBlock(int id, int addr, unsigned char* data);
 
   private:
     XmlFileWriter writer;

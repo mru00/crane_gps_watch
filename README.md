@@ -29,6 +29,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details or file COPYING.
 
 
+All trademarks mentioned belong to their owners, third party brands, product names, trade names, corporate names and company names mentioned may be trademarks of their respective owners or registered trademarks of other companies and are used for purposes of explanation and to the owner's benefit, without implying a violation of copyright law.
+
+
 Installation:
 -------------
 
@@ -43,11 +46,11 @@ Crane GPS Watch client uses make to build:
 2. cd to unpacking directory
 3. build the software 
 
-  make
+  ./configure && make
 
+4. install
 
-Resulting binary file `crane_gps_watch_client` you can copy 
-to destination folder e.g. `/usr/bin` or `/usr/local/bin`.
+  make install
 
 
 USAGE:
@@ -59,6 +62,8 @@ USAGE:
     [--output "filename"]            override default filename
     [--split]                        write file for each track
     [--device "/dev/tty..."]         override default device file
+    [--to_image filename]            write watch data to file <for testing>
+    [--from_image filename]          read watch data from file <for testing>
     [--verbose]                      write debug output to console
 
 As default, the output file is written in the current working directory.
@@ -94,6 +99,4 @@ works great with the tcx files.
 "Viking GPS data editor and analyzer" http://sourceforge.net/projects/viking/
 
 
-
-All trademarks mentioned belong to their owners, third party brands, product names, trade names, corporate names and company names mentioned may be trademarks of their respective owners or registered trademarks of other companies and are used for purposes of explanation and to the owner's benefit, without implying a violation of copyright law.
 

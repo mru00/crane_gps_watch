@@ -186,6 +186,6 @@ void TcxWriter::onSample(const SampleInfo &i) {
     writer.endElement("Trackpoint");
 }
 
-void TcxWriter::onReadBlocks(int id, int count) {}
-void TcxWriter::onReadBlock(int id, int addr) {}
+void TcxWriter::onReadBlocks(int, int) {}
+void TcxWriter::onReadBlock(int, int, unsigned char*) {}
 

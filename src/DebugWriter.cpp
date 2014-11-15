@@ -47,6 +47,6 @@ void DebugWriter::onSample(const SampleInfo &i) {
 void DebugWriter::onReadBlocks(int id, int count) {
     std::cout << "reading block #" << id << " + " << count << std::endl;
 }
-void DebugWriter::onReadBlock(int id, int addr) {
+void DebugWriter::onReadBlock(int id, int addr, unsigned char*) {
     std::cout << "reading block #" << std::dec << id << " from 0x"<< std::hex << addr << std::endl;
 }
