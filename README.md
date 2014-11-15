@@ -57,23 +57,23 @@ Crane GPS Watch client uses make to build:
 
 1. Clone source code archive from githup repo:
 
-    git clone https://github.com/mru00/crane_gps_watch.git
+	git clone https://github.com/mru00/crane_gps_watch.git
     
 
 or download Zip file:
 
-    wget https://github.com/mru00/crane_gps_watch/archive/master.zip
-    unzip master.zip
+	wget https://github.com/mru00/crane_gps_watch/archive/master.zip
+	unzip master.zip
 
 2. cd to unpacking directory
 3. build the software 
 
-    ./configure && make
+	./configure && make
     
 
 4. install
 
-    make install
+	make install
     
 
 
