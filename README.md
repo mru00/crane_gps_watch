@@ -55,11 +55,12 @@ This program uses libxml2. Please install libxml2 before building Crane GPS Watc
 
 Crane GPS Watch client uses make to build:
 
-1. Download source code archive from githup repo:
+1. Clone source code archive from githup repo:
 
     git clone https://github.com/mru00/crane_gps_watch.git
+    
 
-or
+or download Zip file:
 
     wget https://github.com/mru00/crane_gps_watch/archive/master.zip
     unzip master.zip
@@ -68,11 +69,12 @@ or
 3. build the software 
 
     ./configure && make
+    
 
 4. install
 
     make install
-
+    
 
 
 Please also have a look at `.travis.yml`, which describes a full build for the [Travis-ci](travis-ci.org) CI platform.
