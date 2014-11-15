@@ -6,7 +6,10 @@ AC_CONFIG_FILES([
                  src/Makefile
                  test/Makefile
                  ])
-AC_CONFIG_MACRO_DIR([m4])
+
+# requires automake 1.13 [https://autotools.io/autoconf/macros.html]
+#AC_CONFIG_MACRO_DIR([m4])
+m4_include([m4/ax_cxx_compile_stdcxx_11.m4])
 
 PKG_CHECK_MODULES(XML, libxml-2.0 >= 2.4)
 

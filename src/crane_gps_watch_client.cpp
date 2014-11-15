@@ -51,6 +51,7 @@ int main(int argc, char** argv) {
               {"to_image", required_argument, 0, 't'},
               {"split", no_argument, 0, 's'},
               {"verbose", no_argument, 0, 'v'},
+              {"version", no_argument, 0, 'w'},
               {0, 0, 0, 0}
         };
 
@@ -68,6 +69,11 @@ int main(int argc, char** argv) {
               "\n"
               "See README.md or https://github.com/mru00/crane_gps_watch for details\n"
               "Send bugreports to " PACKAGE_BUGREPORT
+              << std::endl;
+            exit (0);
+          case 'w':
+            std::cerr <<
+              PACKAGE_STRING
               << std::endl;
             exit (0);
           case 'd':
