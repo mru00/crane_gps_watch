@@ -1,6 +1,4 @@
 # Copyright (C) 2014 mru@sisyphus.teil.cc
-#
-#
 
 bin_PROGRAMS = crane_gps_watch_client
 crane_gps_watch_client_SOURCES = crane_gps_watch_client.cpp \
@@ -10,4 +8,6 @@ crane_gps_watch_client_SOURCES = crane_gps_watch_client.cpp \
 crane_gps_watch_client_CXXFLAGS = -Werror -Wall $(XML_CFLAGS) $(CXXFLAGS)
 crane_gps_watch_client_LDADD = $(XML_LIBS)
 
+
+MOSTLYCLEANFILES = *.tcx
 

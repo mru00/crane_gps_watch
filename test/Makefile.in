@@ -13,6 +13,8 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
+
+# Copyright (C) 2014 mru@sisyphus.teil.cc
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -408,6 +410,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 TESTS = from_image.sh help.sh from_to_image.sh
 EXTRA_DIST = image.bin TrainingCenterDatabasev2.xsd
+MOSTLYCLEANFILES = image2.bin *.tcx
 all: all-am
 
 .SUFFIXES:
@@ -681,6 +684,7 @@ install-strip:
 	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
 	fi
 mostlyclean-generic:
+	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
 	-test -z "$(TEST_LOGS)" || rm -f $(TEST_LOGS)
 	-test -z "$(TEST_LOGS:.log=.trs)" || rm -f $(TEST_LOGS:.log=.trs)
 	-test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)

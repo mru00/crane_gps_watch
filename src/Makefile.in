@@ -15,8 +15,6 @@
 @SET_MAKE@
 
 # Copyright (C) 2014 mru@sisyphus.teil.cc
-#
-#
 
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
@@ -282,6 +280,7 @@ crane_gps_watch_client_SOURCES = crane_gps_watch_client.cpp \
 
 crane_gps_watch_client_CXXFLAGS = -Werror -Wall $(XML_CFLAGS) $(CXXFLAGS)
 crane_gps_watch_client_LDADD = $(XML_LIBS)
+MOSTLYCLEANFILES = *.tcx
 all: all-am
 
 .SUFFIXES:
@@ -613,6 +612,7 @@ install-strip:
 	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
 	fi
 mostlyclean-generic:
+	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
 
 clean-generic:
 
