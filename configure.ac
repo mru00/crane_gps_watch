@@ -16,7 +16,9 @@ AC_PROG_CXX
 AC_CHECK_HEADERS([fcntl.h])
 AC_CHECK_HEADERS([termios.h])
 AC_CHECK_HEADERS([unistd.h])
-AC_CHECK_HEADER_STDBOOL
+
+# doesn't work on travis-ci.org...
+#AC_CHECK_HEADER_STDBOOL
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
 
