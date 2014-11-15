@@ -1,5 +1,6 @@
 language: cpp
 script:
+  # to enable travis ci, which is using automake 1.11 or so
   - autoreconf -ivf
   - ./configure
   - make 
