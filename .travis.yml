@@ -1,6 +1,6 @@
 language: cpp
 script:
-#- autoreconf -ivf
+  - autoreconf -ivf
   - ./configure
   - make 
   - make check
