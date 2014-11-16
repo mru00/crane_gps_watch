@@ -407,7 +407,15 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-TESTS = 000_help.sh 001_from_image.sh 002_from_to_image.sh 003_from_image_split.sh 004_exclusive_args.sh 005_image_not_found.sh 006_invalid_serial_device.sh
+TESTS = 000_help.sh \
+				001_from_image.sh \
+				002_from_to_image.sh \
+				003_from_image_split.sh \
+				004_exclusive_args.sh \
+				005_image_not_found.sh \
+				006_invalid_serial_device.sh \
+				007_output_not_writable.sh
+
 EXTRA_DIST = image.bin TrainingCenterDatabasev2.xsd
 MOSTLYCLEANFILES = *.tcx 002_image2.bin
 all: all-am
@@ -637,6 +645,13 @@ recheck: all
 006_invalid_serial_device.sh.log: 006_invalid_serial_device.sh
 	@p='006_invalid_serial_device.sh'; \
 	b='006_invalid_serial_device.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+007_output_not_writable.sh.log: 007_output_not_writable.sh
+	@p='007_output_not_writable.sh'; \
+	b='007_output_not_writable.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

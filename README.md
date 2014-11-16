@@ -86,7 +86,7 @@ or download Zip file:
 	sudo make install
 
 
-See INSTALL for details.
+See INSTALL for details. Note that it is possible to install without root rights, use the `./configure --prefix=...` option.
 
 
 Please also have a look at `.travis.yml`, which describes a full build for the [Travis-ci](travis-ci.org) CI platform.
@@ -97,7 +97,7 @@ USAGE:
 	crane_gps_watch_client --help      show the help screen
 
 	crane_gps_watch_client 
-    [--output "filename"]            override default filename
+    [--output "filename"]            override default filename, write single file for all tracks
     [--split]                        write file for each track
     [--device "/dev/tty..."]         override default device file
     [--to_image filename]            write watch data to file <for testing>

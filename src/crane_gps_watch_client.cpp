@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
 
     std::string from_image;
     std::string to_image;
-    std::string device_fn = "/dev/ttyUSB0";
+    std::string device_fn;
     std::string output_fn;
     opterr = 0;
 
@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
               PACKAGE_STRING "\n"
               "crane_gps_watch_client --help\n"
               "\n"
-              "crane_gps_watch_client [--output output-filename] [--device /dev/ttyUSB0 | --from_image image-file] [--to_image image-file] [--split] [--verbose]\n" 
+              "crane_gps_watch_client [--output output-filename | --split] [--device /dev/ttyUSB0 | --from_image image-file] [--to_image image-file] [--verbose]\n" 
               "\n"
               "See README.md or https://github.com/mru00/crane_gps_watch for details\n"
               "Send bugreports to " PACKAGE_BUGREPORT
@@ -77,21 +77,27 @@ int main(int argc, char** argv) {
               << std::endl;
             exit (0);
           case 'd':
+            if (from_image != "") {
+                throw std::runtime_error("cannot use --device and --from_image at the same time");
+            }
             device_fn = optarg;
             break;
           case 's':
-            split_by_track = true;
             if (output_fn != "") {
                 throw std::runtime_error("cannot use --output and --split at the same time");
             }
+            split_by_track = true;
             break;
           case 'f':
-            output_fn = optarg;
             if (split_by_track) {
                 throw std::runtime_error("cannot use --output and --split at the same time");
             }
+            output_fn = optarg;
             break;
           case 'i':
+            if (device_fn != "") {
+                throw std::runtime_error("cannot use --device and --from_image at the same time");
+            }
             from_image = optarg;
             break;
           case 't':
@@ -106,6 +112,9 @@ int main(int argc, char** argv) {
         }
     }
 
+    if (device_fn == "") {
+        device_fn = "/dev/ttyUSB0";
+    }
 
     if (output_fn == "") {
         // set default output filename
