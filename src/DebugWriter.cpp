@@ -24,7 +24,7 @@ void DebugWriter::onWorkout(const WorkoutInfo &i)  {
 void DebugWriter::onWorkoutEnd(const WorkoutInfo &)  {
     std::cout << " workout end" << std::endl;
 }
-void DebugWriter::onTrack(const TrackInfo &i)  {
+void DebugWriter::onTrack(const TrackInfo &)  {
     std::cout << "  track info " << std::endl;
 }
 void DebugWriter::onTrackEnd(const TrackInfo &)  {
@@ -47,6 +47,7 @@ void DebugWriter::onSample(const SampleInfo &i) {
 void DebugWriter::onReadBlocks(int id, int count) {
     std::cout << "reading block #" << id << " + " << count << std::endl;
 }
-void DebugWriter::onReadBlock(int id, int addr, unsigned char*) {
+void DebugWriter::onReadBlock(int id, int addr, unsigned char*, size_t) {
     std::cout << "reading block #" << std::dec << id << " from 0x"<< std::hex << addr << std::endl;
 }
+

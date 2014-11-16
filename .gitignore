@@ -15,3 +15,7 @@ src/Makefile
 Makefile
 stamp-h1
 
+
+test/*.trs
+test/*.log
+

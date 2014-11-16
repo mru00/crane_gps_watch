@@ -813,6 +813,9 @@ uninstall-am: uninstall-dist_docDATA
 	tags-am uninstall uninstall-am uninstall-dist_docDATA
 
 
+cppcheck:
+	cppcheck --enable=all src 
+
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

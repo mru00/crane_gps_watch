@@ -35,12 +35,11 @@ int main(int argc, char** argv) {
 
     bool split_by_track = false;
     bool show_debug = false;
-    int c;
 
     std::string from_image;
     std::string to_image;
     std::string device_fn = "/dev/ttyUSB0";
-    std::string output_fn = format_date_filename() + ".tcx";
+    std::string output_fn;
     opterr = 0;
 
     while (1) {
@@ -57,7 +56,7 @@ int main(int argc, char** argv) {
         };
 
         int option_index = 0;
-        c = getopt_long(argc, argv, "h", long_options, &option_index);
+        int c = getopt_long(argc, argv, "h", long_options, &option_index);
         if (c == -1) break;
 
         switch (c) {
@@ -82,9 +81,15 @@ int main(int argc, char** argv) {
             break;
           case 's':
             split_by_track = true;
+            if (output_fn != "") {
+                throw std::runtime_error("cannot use --output and --split at the same time");
+            }
             break;
           case 'f':
             output_fn = optarg;
+            if (split_by_track) {
+                throw std::runtime_error("cannot use --output and --split at the same time");
+            }
             break;
           case 'i':
             from_image = optarg;
@@ -100,6 +105,13 @@ int main(int argc, char** argv) {
             exit(1);
         }
     }
+
+
+    if (output_fn == "") {
+        // set default output filename
+        output_fn = format_date_filename() + ".tcx";
+    }
+
 
     std::shared_ptr<DeviceInterface> device;
     if (from_image != "") {

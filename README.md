@@ -24,6 +24,10 @@ Proably the same Watch:
 * [Latitude](http://latitude.com.hk/product.asp)
 * [Pyle Gps watch](http://www.pyleaudio.com/sku/PSWGP405BK/GPS-Watch-w-Coded-Heart-Rate-Transmission,-Navigation,-Speed,-Distance,-Workout-Memory,-Compass,--PC-link--(Black-Color))
 
+The TCX format is used instead the popular GPX format, for the following reason:
+The GPS watch is able to record workouts where only heartrate is available, no GPS.
+It is not valid to create GPS records without coordinates. In TCX, this is possible.
+
 Please note that I (the developer) am not affiliated with any of the
 manufacturers listed. The protocol is implemented completely clean-room
 only by observing the behaviour of the watch, without any attempts to 
@@ -47,6 +51,13 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details or file COPYING.
 
 
+Bug reports:
+------------
+
+Please report problems and bugs. If you get compiler errors, please send me the complete compiler output.
+If the generated output files are wrong, please create an image (`--to_image`) and send me the image with a 
+description of the expected output.
+
 
 Installation:
 -------------
@@ -68,13 +79,14 @@ or download Zip file:
 2. cd to unpacking directory
 3. build the software 
 
-	./configure && make
-    
+	./configure && make && make check
 
 4. install
 
-	make install
-    
+	sudo make install
+
+
+See INSTALL for details.
 
 
 Please also have a look at `.travis.yml`, which describes a full build for the [Travis-ci](travis-ci.org) CI platform.

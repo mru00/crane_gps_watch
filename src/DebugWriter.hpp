@@ -10,13 +10,14 @@
 class DebugWriter : public Callback {
 
   public:
-    virtual void onWatch(const WatchInfo &i);
-    virtual void onWatchEnd(const WatchInfo &);
-    virtual void onWorkout(const WorkoutInfo &i);
-    virtual void onWorkoutEnd(const WorkoutInfo &);
-    virtual void onTrack(const TrackInfo &i);
-    virtual void onTrackEnd(const TrackInfo &);
-    virtual void onSample(const SampleInfo &i);
-    virtual void onReadBlocks(int id, int count);
-    virtual void onReadBlock(int id, int addr, unsigned char*);
+    virtual ~DebugWriter() {}
+    void onWatch(const WatchInfo &i) override;
+    void onWatchEnd(const WatchInfo &) override;
+    void onWorkout(const WorkoutInfo &i) override;
+    void onWorkoutEnd(const WorkoutInfo &) override;
+    void onTrack(const TrackInfo &i) override;
+    void onTrackEnd(const TrackInfo &) override;
+    void onSample(const SampleInfo &i) override;
+    void onReadBlocks(int id, int count) override;
+    void onReadBlock(int id, int addr, unsigned char*, size_t) override;
 };

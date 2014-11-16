@@ -19,7 +19,7 @@
 #include "Watch.hpp"
 
 
-Watch::Watch(std::shared_ptr<DeviceInterface> device) : device(device) {
+Watch::Watch(std::shared_ptr<DeviceInterface> device) : br(), device(device) {
 }
 
 void Watch::parse() {
@@ -280,10 +280,10 @@ void Watch::parseBlock0() {
     br.onWatch(wi);
 
     WatchMemoryBlock::mem_it_t mem_it = mb.memory.begin();
-    unsigned char cur;
-    unsigned char first;
     mem_it += 0x100;
     for (;;) {
+        unsigned char cur;
+        unsigned char first;
         cur = first = *mem_it++;
         if (first == 0xff) {
             break;
@@ -295,7 +295,7 @@ void Watch::parseBlock0() {
         WorkoutInfo wo;
         parseWO(wo, first, 1+cur-first);
         br.onWorkoutEnd(wo);
-        mem_it ++;
+        ++mem_it;
     }
 
     br.onWatchEnd(wi);
@@ -317,8 +317,9 @@ void Watch::readBlock(WatchMemoryBlock& b) {
             device->readMemory(block_start + nbyte*readSize, readSize, &*mem_it);
             mem_it += readSize;
         }
-        br.onReadBlock(b.id+block, block_start, block_begin);
+        br.onReadBlock(b.id+block, block_start, block_begin, b.blockSize);
     }
     //b.dump();
 }
+
 

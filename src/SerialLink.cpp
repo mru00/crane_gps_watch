@@ -16,7 +16,7 @@
 #include "SerialLink.hpp"
 
 
-SerialLink::SerialLink(const std::string& filename) : filename(filename) {
+SerialLink::SerialLink(const std::string& filename) : filename(filename), fd(-1) {
 
 
     fd = ::open (filename.c_str(), O_RDWR);
@@ -47,7 +47,6 @@ void SerialLink::readMemory(unsigned addr, unsigned count, unsigned char* it) {
     unsigned char opcode;
     std::vector<unsigned char> tx(8);
     std::vector<unsigned char> rx;
-    std::vector<unsigned char>::iterator tx_it = tx.begin();
     tx[0] = addr ;
     tx[1] = addr >> 8;
     tx[2] = addr >> 16;

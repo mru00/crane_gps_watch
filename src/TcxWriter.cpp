@@ -20,89 +20,15 @@
 #include "Callback.hpp"
 #include "TcxWriter.hpp"
 
-std::string format_xml_exception(int code) {
-    std::ostringstream ss;
-    ss << "XML error #" << code;
-    return ss.str();
-}
 
 
-
-
-XmlFileWriter::XmlFileWriter() :w(nullptr) {
-    LIBXML_TEST_VERSION;
-}
-
-XmlFileWriter::~XmlFileWriter() {
-}
-
-void XmlFileWriter::open(const std::string& filename) {
-    std::cerr << "XmlFileWriter: writing to " << filename << std::endl;
-    w = xmlNewTextWriterFilename((filename).c_str(), 0);
-    if (w == nullptr) throw std::runtime_error("Failed to create XML writer");
-    xmlTextWriterSetIndent(w, 1);
-}
-
-bool XmlFileWriter::isOpen() {
-    return w != nullptr;
-}
-
-void XmlFileWriter::close() {
-    xmlFreeTextWriter(w);
-    w = nullptr;
-}
-
-void XmlFileWriter::startDocument(const std::string& encoding) {
-    int rc;
-    rc = xmlTextWriterStartDocument(w, NULL, encoding.c_str(), NULL);
-    if (rc < 0) throw std::runtime_error(format_xml_exception(rc));
-}
-void XmlFileWriter::endDocument() {
-    int rc;
-    rc = xmlTextWriterEndDocument(w);
-    if (rc < 0) throw std::runtime_error(format_xml_exception(rc));
-}
-
-void XmlFileWriter::startElement(const std::string& name) {
-    int rc;
-    rc = xmlTextWriterStartElement(w, BAD_CAST name.c_str());
-    if (rc < 0) throw std::runtime_error("Error XML");
-    stack.push(name);
-}
-
-void XmlFileWriter::endElement(const std::string& name) {
-    int rc;
-    rc = xmlTextWriterEndElement(w);
-    if (rc < 0) throw std::runtime_error("error");
-    if (name.size()) {
-        assert(name == stack.top());
-    }
-    stack.pop();
-}
-
-void XmlFileWriter::writeAttribute(const std::string& name, const std::string& value) {
-    int rc;
-    rc = xmlTextWriterWriteAttribute(w, BAD_CAST name.c_str(), BAD_CAST value.c_str());
-    if (rc < 0) throw std::runtime_error("Error XML");
-}
-
-void XmlFileWriter::writeElement(const std::string& name, const std::string& value) {
-    int rc;
-    rc = xmlTextWriterWriteElement(w, BAD_CAST name.c_str(), BAD_CAST value.c_str());
-    if (rc < 0) throw std::runtime_error("error");
-}
-
-
-
-
-
-
-TcxWriter::TcxWriter(std::string filename, bool split_by_track) : filename(filename), split_by_track(split_by_track) {
+TcxWriter::TcxWriter(std::string filename, bool split_by_track) :  writer(), filename(filename), current_wo(), split_by_track(split_by_track) {
 }
 TcxWriter::~TcxWriter() {
     if (writer.isOpen()) {
         // XXX shouldn't happen
         writer.endDocument();
+        writer.close();
     }
 }
 void TcxWriter::onWatch(const WatchInfo &) {
@@ -119,6 +45,7 @@ void TcxWriter::onWatchEnd(const WatchInfo &) {
         writer.endElement("Activities");
         writer.endElement("TrainingCenterDatabase");
         writer.endDocument();
+        writer.close();
     } 
 }
 void TcxWriter::onWorkout(const WorkoutInfo &i)  {
@@ -185,7 +112,4 @@ void TcxWriter::onSample(const SampleInfo &i) {
     }
     writer.endElement("Trackpoint");
 }
-
-void TcxWriter::onReadBlocks(int, int) {}
-void TcxWriter::onReadBlock(int, int, unsigned char*) {}
 

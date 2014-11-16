@@ -28,16 +28,19 @@ struct GpsLocation {
 };
 
 struct GpsTimeUpd {
+    GpsTimeUpd() : mm(0), ss(0) {}
     unsigned mm, ss;
 };
 
 struct GpsEle {
+    GpsEle() : ele(0) {}
     unsigned short ele;
     GpsEle& operator += (const GpsEle& other);
     operator std::string() const;
 };
 
 struct GpsTime {
+    GpsTime() : YY(0), MM(0), DD(0), hh(0), mm(0), ss(0) {}
     unsigned char YY, MM, DD, hh, mm, ss;
     GpsTime& operator=(const GpsTimeUpd& other);
     operator std::string() const;
@@ -50,7 +53,7 @@ std::ostream& operator<< (std::ostream& s, const GpsEle& l);
 std::ostream& operator<< (std::ostream& s, const GpsTime& t);
 
 struct SampleInfo {
-    SampleInfo() {}
+    SampleInfo() : type(SampleInfo::None), time(), time_upd(), lon(), lat(), ele(), hr(0), fix(0), fb(0), sb(0), idx_wo(0), idx_track(0) {}
     enum { 
         Full = 0x00, 
         Diff = 0x01, 
@@ -70,6 +73,8 @@ struct SampleInfo {
 };
 
 struct WorkoutInfo {
+    WorkoutInfo() : nsamples(0), lapcount(0), start_time(), workout_time(), profile(0), total_km(0), speed_avg(0), speed_max(0), calories(0) {}
+
     unsigned nsamples;
     unsigned lapcount;
     GpsTime start_time;
@@ -85,6 +90,7 @@ struct TrackInfo {
 };
 
 struct WatchInfo {
+    WatchInfo() : timezone(0), sample_interval(0), selected_profile(0), nblocks(0), path_names(), profile_names(), version() {}
     unsigned timezone;
     unsigned sample_interval;
     unsigned selected_profile;
@@ -93,3 +99,6 @@ struct WatchInfo {
     std::vector<std::string> profile_names;
     std::string version;
 };
+
+
+

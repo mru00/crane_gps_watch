@@ -1,7 +1,7 @@
 # Copyright (C) 2014 mru@sisyphus.teil.cc
 
 
-TESTS = from_image.sh help.sh from_to_image.sh
+TESTS = 000_help.sh 001_from_image.sh 002_from_to_image.sh 003_from_image_split.sh 004_exclusive_args.sh 005_image_not_found.sh 006_invalid_serial_device.sh
 EXTRA_DIST = image.bin TrainingCenterDatabasev2.xsd
 
-MOSTLYCLEANFILES = image2.bin *.tcx
+MOSTLYCLEANFILES = *.tcx 002_image2.bin

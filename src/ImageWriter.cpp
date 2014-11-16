@@ -9,20 +9,12 @@
 #include "DataTypes.hpp"
 #include "ImageWriter.hpp"
 
-ImageWriter::ImageWriter(const std::string& filename) {
+ImageWriter::ImageWriter(const std::string& filename) : f() {
     std::cerr << "Writing image to " << filename << std::endl;
     f.open(filename, std::ios_base::binary|std::ios_base::out);
 }
 
-void ImageWriter::onWatch(const WatchInfo &i) { }
-void ImageWriter::onWatchEnd(const WatchInfo &) { }
-void ImageWriter::onWorkout(const WorkoutInfo &i)  { }
-void ImageWriter::onWorkoutEnd(const WorkoutInfo &)  { }
-void ImageWriter::onTrack(const TrackInfo &i)  { }
-void ImageWriter::onTrackEnd(const TrackInfo &)  { }
-void ImageWriter::onSample(const SampleInfo &i) { }
-void ImageWriter::onReadBlocks(int id, int count) { }
-void ImageWriter::onReadBlock(int id, int addr, unsigned char* data) {
+void ImageWriter::onReadBlock(int , int addr, unsigned char* data, size_t size) {
     f.seekp(addr);
-    f.write((char*) data, 0x1000);
+    f.write((char*) data, size);
 }

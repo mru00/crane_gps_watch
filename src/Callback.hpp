@@ -17,50 +17,54 @@ class SampleInfo;
 
 class Callback {
   public:
-    virtual void onWatch(const WatchInfo &) = 0;
-    virtual void onWatchEnd(const WatchInfo &) = 0;
-    virtual void onWorkout(const WorkoutInfo &) = 0;
-    virtual void onWorkoutEnd(const WorkoutInfo &) = 0;
-    virtual void onTrack(const TrackInfo&) = 0;
-    virtual void onTrackEnd(const TrackInfo&) = 0;
-    virtual void onSample(const SampleInfo &) = 0;
-    virtual void onReadBlocks(int id, int count) = 0;
-    virtual void onReadBlock(int id, int addr, unsigned char* data) = 0;
+    virtual void onWatch(const WatchInfo &) {}
+    virtual void onWatchEnd(const WatchInfo &) {}
+    virtual void onWorkout(const WorkoutInfo &) {}
+    virtual void onWorkoutEnd(const WorkoutInfo &) {}
+    virtual void onTrack(const TrackInfo&) {}
+    virtual void onTrackEnd(const TrackInfo&) {}
+    virtual void onSample(const SampleInfo &) {}
+    virtual void onReadBlocks(int /*id*/, int /*count*/) {}
+    virtual void onReadBlock(int /*id*/, int /*addr*/, unsigned char* /*data*/, size_t /*size*/) {}
 };
 
 class Broadcaster : public Callback {
 
   public:
+    Broadcaster() : recipients() {}
+
     void addRecipient(std::shared_ptr<Callback> c) { recipients.push_back(c); }
 
-    virtual void onWatch(const WatchInfo &i) { 
+    void onWatch(const WatchInfo &i) override { 
         for (auto c : recipients) c->onWatch(i);
     }
-    virtual void onWatchEnd(const WatchInfo &i) { 
+    void onWatchEnd(const WatchInfo &i) override { 
         for (auto c : recipients) c->onWatchEnd(i);
     }
-    virtual void onWorkout(const WorkoutInfo &i) {
+    void onWorkout(const WorkoutInfo &i) override {
         for (auto c : recipients) c->onWorkout(i);
     }
-    virtual void onWorkoutEnd(const WorkoutInfo &i) {
+    void onWorkoutEnd(const WorkoutInfo &i) override {
         for (auto c : recipients) c->onWorkoutEnd(i);
     }
-    virtual void onTrack(const TrackInfo &i) {
+    void onTrack(const TrackInfo &i) override {
         for (auto c : recipients) c->onTrack(i);
     }
-    virtual void onTrackEnd(const TrackInfo &i) {
+    void onTrackEnd(const TrackInfo &i) override {
         for (auto c : recipients) c->onTrackEnd(i);
     }
-    virtual void onSample(const SampleInfo &i) {
+    void onSample(const SampleInfo &i) override {
         for (auto c : recipients) c->onSample(i);
     }
-    virtual void onReadBlocks(int id, int count) {
+    void onReadBlocks(int id, int count) override {
         for (auto c : recipients) c->onReadBlocks(id, count);
     }
-    virtual void onReadBlock(int id, int addr, unsigned char* data) {
-        for (auto c : recipients) c->onReadBlock(id, addr, data);
+    void onReadBlock(int id, int addr, unsigned char* data, size_t size) override {
+        for (auto c : recipients) c->onReadBlock(id, addr, data, size);
     }
   private:
     std::vector<std::shared_ptr<Callback> > recipients;
 };
+
+
 

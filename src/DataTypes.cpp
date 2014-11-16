@@ -21,37 +21,38 @@ std::ostream& operator<<(std::ostream&, const GpsEle&);
 class GpsTime;
 std::ostream& operator<<(std::ostream&, const GpsTime&);
 
-    GpsLocation& GpsLocation::operator += (const GpsLocation& other) {
-        loc += other.loc;
-        return *this;
-    }
+GpsLocation& GpsLocation::operator += (const GpsLocation& other) {
+    loc += other.loc;
+    return *this;
+}
+
 GpsLocation::operator const std::string() const {
-        std::ostringstream ss;
-        ss << (*this);
-        return ss.str();
-    }
+    std::ostringstream ss;
+    ss << (*this);
+    return ss.str();
+}
 
 
-    GpsEle& GpsEle::operator += (const GpsEle& other) {
-        ele += other.ele;
-        return *this;
-    }
+GpsEle& GpsEle::operator += (const GpsEle& other) {
+    ele += other.ele;
+    return *this;
+}
 GpsEle::operator std::string() const {
-        std::ostringstream ss;
-        ss << (*this);
-        return ss.str();
-    }
+    std::ostringstream ss;
+    ss << (*this);
+    return ss.str();
+}
 
-    GpsTime& GpsTime::operator=(const GpsTimeUpd& other) {
-        mm = other.mm;
-        ss = other.ss;
-        return *this;
-    }
+GpsTime& GpsTime::operator=(const GpsTimeUpd& other) {
+    mm = other.mm;
+    ss = other.ss;
+    return *this;
+}
 GpsTime::operator std::string() const {
-        std::ostringstream ss;
-        ss << (*this);
-        return ss.str();
-    }
+    std::ostringstream ss;
+    ss << (*this);
+    return ss.str();
+}
 
 std::ostream& operator<< (std::ostream& s, const GpsLocation& l) {
     s << std::setprecision(15) << l.loc / 10000000.0;

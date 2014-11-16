@@ -407,9 +407,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-TESTS = from_image.sh help.sh from_to_image.sh
+TESTS = 000_help.sh 001_from_image.sh 002_from_to_image.sh 003_from_image_split.sh 004_exclusive_args.sh 005_image_not_found.sh 006_invalid_serial_device.sh
 EXTRA_DIST = image.bin TrainingCenterDatabasev2.xsd
-MOSTLYCLEANFILES = image2.bin *.tcx
+MOSTLYCLEANFILES = *.tcx 002_image2.bin
 all: all-am
 
 .SUFFIXES:
@@ -592,23 +592,51 @@ recheck: all
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-from_image.sh.log: from_image.sh
-	@p='from_image.sh'; \
-	b='from_image.sh'; \
+000_help.sh.log: 000_help.sh
+	@p='000_help.sh'; \
+	b='000_help.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-help.sh.log: help.sh
-	@p='help.sh'; \
-	b='help.sh'; \
+001_from_image.sh.log: 001_from_image.sh
+	@p='001_from_image.sh'; \
+	b='001_from_image.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-from_to_image.sh.log: from_to_image.sh
-	@p='from_to_image.sh'; \
-	b='from_to_image.sh'; \
+002_from_to_image.sh.log: 002_from_to_image.sh
+	@p='002_from_to_image.sh'; \
+	b='002_from_to_image.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+003_from_image_split.sh.log: 003_from_image_split.sh
+	@p='003_from_image_split.sh'; \
+	b='003_from_image_split.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+004_exclusive_args.sh.log: 004_exclusive_args.sh
+	@p='004_exclusive_args.sh'; \
+	b='004_exclusive_args.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+005_image_not_found.sh.log: 005_image_not_found.sh
+	@p='005_image_not_found.sh'; \
+	b='005_image_not_found.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+006_invalid_serial_device.sh.log: 006_invalid_serial_device.sh
+	@p='006_invalid_serial_device.sh'; \
+	b='006_invalid_serial_device.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
