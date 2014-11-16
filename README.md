@@ -1,6 +1,6 @@
 Crane GPS Watch client v.0.1 (crane_gps_watch_client)
 =====================================================
-15 November 2014
+16 November 2014
 
 
 Developer: Rudolf Mühlbauer <mru@sisyphus.teil.cc>
