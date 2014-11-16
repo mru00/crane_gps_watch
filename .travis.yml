@@ -5,6 +5,7 @@ script:
   - ./configure
   - make 
   - make check
+  - sudo make install
 before_install:
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get -qq update
