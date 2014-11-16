@@ -11,6 +11,7 @@
 
 ImageWriter::ImageWriter(const std::string& filename) : f() {
     std::cerr << "Writing image to " << filename << std::endl;
+    f.exceptions(std::ifstream::badbit | std::ifstream::failbit);
     f.open(filename, std::ios_base::binary|std::ios_base::out);
 }
 

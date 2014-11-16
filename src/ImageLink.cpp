@@ -10,7 +10,7 @@
 
 
 ImageLink::ImageLink(const std::string& filename) : f() {
-    f.exceptions(std::ifstream::failbit);
+    f.exceptions(std::ifstream::badbit | std::ifstream::failbit);
     f.open(filename, std::ios_base::binary|std::ios_base::in);
 }
 

@@ -7,11 +7,10 @@
 #include <algorithm>
 #include <iostream>
 
-#include <cassert> 
-
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
+#include <cstring>
 
 #include "SerialLink.hpp"
 
@@ -21,8 +20,7 @@ SerialLink::SerialLink(const std::string& filename) : filename(filename), fd(-1)
 
     fd = ::open (filename.c_str(), O_RDWR);
     if (fd == -1) {
-        perror("failed to open serial device");
-        throw std::runtime_error("failed to open serial port");
+        throw std::runtime_error("failed to open serial port '" + filename + "': " + strerror(errno));
     }
 
     // http://trainingkits.gweb.io/serial-linux.html
@@ -36,9 +34,8 @@ SerialLink::SerialLink(const std::string& filename) : filename(filename), fd(-1)
     options.c_cc[VMIN] = 0;
     options.c_cc[VTIME] = 50;
 
-    if(tcsetattr(fd, TCSANOW, &options)!= 0) {
-        std::cerr << "error!" <<std::endl;
-        throw std::runtime_error("failed to open serial port");
+    if(tcsetattr(fd, TCSANOW, &options) != 0) {
+        throw std::runtime_error("failed to configure serial port '" + filename + "': " + strerror(errno));
     }
 }
 
@@ -47,7 +44,7 @@ void SerialLink::readMemory(unsigned addr, unsigned count, unsigned char* it) {
     unsigned char opcode;
     std::vector<unsigned char> tx(8);
     std::vector<unsigned char> rx;
-    tx[0] = addr ;
+    tx[0] = addr;
     tx[1] = addr >> 8;
     tx[2] = addr >> 16;
     tx[3] = count;
@@ -57,7 +54,7 @@ void SerialLink::readMemory(unsigned addr, unsigned count, unsigned char* it) {
 }
 
 std::string SerialLink::readVersion() {
-    assert(fd != -1);
+    assertOpen();
     std::vector<unsigned char> version;
     unsigned char opcode;
     sendCommand(0x10, std::vector<unsigned char>());
@@ -70,7 +67,7 @@ std::string SerialLink::readVersion() {
 
 
 void SerialLink::sendCommand(unsigned char opcode, std::vector<unsigned char> payload) {
-    assert (fd != -1);
+    assertOpen();
 
     std::vector<unsigned char> frame(2+2+1+ payload.size() +2+2);
     std::vector<unsigned char>::iterator it = frame.begin();
@@ -93,7 +90,7 @@ void SerialLink::sendCommand(unsigned char opcode, std::vector<unsigned char> pa
 }
 
 void SerialLink::receiveReply(unsigned char& opcode, std::vector<unsigned char>& target) {
-    assert(fd!=-1);
+    assertOpen();
     unsigned short l;
     unsigned short cs;
     expect(0xa0);
@@ -112,29 +109,36 @@ void SerialLink::receiveReply(unsigned char& opcode, std::vector<unsigned char>&
 
 unsigned char SerialLink::expect(unsigned char val) {
     unsigned char rcv = read();
-    assert (rcv == val);
+    if ( rcv != val ) {
+        throw std::runtime_error("Serial link: protocol error: unexpected answer");
+    }
     return rcv;
 }
 
 void SerialLink::write(std::vector<unsigned char>& buf) {
     ssize_t n;
     n = ::write(fd, &buf[0], buf.size());
-    assert((size_t)n==buf.size());
+    if ( (size_t)n != buf.size() ) {
+        throw std::runtime_error("Serial link: failed to write expected number of bytes");
+    }
 }
 
 unsigned char SerialLink::read() {
-    assert(fd!=-1);
+    assertOpen();
     unsigned char val;
     ssize_t n = ::read(fd, &val, 1);
-    assert(n == 1);
+    if ( n != 1 ) {
+        throw std::runtime_error("Serial link: no answer from device");
+    }
     return val;
 }
 
 void SerialLink::read(std::vector<unsigned char>& buf) {
-
-    assert(fd!=-1);
+    assertOpen();
     ssize_t n = ::read(fd, &buf[0], buf.size());
-    assert( (size_t)n == buf.size());
+    if ( (size_t)n != buf.size() ) {
+        throw std::runtime_error("Serial link: failed to read expected number of bytes");
+    }
 }
 
 unsigned short SerialLink::checksum(unsigned char opcode, std::vector<unsigned char> payload) {
@@ -144,4 +148,10 @@ unsigned short SerialLink::checksum(unsigned char opcode, std::vector<unsigned c
         cs += v;
     }
     return cs;
+}
+
+void SerialLink::assertOpen() {
+    if (fd == -1) {
+        throw std::runtime_error("Illegal operation on closed serial port");
+    }
 }

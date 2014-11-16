@@ -4,3 +4,4 @@ pwd
 
 ! ../src/crane_gps_watch_client --output 006_out --device file-probably-does-not-exist
 
+! ../src/crane_gps_watch_client --output 006_out --device ${srcdir}/image.bin

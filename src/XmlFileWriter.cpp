@@ -28,8 +28,18 @@ const xmlChar* toXmlChar (const std::string& str) {
 }
 
 
+void XmlErrorToException(void* /*ctx*/, xmlErrorPtr error) {
+    std::ostringstream ss;
+    ss << "XML error: '" << error->message << "' "
+      << "in " << error->file 
+      << ":" << error->line;
+    throw std::runtime_error(ss.str());
+}
+
+
 XmlFileWriter::XmlFileWriter() :w(nullptr), stack() {
     LIBXML_TEST_VERSION;
+    xmlSetStructuredErrorFunc(nullptr, XmlErrorToException);
 }
 
 XmlFileWriter::~XmlFileWriter() {

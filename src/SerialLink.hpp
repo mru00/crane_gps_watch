@@ -29,6 +29,9 @@ class SerialLink : public DeviceInterface {
     unsigned short checksum(unsigned char opcode, std::vector<unsigned char> payload);
 
   private:
+    void assertOpen();
+
+  private:
     std::string filename;
     int fd;
 };
