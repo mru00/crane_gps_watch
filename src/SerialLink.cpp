@@ -6,6 +6,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <stdexcept>
 
 #include <unistd.h>
 #include <fcntl.h>

@@ -17,6 +17,7 @@ class SampleInfo;
 
 class Callback {
   public:
+    virtual ~Callback() {}
     virtual void onWatch(const WatchInfo &) {}
     virtual void onWatchEnd(const WatchInfo &) {}
     virtual void onWorkout(const WorkoutInfo &) {}
@@ -32,6 +33,7 @@ class Broadcaster : public Callback {
 
   public:
     Broadcaster() : recipients() {}
+    virtual ~Broadcaster() {}
 
     void addRecipient(std::shared_ptr<Callback> c) { recipients.push_back(c); }
 

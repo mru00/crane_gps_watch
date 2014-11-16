@@ -7,7 +7,7 @@
 
 
 # adapt to your needs:
-client=~/dev/crane_gps_watch_client/crane_gps_watch_client
+client=crane_gps_watch_client
 tb_bin=mytourbook
 tb=~/opt/tourbook/mytourbook/$tb_bin
 
@@ -24,6 +24,7 @@ sleep 3
 
 $client --split --device $1 --verbose
 
+gnome-open $(pwd)
 
 if [[ -z "$(pgrep -f $tb)" ]]; then
   nohup $tb &
