@@ -9,6 +9,9 @@
 #include "DataTypes.hpp"
 #include "DebugWriter.hpp"
 
+DebugWriter::DebugWriter(int level) : debug_level(level) {
+}
+
 void DebugWriter::onWatch(const WatchInfo &i) {
     std::cout << "watch version: " << i.version << std::endl;
 }
@@ -31,17 +34,19 @@ void DebugWriter::onTrackEnd(const TrackInfo &)  {
     std::cout << "  track end" << std::endl;
 }
 void DebugWriter::onSample(const SampleInfo &i) {
-    std::cout << "   sample info: " 
-      << " idx_wo: " << (int)i.idx_wo
-      << " idx_track: " << (int)i.idx_track
-      << " type: " << (int)i.type
-      << " fix: " << (int)i.fix
-      << " time: " << i.time 
-      << " hr: " << (int)i.hr 
-      << " lon: " << i.lon
-      << " lat: " << i.lat
-      << " ele: " << i.ele
-      << std::endl;
+    if (debug_level > 1) {
+        std::cout << "   sample info: " 
+          << " idx_wo: " << (int)i.idx_wo
+          << " idx_track: " << (int)i.idx_track
+          << " type: " << (int)i.type
+          << " fix: " << (int)i.fix
+          << " time: " << i.time 
+          << " hr: " << (int)i.hr 
+          << " lon: " << i.lon
+          << " lat: " << i.lat
+          << " ele: " << i.ele
+          << std::endl;
+    }
 
 }
 void DebugWriter::onReadBlocks(int id, int count) {

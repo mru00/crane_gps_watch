@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Gps watch monitor
+GenericName=Auto import tracks from gps watch
+Comment=
+Exec=gps_watch_monitor.py
+Terminal=false
+Type=Application
+X-GNOME-Autostart-enabled=true
+

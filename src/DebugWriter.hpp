@@ -10,6 +10,7 @@
 class DebugWriter : public Callback {
 
   public:
+    DebugWriter(int debug_level);
     virtual ~DebugWriter() {}
     void onWatch(const WatchInfo &i) override;
     void onWatchEnd(const WatchInfo &) override;
@@ -20,4 +21,6 @@ class DebugWriter : public Callback {
     void onSample(const SampleInfo &i) override;
     void onReadBlocks(int id, int count) override;
     void onReadBlock(int id, int addr, unsigned char*, size_t) override;
+  private:
+    int debug_level;
 };

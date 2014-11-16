@@ -1,0 +1,90 @@
+#! /usr/bin/env python
+
+# Copyright (C) 2014 mru@sisyphus.teil.cc
+
+# auto-start this in your gnome session.
+# calls `gps_watch_onconnect.sh` when the watch is connected.
+# `gps_watch_onconnect.sh` is searched:
+# in ~/.gps_watch_onconnect.sh
+# in $(prefix)/share/gps_watch_onconnect.sh
+
+# set up a gnome-terminal configuration "keep-open", that 
+# doesn't close when the command finishes
+
+# monitors the udev messages to find out when the watch is connected.
+
+import subprocess
+import os
+import stat
+import sys
+import os.path
+import pyudev
+import pyudev.glib
+import gobject
+import glib
+import gtk
+import vte
+
+from pyudev.glib import GUDevMonitorObserver as MonitorObserver
+
+
+HOME=os.path.expanduser("~")
+
+class ShellWindow(gtk.Window):
+    def __init__(self, command):
+        gtk.Window.__init__(self)
+        self.set_default_size(600, 300)
+
+
+        box = gtk.VBox()
+        label = gtk.Label("Importing tracks from watch")
+        terminal = vte.Terminal()
+
+        box.add(terminal)
+        box.add(label)
+        self.add(box)
+
+        def on_exit(event):
+            label.set_text("Finished")
+        terminal.connect('child-exited', on_exit)
+
+        terminal.fork_command(command = command[0], argv=command, directory=HOME)
+
+def device_added_callback(device, event, b):
+
+    if event != "add":
+        return
+    if b['ID_MODEL'] != "CP2104_USB_to_UART_Bridge_Controller":
+        return
+
+    device_fn = b['DEVNAME']
+
+    p1 = os.path.join(HOME, ".gps_watch_onconnect.sh")
+    p2 = os.path.join("@PKGDATADIR@", "gps_watch_onconnect.sh")
+    
+    script = None
+    if os.path.exists(p1):
+        script = p1
+    elif os.path.exists(p2):
+        script = p2
+    else:
+        script = "gps_watch_onconnect.sh"
+
+    
+
+    win = ShellWindow([script, device_fn])
+    win.show_all()
+
+
+context = pyudev.Context()
+monitor = pyudev.Monitor.from_netlink(context)
+monitor.filter_by(subsystem = 'tty')
+
+observer = MonitorObserver(monitor)
+
+observer.connect('device-event', device_added_callback)
+monitor.start();
+
+mainloop = gobject.MainLoop();
+mainloop.run()
+

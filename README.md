@@ -97,12 +97,12 @@ USAGE:
 	crane_gps_watch_client --help      show the help screen
 
 	crane_gps_watch_client 
-    [--output "filename"]            override default filename, write single file for all tracks
-    [--split]                        write file for each track
-    [--device "/dev/tty..."]         override default device file
-    [--to_image filename]            write watch data to file <for testing>
-    [--from_image filename]          read watch data from file <for testing>
-    [--verbose]                      write debug output to console
+    [--output "filename"]            override default filename, write single file for all tracks.
+    [--split]                        write file for each track.
+    [--device "/dev/tty..."]         override default device file.
+    [--to_image filename]            write watch data to file <for testing>.
+    [--from_image filename]          read watch data from file <for testing>.
+    [--verbose]                      write debug output to console. repeat to get more output.
 
 As default, the output file is written in the current working directory.
 The filename is created from the current time and date. Use the `--output` option
@@ -121,6 +121,32 @@ Resulting track file in TCX format you can convert into GPX format
 by means of [gpsbabel](http://www.gpsbabel.org/) or use TCX format as it is.
 
 Enjoy!
+
+
+Auto import
+-----------
+
+Note: this is experimental and not well documented and badly implemented and not intended for the end-user.
+
+The script requires the package `python-pyudev` to be installed.
+
+This package also ships the script `gps_watch_monitor.py` and `gps_watch_onconnect.sh`.
+
+
+`gps_watch_monitor.py` is intended to be auto-started with your X session.
+To enable auto-start copy the file `gps_watch_monitor.desktop` (usually in `/usr/local/share/crane_gps_watch_client`) 
+to `~/.config/autostart`. 
+
+It monitors the UDEV bus for
+new connections on the USB bus. If the watch is connected, 
+it will start `gps_watch_onconnect.sh` in a terminal window.
+
+`gps_watch_onconnect.sh` can start the client to import the files, 
+and execute additional tasks. To customize the default behaviour, 
+copy the script (usually `/usr/local/share/crane_gps_watch_client/gps_watch_onconnect.sh`) 
+to your home as: `~/.gps_watch_onconnect.sh` and 
+modify it to your needs.
+
 
 Version History:
 ----------------

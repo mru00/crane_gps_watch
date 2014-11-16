@@ -5,6 +5,7 @@ AC_CONFIG_FILES([
                  Makefile
                  src/Makefile
                  test/Makefile
+                 data/Makefile
                  ])
 
 # requires automake 1.13 [https://autotools.io/autoconf/macros.html] -- breaks travis-ci.org
@@ -17,7 +18,6 @@ PKG_CHECK_MODULES(XML, libxml-2.0 >= 2.4)
 AC_LANG([C++])
 AX_CXX_COMPILE_STDCXX_11
 AC_PROG_CXX
-
 
 AC_CHECK_HEADERS([fcntl.h])
 AC_CHECK_HEADERS([termios.h])

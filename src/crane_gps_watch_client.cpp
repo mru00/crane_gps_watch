@@ -34,7 +34,7 @@ std::string format_date_filename() {
 int main(int argc, char** argv) {
 
     bool split_by_track = false;
-    bool show_debug = false;
+    int debug_level = 0;
 
     std::string from_image;
     std::string to_image;
@@ -106,7 +106,7 @@ int main(int argc, char** argv) {
                 to_image = optarg;
                 break;
               case 'v':
-                show_debug = true;
+                debug_level++;
                 break;
               default:
                 std::cerr << "unknown option" << std::endl;
@@ -138,8 +138,8 @@ int main(int argc, char** argv) {
         if (to_image != "") {
             watch.addRecipient(std::make_shared<ImageWriter>(to_image));
         }
-        if (show_debug) {
-            watch.addRecipient(std::make_shared<DebugWriter>());
+        if (debug_level > 0) {
+            watch.addRecipient(std::make_shared<DebugWriter>(debug_level));
         }
 
         watch.parse();

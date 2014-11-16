@@ -38,6 +38,8 @@ SerialLink::SerialLink(const std::string& filename) : filename(filename), fd(-1)
     if(tcsetattr(fd, TCSANOW, &options) != 0) {
         throw std::runtime_error("failed to configure serial port '" + filename + "': " + strerror(errno));
     }
+
+    std::cerr << "Connected to watch on " << filename << std::endl;
 }
 
 

@@ -11,3 +11,15 @@ crane_gps_watch_client_LDADD = $(XML_LIBS)
 
 MOSTLYCLEANFILES = *.tcx
 
+
+# gps_watch_monitor.py:
+bin_SCRIPTS = gps_watch_monitor.py
+CLEANFILES = $(bin_SCRIPTS)
+EXTRA_DIST = gps_watch_monitor.py.in
+
+do_subst = sed -e 's,[@]datadir[@],$(datadir),g' -e 's,[@]PACKAGE[@],$(PACKAGE),g' -e 's,[@]PKGDATADIR[@],$(pkgdatadir),g'
+
+gps_watch_monitor.py: $(srcdir)/gps_watch_monitor.py.in
+	$(do_subst) < $< > $@
+	chmod +x $@
+
