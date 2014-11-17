@@ -293,10 +293,19 @@ void Watch::parseBlock0() {
     WatchInfo wi;
 
     wi.version = version;
-    br.onWatch(wi);
 
     WatchMemoryBlock::mem_it_t mem_it = mb.memory.begin();
-    mem_it += 0x100;
+    
+    
+    mem_it += 0x60;
+    wi.firmware.resize(16, '\0');
+    std::copy(mem_it, mem_it+16, wi.firmware.begin());
+
+    br.onWatch(wi);
+
+
+
+    mem_it = mb.memory.begin() + 0x100;
     for (;;) {
         unsigned char cur;
         unsigned char first;

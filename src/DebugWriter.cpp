@@ -13,7 +13,10 @@ DebugWriter::DebugWriter(int level) : debug_level(level) , wo_with_coord(0) {
 }
 
 void DebugWriter::onWatch(const WatchInfo &i) {
-    std::cout << "watch version: " << i.version << std::endl;
+    std::cout << "watch begin"
+      << " version='" << i.version << "'"
+      << " firmware='" << i.firmware << "'"
+      << std::endl;
 }
 void DebugWriter::onWatchEnd(const WatchInfo &) {
     std::cout << "watch end" << std::endl;
@@ -26,12 +29,12 @@ void DebugWriter::onWorkout(const WorkoutInfo &i)  {
     wo_with_coord = 0;
 }
 void DebugWriter::onWorkoutEnd(const WorkoutInfo &)  {
-    std::cout << " workout end, "
-      << "samples with coord: " << wo_with_coord
+    std::cout << " workout end"
+      << " samples with coord=" << wo_with_coord
       << std::endl;
 }
 void DebugWriter::onTrack(const TrackInfo &)  {
-    std::cout << "  track info " << std::endl;
+    std::cout << "  track begin" << std::endl;
 }
 void DebugWriter::onTrackEnd(const TrackInfo &)  {
     std::cout << "  track end" << std::endl;
@@ -39,15 +42,15 @@ void DebugWriter::onTrackEnd(const TrackInfo &)  {
 void DebugWriter::onSample(const SampleInfo &i) {
     if (debug_level > 1) {
         std::cout << "   sample info: " 
-          << " idx_wo: " << (int)i.idx_wo
-          << " idx_track: " << (int)i.idx_track
-          << " type: " << (int)i.type
-          << " fix: " << (int)i.fix
-          << " time: " << i.time 
-          << " hr: " << (int)i.hr 
-          << " lon: " << i.lon
-          << " lat: " << i.lat
-          << " ele: " << i.ele
+          << " idx_wo=" << (int)i.idx_wo
+          << " idx_track=" << (int)i.idx_track
+          << " type=" << (int)i.type
+          << " fix=" << (int)i.fix
+          << " time=" << i.time 
+          << " hr=" << (int)i.hr 
+          << " lon=" << i.lon
+          << " lat=" << i.lat
+          << " ele=" << i.ele
           << std::endl;
     }
     if (i.fix != 0) {
@@ -56,9 +59,11 @@ void DebugWriter::onSample(const SampleInfo &i) {
 
 }
 void DebugWriter::onReadBlocks(int id, int count) {
-    std::cout << "reading block #" << id << " + " << count << std::endl;
+    std::cout << "memory block #" << id << " + " << count << std::endl;
 }
 void DebugWriter::onReadBlock(int id, int addr, unsigned char*, size_t) {
-    std::cout << "reading block #" << std::dec << id << " from 0x"<< std::hex << addr << std::endl;
+    if (debug_level > 1) {
+        std::cout << "reading block #" << std::dec << id << " from 0x"<< std::hex << addr << std::endl;
+    }
 }
 

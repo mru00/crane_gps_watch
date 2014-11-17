@@ -91,7 +91,7 @@ struct TrackInfo {
 };
 
 struct WatchInfo {
-    WatchInfo() : timezone(0), sample_interval(0), selected_profile(0), nblocks(0), path_names(), profile_names(), version() {}
+    WatchInfo() : timezone(0), sample_interval(0), selected_profile(0), nblocks(0), path_names(), profile_names(), version(), firmware() {}
     unsigned timezone;
     unsigned sample_interval;
     unsigned selected_profile;
@@ -99,6 +99,7 @@ struct WatchInfo {
     std::vector<std::string> path_names;
     std::vector<std::string> profile_names;
     std::string version;
+    std::string firmware;
 };
 
 
