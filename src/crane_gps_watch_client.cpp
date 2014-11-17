@@ -28,7 +28,7 @@ std::string format_date_filename() {
     auto tm = *std::localtime(&t);
     const size_t len_max = 1000;
     char buffer[len_max];
-    std::strftime(buffer, len_max, "%Y-%m-%d_%I-%M-%S", &tm);
+    std::strftime(buffer, len_max, "%Y-%m-%d_%H-%M-%S", &tm);
     return buffer;
 }
 
