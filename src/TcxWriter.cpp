@@ -96,7 +96,7 @@ void TcxWriter::onTrackEnd(const TrackInfo&) {
 void TcxWriter::onSample(const SampleInfo &i) { 
     writer.startElement("Trackpoint");
     writer.writeElement("Time", i.time);
-    if (i.lon.loc != 0) {
+    if (i.fix != 0) {
         writer.startElement("Position");
         writer.writeElement("LatitudeDegrees", i.lat);
         writer.writeElement("LongitudeDegrees", i.lon);

@@ -175,20 +175,6 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
         idx_wo ++;
         idx_track++;
 
-#ifdef DEBUG
-        // assumptions:
-        
-        // this one does not hold:
-        //if (si.type == SampleInfo::Full)
-        //  assert (si.fix != 0);
-
-
-        // doesn't hold
-        //if (si.type == SampleInfo::Diff)
-        //  assert(si.fix == 0);
-#endif
-
-
         if (si.type == SampleInfo::Full || si.type == SampleInfo::HrOnly) {
             t = si.time;
         }
@@ -199,38 +185,78 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
             break;
         }
 
+        if (1) {
 
-        if (si.fix != 0) {
+            bool has_position = false;
             if (si.type == SampleInfo::Full) {
                 lon = si.lon;
                 lat = si.lat;
                 ele = si.ele;
                 has_full_fix = true;
+                has_position = true;
             }
             else if (si.type == SampleInfo::Diff) {
                 si.lon = (lon += si.lon);
                 si.lat = (lat += si.lat);
                 si.ele = (ele += si.ele);
+                has_position = has_full_fix;
             }
             else if (si.type == SampleInfo::None) {
-                lon = si.lon;
-                lat = si.lat;
-                ele = si.ele;
-                has_full_fix = true;
+                if (si.fix) {
+                    // not sure about this
+                    lon = si.lon;
+                    lat = si.lat;
+                    ele = si.ele;
+                }
+                has_position = has_full_fix = si.fix != 0;
+            }
+            else {
+                // certainly not:
+                // there can be a HrOnly/0x03, followed only by a Diff/0x01
+                //has_position = has_full_fix = false;
+            }
+
+
+            if (!has_position) {
+                si.fix = 0;
+            }
+        }
+        else {
+
+            if (si.fix != 0) {
+                if (si.type == SampleInfo::Full) {
+                    lon = si.lon;
+                    lat = si.lat;
+                    ele = si.ele;
+                    has_full_fix = true;
+                }
+                else if (si.type == SampleInfo::Diff) {
+                    si.lon = (lon += si.lon);
+                    si.lat = (lat += si.lat);
+                    si.ele = (ele += si.ele);
+                }
+                else if (si.type == SampleInfo::None) {
+                    lon = si.lon;
+                    lat = si.lat;
+                    ele = si.ele;
+                    has_full_fix = true;
+                }
+                else {
+                    has_full_fix = false;
+                }
             }
             else {
                 has_full_fix = false;
             }
-        }
-        else {
-            has_full_fix = false;
-        }
 
-        if (!has_full_fix) {
-            si.lon.loc = lon.loc = 0;
-            si.lat.loc = lat.loc = 0;
-            si.ele.ele = ele.ele = 0;
-            si.fix = 0;
+            if (!has_full_fix) {
+                si.lon.loc = lon.loc = 0;
+                si.lat.loc = lat.loc = 0;
+                si.ele.ele = ele.ele = 0;
+
+                si.fix = 0;
+            }
+
         }
 
         if (track_active && si.type == SampleInfo::None) {
@@ -246,16 +272,6 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
             track_active = true;
             idx_track = 1;
         }
-
-#ifdef DEBUG
-
-
-        if (has_full_fix) {
-            //assert(int(si.lon)==14);
-        }
-
-
-#endif
 
         si.idx_track = idx_track;
         si.idx_wo = idx_wo;
@@ -319,7 +335,10 @@ void Watch::readBlock(WatchMemoryBlock& b) {
         }
         br.onReadBlock(b.id+block, block_start, block_begin, b.blockSize);
     }
-    //b.dump();
+
+    if (0) {
+        b.dump();
+    }
 }
 
 

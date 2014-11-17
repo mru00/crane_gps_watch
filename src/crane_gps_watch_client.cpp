@@ -15,6 +15,7 @@
 #include "Callback.hpp"
 #include "TcxWriter.hpp"
 #include "DebugWriter.hpp"
+#include "GpsLint.hpp"
 #include "ImageWriter.hpp"
 #include "Watch.hpp"
 #include "SerialLink.hpp"
@@ -33,17 +34,18 @@ std::string format_date_filename() {
 
 int main(int argc, char** argv) {
 
-    bool split_by_track = false;
-    int debug_level = 0;
-
-    std::string from_image;
-    std::string to_image;
-    std::string device_fn;
-    std::string output_fn;
-    opterr = 0;
 
     try {
 
+        bool do_lint = false;
+        bool split_by_track = false;
+        int debug_level = 0;
+
+        std::string from_image;
+        std::string to_image;
+        std::string device_fn;
+        std::string output_fn;
+        opterr = 0;
         while (1) {
             static struct option long_options[] = {
                   {"help", no_argument, 0, 'h'},
@@ -54,6 +56,7 @@ int main(int argc, char** argv) {
                   {"split", no_argument, 0, 's'},
                   {"verbose", no_argument, 0, 'v'},
                   {"version", no_argument, 0, 'w'},
+                  {"lint", no_argument, 0, 'l'},
                   {0, 0, 0, 0}
             };
 
@@ -108,6 +111,9 @@ int main(int argc, char** argv) {
               case 'v':
                 debug_level++;
                 break;
+              case 'l':
+                do_lint = true;
+                break;
               default:
                 std::cerr << "unknown option" << std::endl;
                 exit(1);
@@ -140,6 +146,9 @@ int main(int argc, char** argv) {
         }
         if (debug_level > 0) {
             watch.addRecipient(std::make_shared<DebugWriter>(debug_level));
+        }
+        if (do_lint) {
+            watch.addRecipient(std::make_shared<GpsLint>());
         }
 
         watch.parse();

@@ -32,6 +32,9 @@ GpsLocation::operator const std::string() const {
     return ss.str();
 }
 
+GpsLocation::operator double() const {
+    return (loc / 10000000.0);
+}
 
 GpsEle& GpsEle::operator += (const GpsEle& other) {
     ele += other.ele;
@@ -55,7 +58,7 @@ GpsTime::operator std::string() const {
 }
 
 std::ostream& operator<< (std::ostream& s, const GpsLocation& l) {
-    s << std::setprecision(15) << l.loc / 10000000.0;
+    s << std::setprecision(15) << (double)l;
     return s;
 }
 

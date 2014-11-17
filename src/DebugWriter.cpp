@@ -9,7 +9,7 @@
 #include "DataTypes.hpp"
 #include "DebugWriter.hpp"
 
-DebugWriter::DebugWriter(int level) : debug_level(level) {
+DebugWriter::DebugWriter(int level) : debug_level(level) , wo_with_coord(0) {
 }
 
 void DebugWriter::onWatch(const WatchInfo &i) {
@@ -23,9 +23,12 @@ void DebugWriter::onWorkout(const WorkoutInfo &i)  {
       << " t=" << i.start_time
       << " nsamples=" << i.nsamples
       << std::endl;
+    wo_with_coord = 0;
 }
 void DebugWriter::onWorkoutEnd(const WorkoutInfo &)  {
-    std::cout << " workout end" << std::endl;
+    std::cout << " workout end, "
+      << "samples with coord: " << wo_with_coord
+      << std::endl;
 }
 void DebugWriter::onTrack(const TrackInfo &)  {
     std::cout << "  track info " << std::endl;
@@ -46,6 +49,9 @@ void DebugWriter::onSample(const SampleInfo &i) {
           << " lat: " << i.lat
           << " ele: " << i.ele
           << std::endl;
+    }
+    if (i.fix != 0) {
+        wo_with_coord ++;
     }
 
 }

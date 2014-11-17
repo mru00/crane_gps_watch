@@ -8,7 +8,9 @@ TESTS = 000_help.sh \
 				004_exclusive_args.sh \
 				005_image_not_found.sh \
 				006_invalid_serial_device.sh \
-				007_output_not_writable.sh
+				007_output_not_writable.sh \
+				008_lint_images.sh \
+				009_expect_coordinates.sh
 
 
 EXTRA_DIST = image.bin TrainingCenterDatabasev2.xsd

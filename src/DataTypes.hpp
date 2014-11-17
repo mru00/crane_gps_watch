@@ -25,6 +25,7 @@ struct GpsLocation {
     int loc;
     GpsLocation& operator += (const GpsLocation& other);
     operator const std::string() const;
+    operator double() const;
 };
 
 struct GpsTimeUpd {
