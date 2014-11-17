@@ -12,17 +12,17 @@ Crane GPS Watch client is a client for downloading track files in [TCX  format](
 from the following GPS watches.
 
 Supported Watches:
-* [Crane GPS Watch from Aldi/Hofer](https://www.produktservice.info/20014414/20014414.html)
-* [Conrad GPS Nav II](http://www.conrad.de/ce/de/product/372884/Multi-NAV-2-GPS-Pulsuhr-mit-Brustgurt-Schwarz)
-* [Runtastic Gps Watch](https://www.runtastic.com/shop/en/runtastic-gps-watch-with-heart-rate-monitor)
+* `1.20.22_KRIP0_00` [Crane GPS Watch from Aldi/Hofer](https://www.produktservice.info/20014414/20014414.html)
+* `1.20.21_DLES0_00` [Conrad GPS Nav II](http://www.conrad.de/ce/de/product/372884/Multi-NAV-2-GPS-Pulsuhr-mit-Brustgurt-Schwarz)
 
 
 I suspect that Latitude is the original manufacturer.
 As the watch is commonly rebranded, the following Watches might just work:
 
 Proably the same Watch:
-* [Latitude](http://latitude.com.hk/product.asp)
+* [Latitude NAV Master II](http://www.latitude.com.hk/dbimages/document/856/gps_series_catalog.pdf) (probably the original manufacturer)
 * [Pyle Gps watch](http://www.pyleaudio.com/sku/PSWGP405BK/GPS-Watch-w-Coded-Heart-Rate-Transmission,-Navigation,-Speed,-Distance,-Workout-Memory,-Compass,--PC-link--(Black-Color))
+* [Runtastic Gps Watch](https://www.runtastic.com/shop/en/runtastic-gps-watch-with-heart-rate-monitor)
 
 The TCX format is used instead the popular GPX format, for the following reason:
 The GPS watch is able to record workouts where only heartrate is available, no GPS.
