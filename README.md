@@ -16,17 +16,27 @@ Supported Watches:
 * `1.20.21_DLES0_00` [Conrad GPS Nav II](http://www.conrad.de/ce/de/product/372884/Multi-NAV-2-GPS-Pulsuhr-mit-Brustgurt-Schwarz)
 
 
-I suspect that Latitude is the original manufacturer.
 As the watch is commonly rebranded, the following Watches might just work:
 
-Proably the same Watch:
 * [Latitude NAV Master II](http://www.latitude.com.hk/dbimages/document/856/gps_series_catalog.pdf) (probably the original manufacturer)
 * [Pyle Gps watch](http://www.pyleaudio.com/sku/PSWGP405BK/GPS-Watch-w-Coded-Heart-Rate-Transmission,-Navigation,-Speed,-Distance,-Workout-Memory,-Compass,--PC-link--(Black-Color))
 * [Runtastic Gps Watch](https://www.runtastic.com/shop/en/runtastic-gps-watch-with-heart-rate-monitor)
+* [Ultrasport NavRun 500](http://www.ebay.de/itm/Ultrasport-GPS-Pulsuhr-NavRun-500-Uhr-Watch-mit-Brustgurt-/301393562885)
+* [unknown model](http://www.ebay.de/itm/GPS-Uhr-mit-Herzfrequnzmessung-Kompass-PC-Download-Pulsuhr-NEU/300968440724)
+
+I guess that all GPS watches delivered with "GPS Master" software work.
+
+
+Output format:
+--------------
 
 The TCX format is used instead the popular GPX format, for the following reason:
 The GPS watch is able to record workouts where only heartrate is available, no GPS.
 It is not valid to create GPS records without coordinates. In TCX, this is possible.
+
+
+Disclaimer:
+-----------
 
 Please note that I (the developer) am not affiliated with any of the
 manufacturers listed. The protocol is implemented completely clean-room
@@ -36,7 +46,6 @@ was not reverse engineered in any way.
 
 
 All trademarks mentioned belong to their owners, third party brands, product names, trade names, corporate names and company names mentioned may be trademarks of their respective owners or registered trademarks of other companies and are used for purposes of explanation and to the owner's benefit, without implying a violation of copyright law.
-
 
 
 This software is distributed under the GNU General Public License.
@@ -57,6 +66,9 @@ Bug reports:
 Please report problems and bugs. If you get compiler errors, please send me the complete compiler output.
 If the generated output files are wrong, please create an image (`--to_image`) and send me the image with a 
 description of the expected output.
+
+I also appreciate positive feedback very much, and "works for me" messages.
+If your watch works, please send me a note so I can update the list of supported watches.
 
 
 Installation:
@@ -158,11 +170,22 @@ Version History:
 
 See Also:
 ---------
-* "Gps Visualizer": http://www.gpsvisualizer.com/
-* "Sport route planner": http://www.sportrouteplanner.com/ 
-* "My Tourbook": http://mytourbook.sourceforge.net/mytourbook/ works great with the TCX files.
-* "Viking GPS data editor and analyzer" http://sourceforge.net/projects/viking/
 
-* "Tcx files": http://en.wikipedia.org/wiki/Training_Center_XML
+GPS Software:
+
+* [Gps Visualizer](http://www.gpsvisualizer.com/)
+* [Sport route planner](http://www.sportrouteplanner.com/)
+* [My Tourbook](http://mytourbook.sourceforge.net/mytourbook/) works great with the TCX files. I like it.
+* [Viking GPS data editor and analyzer](http://sourceforge.net/projects/viking/)
+* [Alternatives to My tourbook](http://alternativeto.net/software/my-tourbook/)
 
 
+Technical links:
+
+* [Tcx files](http://en.wikipedia.org/wiki/Training_Center_XML)
+
+
+Similar projects:
+
+* [Kalenji gps watch reader](https://code.google.com/p/kalenji-gps-watch-reader), support for W Kalenji 300, CW Kalenji 700, On Move 500, On Move 700, Kaymaze 700
+* [crane-gps-watch](https://github.com/mru00/GpsWatch), reverse engineering repository of this project, written in perl, easy to hack&test stuff.
