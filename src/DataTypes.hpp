@@ -9,59 +9,50 @@
 #include <iomanip>
 #include <vector>
 
+#include <ctime>
 
 
 
-class GpsLocation;
-std::ostream& operator<<(std::ostream&, const GpsLocation&);
+// while we are waiting for http://en.cppreference.com/w/cpp/io/manip/put_time
+struct put_time {
+    std::string str;
+    put_time(const tm* time, const std::string& format);
+};
+std::ostream& operator<< (std::ostream&, const put_time&);
 
-class GpsEle;
-std::ostream& operator<<(std::ostream&, const GpsEle&);
-
-class GpsTime;
-std::ostream& operator<<(std::ostream&, const GpsTime&);
 
 struct GpsLocation {
     int loc;
     GpsLocation& operator += (const GpsLocation& other);
-    operator const std::string() const;
+    std::string format() const;
     operator double() const;
 };
 
 struct GpsTimeUpd {
-    GpsTimeUpd() : mm(0), ss(0) {}
-    unsigned mm, ss;
+    int mm, ss;
 };
 
 struct GpsEle {
-    GpsEle() : ele(0) {}
     unsigned short ele;
     GpsEle& operator += (const GpsEle& other);
-    operator std::string() const;
+    std::string format() const;
 };
 
 struct GpsTime {
-    GpsTime() : YY(0), MM(0), DD(0), hh(0), mm(0), ss(0) {}
-    unsigned char YY, MM, DD, hh, mm, ss;
+    tm time;
     GpsTime& operator=(const GpsTimeUpd& other);
-    operator std::string() const;
+    std::string format() const;
 };
 
-std::ostream& operator<< (std::ostream& s, const GpsLocation& l);
-
-std::ostream& operator<< (std::ostream& s, const GpsEle& l);
-
-std::ostream& operator<< (std::ostream& s, const GpsTime& t);
 
 struct SampleInfo {
-    SampleInfo() : type(SampleInfo::None), time(), time_upd(), lon(), lat(), ele(), hr(0), fix(0), fb(0), sb(0), idx_wo(0), idx_track(0) {}
-    enum { 
-        Full = 0x00, 
-        Diff = 0x01, 
-        TimeOnly = 0x02, 
-        HrOnly = 0x03, 
-        None = 0x80, 
-        End = 0xff 
+    enum {
+        Full = 0x00,
+        Diff = 0x01,
+        TimeOnly = 0x02,
+        HrOnly = 0x03,
+        None = 0x80,
+        End = 0xff
     } type;
     GpsTime time;
     GpsTimeUpd time_upd;
@@ -74,9 +65,10 @@ struct SampleInfo {
 };
 
 struct WorkoutInfo {
-    WorkoutInfo() : nsamples(0), lapcount(0), start_time(), workout_time(), profile(0), total_km(0), speed_avg(0), speed_max(0), calories(0) {}
 
+    // i doubt nsamples:
     unsigned nsamples;
+
     unsigned lapcount;
     GpsTime start_time;
     GpsTime workout_time;
@@ -85,13 +77,13 @@ struct WorkoutInfo {
     double speed_avg;
     double speed_max;
     double calories;
+    std::string toc;
 };
 
 struct TrackInfo {
 };
 
 struct WatchInfo {
-    WatchInfo() : timezone(0), sample_interval(0), selected_profile(0), nblocks(0), path_names(), profile_names(), version(), firmware() {}
     unsigned timezone;
     unsigned sample_interval;
     unsigned selected_profile;

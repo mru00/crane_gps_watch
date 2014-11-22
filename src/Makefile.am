@@ -8,7 +8,7 @@ crane_gps_watch_client_SOURCES = crane_gps_watch_client.cpp \
  Callback.hpp GpsLint.hpp XmlFileWriter.hpp ImageWriter.hpp \
  DebugWriter.hpp DataTypes.hpp MemoryBlock.hpp ImageLink.hpp SerialLink.hpp TcxWriter.hpp Watch.hpp
 
-crane_gps_watch_client_CXXFLAGS = -Wall -Wextra -Weffc++
+crane_gps_watch_client_CXXFLAGS = -Wall -Wextra
 crane_gps_watch_client_LDADD = 
 
 
