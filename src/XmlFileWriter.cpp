@@ -12,34 +12,13 @@
 #include <sstream>
 
 
-#include <libxml/encoding.h>
-#include <libxml/xmlwriter.h>
-
 #include "XmlFileWriter.hpp"
 
-std::string format_xml_exception(int code) {
-    std::ostringstream ss;
-    ss << "XML error #" << code;
-    return ss.str();
+unsigned char* get_str(const std::string& str) {
+    return (unsigned char*) str.c_str();
 }
 
-const xmlChar* toXmlChar (const std::string& str) {
-    return BAD_CAST str.c_str();
-}
-
-
-void XmlErrorToException(void* /*ctx*/, xmlErrorPtr error) {
-    std::ostringstream ss;
-    ss << "XML error: '" << error->message << "' "
-      << "in " << error->file 
-      << ":" << error->line;
-    throw std::runtime_error(ss.str());
-}
-
-
-XmlFileWriter::XmlFileWriter() :w(nullptr), stack() {
-    LIBXML_TEST_VERSION;
-    xmlSetStructuredErrorFunc(nullptr, XmlErrorToException);
+XmlFileWriter::XmlFileWriter() : wf(nullptr), w(nullptr) {
 }
 
 XmlFileWriter::~XmlFileWriter() {
@@ -51,9 +30,8 @@ XmlFileWriter::~XmlFileWriter() {
 
 void XmlFileWriter::open(const std::string& filename) {
     std::cerr << "XmlFileWriter: writing to " << filename << std::endl;
-    w = xmlNewTextWriterFilename((filename).c_str(), 0);
-    if (w == nullptr) throw std::runtime_error("Failed to create XML writer");
-    xmlTextWriterSetIndent(w, 1);
+    wf = fopen(filename.c_str(), "w");
+    w = genxNew(NULL, NULL, NULL);
 }
 
 bool XmlFileWriter::isOpen() {
@@ -61,31 +39,29 @@ bool XmlFileWriter::isOpen() {
 }
 
 void XmlFileWriter::close() {
-    if (w == nullptr) {
-        throw std::runtime_error("Protocol mismatch: closing already closed XML document");
+    if (isOpen()) {
+        //throw std::runtime_error("Protocol mismatch: closing already closed XML document");
     }
-    xmlFreeTextWriter(w);
+    genxDispose(w);
+    fclose(wf);
+    wf = nullptr;
     w = nullptr;
 }
 
 void XmlFileWriter::startDocument(const std::string& encoding) {
-    int rc = xmlTextWriterStartDocument(w, NULL, encoding.c_str(), NULL);
-    if (rc < 0) throw std::runtime_error(format_xml_exception(rc));
+    genxStartDocFile(w, wf);
 }
 void XmlFileWriter::endDocument() {
-    int rc = xmlTextWriterEndDocument(w);
-    if (rc < 0) throw std::runtime_error(format_xml_exception(rc));
+    genxEndDocument(w);
 }
 
 void XmlFileWriter::startElement(const std::string& name) {
-    int rc = xmlTextWriterStartElement(w, toXmlChar(name));
-    if (rc < 0) throw std::runtime_error(format_xml_exception(rc));
+    genxStartElementLiteral(w, NULL, get_str(name));
     stack.push(name);
 }
 
 void XmlFileWriter::endElement(const std::string& name) {
-    int rc = xmlTextWriterEndElement(w);
-    if (rc < 0) throw std::runtime_error(format_xml_exception(rc));
+    genxEndElement(w);
     if (name.size()) {
         if (name != stack.top()) throw std::runtime_error("XML Tag mismatch (expected a <" + stack.top() + ">, got a <" + name +">)");
     }
@@ -93,11 +69,11 @@ void XmlFileWriter::endElement(const std::string& name) {
 }
 
 void XmlFileWriter::writeAttribute(const std::string& name, const std::string& value) {
-    int rc = xmlTextWriterWriteAttribute(w, toXmlChar(name), toXmlChar(value));
-    if (rc < 0) throw std::runtime_error(format_xml_exception(rc));
+    genxAddAttributeLiteral(w, NULL, get_str(name), get_str(value));
 }
 
 void XmlFileWriter::writeElement(const std::string& name, const std::string& value) {
-    int rc = xmlTextWriterWriteElement(w, toXmlChar(name), toXmlChar(value));
-    if (rc < 0) throw std::runtime_error(format_xml_exception(rc));
+    startElement(name);
+    genxAddText(w, get_str(value));
+    endElement(name);
 }

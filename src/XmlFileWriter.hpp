@@ -1,15 +1,12 @@
 // Copyright (C) 2014 mru@sisyphus.teil.cc
 //
-//
-//
 
 
 #pragma once
 
-
 #include <stack>
 
-#include <libxml/xmlwriter.h>
+#include "genx.h"
 
 
 class XmlFileWriter {
@@ -30,6 +27,7 @@ class XmlFileWriter {
     void endDocument();
 
   private:
-    xmlTextWriterPtr w;
+    FILE* wf;
+    genxWriter w;
     std::stack<std::string> stack;
 };

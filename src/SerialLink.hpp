@@ -9,6 +9,15 @@
 #include <vector>
 #include <string>
 
+#ifdef __MINGW32__
+# include <windows.h>
+typedef HANDLE handle_t;
+# define HANDLE_NULL nullptr
+#else
+typedef int handle_t;
+# define HANDLE_NULL (-1)
+#endif
+
 #include "DeviceInterface.hpp"
 
 class SerialLink : public DeviceInterface {
@@ -33,5 +42,5 @@ class SerialLink : public DeviceInterface {
 
   private:
     std::string filename;
-    int fd;
+    handle_t fd;
 };

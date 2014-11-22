@@ -13,9 +13,6 @@
 #include <algorithm>
 
 
-#include <libxml/encoding.h>
-#include <libxml/xmlwriter.h>
-
 #include "DataTypes.hpp"
 #include "Callback.hpp"
 #include "TcxWriter.hpp"

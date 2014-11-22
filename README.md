@@ -74,8 +74,6 @@ If your watch works, please send me a note so I can update the list of supported
 Installation:
 -------------
 
-This program uses libxml2. Please install libxml2 before building Crane GPS Watch client.
-
 Crane GPS Watch client uses make to build:
 
 1. Clone source code archive from githup repo:
@@ -99,6 +97,9 @@ or download Zip file:
 
 
 See INSTALL for details. Note that it is possible to install without root rights, use the `./configure --prefix=...` option.
+
+
+The software also works in windows; compiled with mingw, using the Bloodshed-dev C++.
 
 
 Please also have a look at `.travis.yml`, which describes a full build for the [Travis-ci](travis-ci.org) CI platform.
@@ -167,6 +168,7 @@ Version History:
 
 
 
+Uses [genx xml library](http://www.tbray.org/ongoing/When/200x/2004/02/20/GenxStatus).
 
 See Also:
 ---------

@@ -13,11 +13,10 @@ AC_CONFIG_FILES([
 # this works with older versions:
 m4_include([m4/ax_cxx_compile_stdcxx_11.m4])
 
-PKG_CHECK_MODULES(XML, libxml-2.0 >= 2.4)
-
 AC_LANG([C++])
 AX_CXX_COMPILE_STDCXX_11
 AC_PROG_CXX
+AC_PROG_CC
 
 AC_CHECK_HEADERS([fcntl.h])
 AC_CHECK_HEADERS([termios.h])

@@ -9,7 +9,13 @@
 
 #include <getopt.h>
 
-#include "../config.h"
+#ifdef HAVE_CONFIG_H
+# include "../config.h"
+#else
+# define PACKAGE_STRING "crane_gps_watch_client"
+# define PACKAGE_VERSION "0.1-win"
+# define PACKAGE_BUGREPORT "mru sisyphus.teil.cc"
+#endif
 
 #include "DataTypes.hpp"
 #include "Callback.hpp"
@@ -121,7 +127,11 @@ int main(int argc, char** argv) {
         }
 
         if (device_fn == "") {
+#ifdef __MINGW32__
+            device_fn = "COM3";
+#else
             device_fn = "/dev/ttyUSB0";
+#endif
         }
 
         if (output_fn == "") {
