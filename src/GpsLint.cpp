@@ -34,9 +34,7 @@ void GpsLint::onSample(const SampleInfo &i) {
     }
 
     // around this year
-    assert ( abs(i.time.time.tm_year-114) < 5);
-
-
+    assert ( std::abs(i.time.time.tm_year-114) < 5);
 
     static SampleInfo lastI;
     if (i.idx_track > 1) {
