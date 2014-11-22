@@ -12,24 +12,29 @@
 #include "DataTypes.hpp"
 
 
-class GpsLocation;
-std::ostream& operator<<(std::ostream&, const GpsLocation&);
+struct fmt {
+    std::ostringstream s;
+    operator std::string() {return s.str();}
+    template<class T> fmt& operator<<(T const& v) {return s<<v, *this;}
+};
 
-class GpsEle;
-std::ostream& operator<<(std::ostream&, const GpsEle&);
+put_time::put_time(const tm* time, const std::string& format) : str() {
+    char buf[80];
+    strftime(buf, 80, format.c_str(), time);
+    str = buf;
+  }
 
-class GpsTime;
-std::ostream& operator<<(std::ostream&, const GpsTime&);
+std::ostream& operator << (std::ostream& o, const put_time& time) {
+    return o << time.str;
+}
 
 GpsLocation& GpsLocation::operator += (const GpsLocation& other) {
     loc += other.loc;
     return *this;
 }
 
-GpsLocation::operator const std::string() const {
-    std::ostringstream ss;
-    ss << (*this);
-    return ss.str();
+std::string GpsLocation::format() const {
+    return fmt() << std::setprecision(15) << (double)(*this);
 }
 
 GpsLocation::operator double() const {
@@ -40,41 +45,17 @@ GpsEle& GpsEle::operator += (const GpsEle& other) {
     ele += other.ele;
     return *this;
 }
-GpsEle::operator std::string() const {
-    std::ostringstream ss;
-    ss << (*this);
-    return ss.str();
+std::string GpsEle::format() const {
+    return fmt() << ele;
 }
+
 
 GpsTime& GpsTime::operator=(const GpsTimeUpd& other) {
-    mm = other.mm;
-    ss = other.ss;
+    time.tm_min = other.mm;
+    time.tm_sec = other.ss;
     return *this;
 }
-GpsTime::operator std::string() const {
-    std::ostringstream ss;
-    ss << (*this);
-    return ss.str();
-}
-
-std::ostream& operator<< (std::ostream& s, const GpsLocation& l) {
-    s << std::setprecision(15) << (double)l;
-    return s;
-}
-
-std::ostream& operator<< (std::ostream& s, const GpsEle& l) {
-    s << l.ele;
-    return s;
-}
-
-std::ostream& operator<< (std::ostream& s, const GpsTime& t) {
-    s << std::dec
-      << "20" << (int)t.YY << "-"  
-      << std::setfill('0') << std::setw(2) << (int)t.MM << "-" 
-      << std::setfill('0') << std::setw(2) << (int)t.DD << "T" 
-      << std::setfill('0') << std::setw(2) << (int)t.hh << ":" 
-      << std::setfill('0') << std::setw(2) << (int)t.mm << ":" 
-      << std::setfill('0') << std::setw(2) << (int)t.ss << "Z";
-    return s;
+std::string GpsTime::format() const {
+    return fmt() << put_time(&time, "%FT%TZ");
 }
 

@@ -50,7 +50,7 @@ void TcxWriter::onWatchEnd(const WatchInfo &) {
 }
 void TcxWriter::onWorkout(const WorkoutInfo &i)  {
     if (split_by_track) {
-        std::string fn = i.start_time;
+        std::string fn = i.start_time.format();
         fn += ".tcx";
         std::replace(fn.begin(), fn.end(), ':', '_');
         writer.open(fn);
@@ -63,9 +63,9 @@ void TcxWriter::onWorkout(const WorkoutInfo &i)  {
     current_wo = i;
     writer.startElement("Activity");
     writer.writeAttribute("Sport", "Other");
-    writer.writeElement("Id", i.start_time);
+    writer.writeElement("Id", i.start_time.format());
     writer.startElement("Lap");
-    writer.writeAttribute("StartTime", i.start_time);
+    writer.writeAttribute("StartTime", i.start_time.format());
     writer.writeElement("TotalTimeSeconds", "0");
     writer.writeElement("DistanceMeters", "0");
       {
@@ -77,7 +77,7 @@ void TcxWriter::onWorkout(const WorkoutInfo &i)  {
     writer.writeElement("TriggerMethod", "Manual");
 }
 void TcxWriter::onWorkoutEnd(const WorkoutInfo &)  { 
-    writer.writeElement("Notes", current_wo.start_time);
+    writer.writeElement("Notes", current_wo.start_time.format());
     writer.endElement("Lap");
     writer.endElement("Activity");
 
@@ -95,13 +95,13 @@ void TcxWriter::onTrackEnd(const TrackInfo&) {
 }
 void TcxWriter::onSample(const SampleInfo &i) { 
     writer.startElement("Trackpoint");
-    writer.writeElement("Time", i.time);
+    writer.writeElement("Time", i.time.format());
     if (i.fix != 0) {
         writer.startElement("Position");
-        writer.writeElement("LatitudeDegrees", i.lat);
-        writer.writeElement("LongitudeDegrees", i.lon);
+        writer.writeElement("LatitudeDegrees", i.lat.format());
+        writer.writeElement("LongitudeDegrees", i.lon.format());
         writer.endElement("Position");
-        writer.writeElement("AltitudeMeters", i.ele);
+        writer.writeElement("AltitudeMeters", i.ele.format());
     }
     if (i.hr != 0) {
         std::ostringstream ss;

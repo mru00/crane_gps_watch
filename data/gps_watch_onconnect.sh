@@ -17,7 +17,10 @@ serial_device=$1
 
 destdir=$HOME/Documents/TcxTracks
 mkdir -p $destdir
+mkdir -p $destdir/images
 cd $destdir
+
+now_fn=$(date +%F_%T | tr ':' '_')
 
 trap '{
 echo "failed to receive watch data";
@@ -28,7 +31,7 @@ sleep 1
 echo "importing data"
 echo
 
-crane_gps_watch_client --device $serial_device --verbose
+crane_gps_watch_client --device $serial_device --verbose --to_image ~/dev/crane_gps_watch_client/test/images/image-${now_fn}.bin
 
 
 echo

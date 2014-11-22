@@ -8,7 +8,8 @@ Developer: Rudolf Mühlbauer <mru@sisyphus.teil.cc>
 [![Build Status](https://travis-ci.org/mru00/crane_gps_watch.svg)](https://travis-ci.org/mru00/crane_gps_watch)
 
 
-Crane GPS Watch client is a client for downloading track files in [TCX  format](http://en.wikipedia.org/wiki/Training_Center_XML)
+Crane GPS Watch client is a Linux client for downloading track files in 
+[TCX  format](http://en.wikipedia.org/wiki/Training_Center_XML)
 from the following GPS watches.
 
 Supported Watches:
@@ -23,6 +24,8 @@ As the watch is commonly rebranded, the following Watches might just work:
 * [Runtastic Gps Watch](https://www.runtastic.com/shop/en/runtastic-gps-watch-with-heart-rate-monitor)
 * [Ultrasport NavRun 500](http://www.ebay.de/itm/Ultrasport-GPS-Pulsuhr-NavRun-500-Uhr-Watch-mit-Brustgurt-/301393562885)
 * [unknown model](http://www.ebay.de/itm/GPS-Uhr-mit-Herzfrequnzmessung-Kompass-PC-Download-Pulsuhr-NEU/300968440724)
+* [Ascen Smart GPS watch GPS300](http://forums.watchuseek.com/f296/new-comer-ascen-gps-watch-comprehensive-review-pics-630057.html)
+* [Tech4O Discover GPS](http://tech4o.shptron.com/p/discover-gps/tech4o_outdoor-multifunction_gps_discover-gps?pp=8)
 
 I guess that all GPS watches delivered with "GPS Master" software work.
 
@@ -34,6 +37,8 @@ The TCX format is used instead the popular GPX format, for the following reason:
 The GPS watch is able to record workouts where only heartrate is available, no GPS.
 It is not valid to create GPS records without coordinates. In TCX, this is possible.
 
+If you require a desire a different output format, have a look at [gpsbabel](http://www.gpsbabel.org/).
+The program can convert between many different formats.
 
 Disclaimer:
 -----------
@@ -129,8 +134,6 @@ If a file already exists, it will be overwritten.
 The `--device` option is used to specify the device file, default is '/dev/ttyUSB0'.
 
 
-Resulting track file in TCX format you can convert into GPX format 
-by means of [gpsbabel](http://www.gpsbabel.org/) or use TCX format as it is.
 
 Enjoy!
 
@@ -178,7 +181,7 @@ GPS Software:
 * [My Tourbook](http://mytourbook.sourceforge.net/mytourbook/) works great with the TCX files. I like it.
 * [Viking GPS data editor and analyzer](http://sourceforge.net/projects/viking/)
 * [Alternatives to My tourbook](http://alternativeto.net/software/my-tourbook/)
-
+* [gpsbabel](http://www.gpsbabel.org/)
 
 Technical links:
 

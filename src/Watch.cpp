@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <vector>
 #include <iomanip>
+#include <stdexcept>
 
 #include <cassert>
 
@@ -45,15 +46,12 @@ void Watch::parseGpsTimeUpd(GpsTimeUpd& t, WatchMemoryBlock::mem_it_t it) {
     t.ss = *it++;
 }
 void Watch::parseGpsTime(GpsTime& t, WatchMemoryBlock::mem_it_t it) {
-    t.YY = *it++;
-    t.MM = *it++;
-    t.DD = *it++;
-    t.hh = *it++;
-    t.mm = *it++;
-    t.ss = *it++;
-#ifdef DEBUG
-    assert (t.YY == 14);
-#endif
+    t.time.tm_year = 100 + *it++;
+    t.time.tm_mon = *it++ - 1;
+    t.time.tm_mday = *it++;
+    t.time.tm_hour = *it++;
+    t.time.tm_min = *it++;
+    t.time.tm_sec = *it++;
 }
 void Watch::parseSample(SampleInfo& si, WatchMemoryBlock::mem_it_t& it) {
 
@@ -135,7 +133,7 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
     WatchMemoryBlock::mem_it_t it = cb.memory.begin();
 
     wo.nsamples = *it++;  // [0..1]
-    wo.nsamples+= *it++ << 8;
+    wo.nsamples+= (*it++) << 8;
 
     wo.lapcount = *it++;  // [2]
 
@@ -143,6 +141,12 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
     std::vector<unsigned char> reverse_time(6);
     std::reverse_copy(it, it +6, reverse_time.begin());
     parseGpsTime(wo.start_time, reverse_time.begin());
+
+
+    // [9..11] workout time
+    std::reverse_copy(it+6, it +9, reverse_time.begin()+3);
+    parseGpsTime(wo.workout_time, reverse_time.begin());
+
     it += 6;
 
     it += 3; // total workout time [9..12]
@@ -169,19 +173,36 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
     unsigned idx_wo = 0;
     unsigned idx_track = 0;
     bool has_full_fix = false;
-    for (unsigned i =0; i< wo.nsamples;i++) {
+
+
+    for (unsigned i =0; /*i< wo.nsamples*/;i++) {
+
+        assert (it < cb.memory.end());
         SampleInfo si;
         parseSample(si, it);
         idx_wo ++;
         idx_track++;
 
+
         if (si.type == SampleInfo::Full || si.type == SampleInfo::HrOnly) {
             t = si.time;
         }
         else if (si.type == SampleInfo::Diff || si.type == SampleInfo::TimeOnly) {
+            // special case: minute overrun. 
+            // this condition is probably incorrect.
+            // XXX find a proper way to fix this
+            // it helps in a lot of cases
+            // DST is not covered by this, is DST really a problem: to be confirmed
+            if (si.time_upd.mm < t.time.tm_min) {
+                t.time.tm_hour ++;
+                // mktime fixes clock info, 
+                // 23:50 + 1h = 24:50; mktime increments day automatically.
+                mktime(&t.time);
+            }
             si.time = (t = si.time_upd);
         }
         else if (si.type == SampleInfo::End) {
+            std::cerr << "  premature end of samples, expected=" << wo.nsamples << " actual=" << idx_wo << " block=" << (int)(it - cb.memory.begin())/0x1000 << std::endl;
             break;
         }
 
@@ -278,12 +299,17 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
         br.onSample(si);
 
     }
+    
+    std::cout << "nb: " << (int)*it << std::endl;
 
     if (track_active) {
 
         TrackInfo i;
         br.onTrackEnd(i);
     }
+
+
+    br.onWorkoutEnd(wo);
 }
 void Watch::parseBlock0() {
 
@@ -296,17 +322,28 @@ void Watch::parseBlock0() {
 
     WatchMemoryBlock::mem_it_t mem_it = mb.memory.begin();
     
+    unsigned char cs = *mem_it;
+    unsigned char cs_v = *(mem_it+1);
+    if ( cs != (unsigned char)(~cs_v) ) {
+        throw std::runtime_error ("checksum mismatch");
+    }
+
+    wi.timezone = *(mem_it + 3);
+    wi.sample_interval = *(mem_it + 14);
+    wi.selected_profile = *(mem_it + 0x10+10);
     
     mem_it += 0x60;
     wi.firmware.resize(16, '\0');
     std::copy(mem_it, mem_it+16, wi.firmware.begin());
 
+
+
     br.onWatch(wi);
-
-
 
     mem_it = mb.memory.begin() + 0x100;
     for (;;) {
+        std::ostringstream ss;
+
         unsigned char cur;
         unsigned char first;
         cur = first = *mem_it++;
@@ -314,12 +351,15 @@ void Watch::parseBlock0() {
             break;
         }
 
+        ss << (int)cur;
         while (*mem_it != 0xff) {
             cur = *mem_it++;
+            ss << "," << (int)cur;
         }
+
         WorkoutInfo wo;
+        wo.toc = ss.str();
         parseWO(wo, first, 1+cur-first);
-        br.onWorkoutEnd(wo);
         ++mem_it;
     }
 

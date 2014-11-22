@@ -23,5 +23,6 @@ class DebugWriter : public Callback {
     void onReadBlock(int id, int addr, unsigned char*, size_t) override;
   private:
     int debug_level;
-    int wo_with_coord;
+    int wo_samples_with_coord, wo_samples;
+    double diff_acc;
 };
