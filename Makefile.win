@@ -7,7 +7,7 @@ WINDRES = windres.exe
 RES  = 
 OBJ  = src/crane_gps_watch_client.o src/DataTypes.o src/DebugWriter.o src/GpsLint.o src/ImageLink.o src/ImageWriter.o src/MemoryBlock.o src/SerialLink.o src/Watch.o Y:/crane_gps_watch_client/src/XmlFileWriter.o Y:/crane_gps_watch_client/src/TcxWriter.o Y:/crane_gps_watch_client/src/charProps.o Y:/crane_gps_watch_client/src/genx.o $(RES)
 LINKOBJ  = src/crane_gps_watch_client.o src/DataTypes.o src/DebugWriter.o src/GpsLint.o src/ImageLink.o src/ImageWriter.o src/MemoryBlock.o src/SerialLink.o src/Watch.o Y:/crane_gps_watch_client/src/XmlFileWriter.o Y:/crane_gps_watch_client/src/TcxWriter.o Y:/crane_gps_watch_client/src/charProps.o Y:/crane_gps_watch_client/src/genx.o $(RES)
-LIBS =  -L"C:/MinGW/lib"  -g3 
+LIBS =  -L"C:/MinGW/lib" -static-libstdc++ -static-libgcc  -g3 
 INCS =  -I"C:/MinGW/include" 
 CXXINCS =  -I"C:/MinGW/include" 
 BIN  = crane_gps_watch_client.exe
@@ -26,41 +26,41 @@ clean: clean-custom
 $(BIN): $(OBJ)
 	$(CPP) $(LINKOBJ) -o "crane_gps_watch_client.exe" $(LIBS)
 
-src/crane_gps_watch_client.o: src/crane_gps_watch_client.cpp
+src/crane_gps_watch_client.o: src/crane_gps_watch_client.cpp  src/DataTypes.hpp src/Callback.hpp src/TcxWriter.hpp  src/XmlFileWriter.hpp src/genx.h src/DebugWriter.hpp src/GpsLint.hpp  src/ImageWriter.hpp src/Watch.hpp src/DeviceInterface.hpp  src/MemoryBlock.hpp src/SerialLink.hpp src/ImageLink.hpp
 	$(CPP) -c src/crane_gps_watch_client.cpp -o src/crane_gps_watch_client.o $(CXXFLAGS)
 
-src/DataTypes.o: src/DataTypes.cpp
+src/DataTypes.o: src/DataTypes.cpp src/DataTypes.hpp
 	$(CPP) -c src/DataTypes.cpp -o src/DataTypes.o $(CXXFLAGS)
 
-src/DebugWriter.o: src/DebugWriter.cpp
+src/DebugWriter.o: src/DebugWriter.cpp src/DataTypes.hpp src/DebugWriter.hpp  src/Callback.hpp
 	$(CPP) -c src/DebugWriter.cpp -o src/DebugWriter.o $(CXXFLAGS)
 
-src/GpsLint.o: src/GpsLint.cpp
+src/GpsLint.o: src/GpsLint.cpp src/DataTypes.hpp src/GpsLint.hpp  src/Callback.hpp
 	$(CPP) -c src/GpsLint.cpp -o src/GpsLint.o $(CXXFLAGS)
 
-src/ImageLink.o: src/ImageLink.cpp
+src/ImageLink.o: src/ImageLink.cpp src/ImageLink.hpp src/DeviceInterface.hpp
 	$(CPP) -c src/ImageLink.cpp -o src/ImageLink.o $(CXXFLAGS)
 
-src/ImageWriter.o: src/ImageWriter.cpp
+src/ImageWriter.o: src/ImageWriter.cpp src/DataTypes.hpp src/ImageWriter.hpp  src/Callback.hpp
 	$(CPP) -c src/ImageWriter.cpp -o src/ImageWriter.o $(CXXFLAGS)
 
-src/MemoryBlock.o: src/MemoryBlock.cpp
+src/MemoryBlock.o: src/MemoryBlock.cpp src/MemoryBlock.hpp
 	$(CPP) -c src/MemoryBlock.cpp -o src/MemoryBlock.o $(CXXFLAGS)
 
-src/SerialLink.o: src/SerialLink.cpp
+src/SerialLink.o: src/SerialLink.cpp src/SerialLink.hpp  src/DeviceInterface.hpp
 	$(CPP) -c src/SerialLink.cpp -o src/SerialLink.o $(CXXFLAGS)
 
-src/Watch.o: src/Watch.cpp
+src/Watch.o: src/Watch.cpp src/DataTypes.hpp src/MemoryBlock.hpp  src/Callback.hpp src/Watch.hpp src/DeviceInterface.hpp
 	$(CPP) -c src/Watch.cpp -o src/Watch.o $(CXXFLAGS)
 
-Y:/crane_gps_watch_client/src/XmlFileWriter.o: Y:/crane_gps_watch_client/src/XmlFileWriter.cpp
+Y:/crane_gps_watch_client/src/XmlFileWriter.o: Y:/crane_gps_watch_client/src/XmlFileWriter.cpp  Y:/crane_gps_watch_client/src/XmlFileWriter.hpp  Y:/crane_gps_watch_client/src/genx.h
 	$(CPP) -c Y:/crane_gps_watch_client/src/XmlFileWriter.cpp -o Y:/crane_gps_watch_client/src/XmlFileWriter.o $(CXXFLAGS)
 
-Y:/crane_gps_watch_client/src/TcxWriter.o: Y:/crane_gps_watch_client/src/TcxWriter.cpp
+Y:/crane_gps_watch_client/src/TcxWriter.o: Y:/crane_gps_watch_client/src/TcxWriter.cpp  Y:/crane_gps_watch_client/src/DataTypes.hpp  Y:/crane_gps_watch_client/src/Callback.hpp  Y:/crane_gps_watch_client/src/TcxWriter.hpp  Y:/crane_gps_watch_client/src/XmlFileWriter.hpp  Y:/crane_gps_watch_client/src/genx.h
 	$(CPP) -c Y:/crane_gps_watch_client/src/TcxWriter.cpp -o Y:/crane_gps_watch_client/src/TcxWriter.o $(CXXFLAGS)
 
-Y:/crane_gps_watch_client/src/charProps.o: Y:/crane_gps_watch_client/src/charProps.c
+Y:/crane_gps_watch_client/src/charProps.o: Y:/crane_gps_watch_client/src/charProps.c  Y:/crane_gps_watch_client/src/genx.h
 	$(CPP) -c Y:/crane_gps_watch_client/src/charProps.c -o Y:/crane_gps_watch_client/src/charProps.o $(CXXFLAGS)
 
-Y:/crane_gps_watch_client/src/genx.o: Y:/crane_gps_watch_client/src/genx.c
+Y:/crane_gps_watch_client/src/genx.o: Y:/crane_gps_watch_client/src/genx.c  Y:/crane_gps_watch_client/src/genx.h
 	$(CPP) -c Y:/crane_gps_watch_client/src/genx.c -o Y:/crane_gps_watch_client/src/genx.o $(CXXFLAGS)

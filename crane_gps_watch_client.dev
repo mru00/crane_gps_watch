@@ -12,7 +12,7 @@ ResourceIncludes=
 MakeIncludes=
 Compiler=
 CppCompiler=-std=c++11_@@_
-Linker=
+Linker=-static-libstdc++_@@_-static-libgcc_@@_
 IsCpp=1
 Icon=
 ExeOutput=
