@@ -1,8 +1,4 @@
 // Copyright (C) 2014 mru@sisyphus.teil.cc
-//
-// linux client for crane gps watch, runtastic gps watch.
-//
-
 
 
 #include <stack>
@@ -11,8 +7,8 @@
 #include <iostream>
 #include <sstream>
 
-
 #include "XmlFileWriter.hpp"
+
 
 unsigned char* get_str(const std::string& str) {
     return (unsigned char*) str.c_str();
@@ -31,6 +27,7 @@ XmlFileWriter::~XmlFileWriter() {
 void XmlFileWriter::open(const std::string& filename) {
     std::cerr << "XmlFileWriter: writing to " << filename << std::endl;
     wf = fopen(filename.c_str(), "w");
+    fprintf(wf, "<?xml version=\"1.0\"?>\n");
     w = genxNew(NULL, NULL, NULL);
 }
 
@@ -39,8 +36,8 @@ bool XmlFileWriter::isOpen() {
 }
 
 void XmlFileWriter::close() {
-    if (isOpen()) {
-        //throw std::runtime_error("Protocol mismatch: closing already closed XML document");
+    if (!isOpen()) {
+        throw std::runtime_error("Protocol mismatch: closing already closed XML document");
     }
     genxDispose(w);
     fclose(wf);
@@ -48,7 +45,7 @@ void XmlFileWriter::close() {
     w = nullptr;
 }
 
-void XmlFileWriter::startDocument(const std::string& encoding) {
+void XmlFileWriter::startDocument(const std::string&) {
     genxStartDocFile(w, wf);
 }
 void XmlFileWriter::endDocument() {
