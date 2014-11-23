@@ -15,9 +15,11 @@ before_install:
   - sudo apt-get -qq update
 install:
 # install a proper compiler, c++11 is required
+  - sudo apt-cache search automake
   - sudo apt-get -qq install automake build-essential autoconf m4 gnulib
   - sudo apt-get -qq install gcc-4.8 g++-4.8
   - dpkg -l 'automake*'
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
   - g++ --version
   - automake --version
