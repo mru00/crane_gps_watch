@@ -1,0 +1,24 @@
+@echo off
+rem Copyright (C) 2014 mru@sisyphus.teil.cc
+
+rem Start the client in a pre-defined directory
+
+
+echo.
+echo Starting import
+echo.
+
+rem start the client
+"C:\Program Files\crane_gps_watch_client 0.2\crane_gps_watch_client.exe" --split --verbose --device COM3
+
+
+start .
+
+
+echo.
+echo Finished
+echo.
+
+rem keep window open
+pause
+

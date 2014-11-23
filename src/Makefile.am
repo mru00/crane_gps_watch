@@ -19,9 +19,10 @@ MOSTLYCLEANFILES = *.tcx
 
 
 # gps_watch_monitor.py:
-bin_SCRIPTS = gps_watch_monitor.py setup.ss
+bin_SCRIPTS = gps_watch_monitor.py
 CLEANFILES = $(bin_SCRIPTS)
-EXTRA_DIST = gps_watch_monitor.py.in setup.ss.in
+EXTRA_DIST = gps_watch_monitor.py.in
+
 
 
 do_subst = sed \
@@ -39,6 +40,9 @@ gps_watch_monitor.py: $(srcdir)/gps_watch_monitor.py.in
 	$(do_subst) < $< > $@
 	chmod +x $@
 
+if CROSS_COMPILING
+all: setup.ss
 setup.ss: $(srcdir)/setup.ss.in
 	$(do_subst) < $< > $@
+endif
 

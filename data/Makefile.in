@@ -14,6 +14,8 @@
 
 @SET_MAKE@
 
+# Copyright (C) 2014 mru@sisyphus.teil.cc
+
 
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
@@ -488,6 +490,10 @@ uninstall-am: uninstall-dist_pkgdataDATA uninstall-dist_pkgdataSCRIPTS
 	pdf-am ps ps-am tags-am uninstall uninstall-am \
 	uninstall-dist_pkgdataDATA uninstall-dist_pkgdataSCRIPTS
 
+
+@CROSS_COMPILING_TRUE@all: start_watch_client.bat
+@CROSS_COMPILING_TRUE@start_watch_client.bat: $(srcdir)/start_watch_client.bat.in
+@CROSS_COMPILING_TRUE@	unix2dos -n $< $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

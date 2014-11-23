@@ -25,20 +25,24 @@ void DebugWriter::onWatchEnd(const WatchInfo &) {
     std::cout << "watch end" << std::endl;
 }
 void DebugWriter::onWorkout(const WorkoutInfo &i)  {
-    std::cout << " workout info"
+    std::cout 
+      << std::endl
+      << " workout info"
       << " t=" << i.start_time.format()
       << " d=" << put_time(&i.workout_time.time, "%H:%M:%S") << "=" << i.workout_time.time.tm_hour*60*60 + i.workout_time.time.tm_min*60 +i.workout_time.time.tm_sec
       << " nsamples=" << i.nsamples << "=0x" << std::hex << i.nsamples << std::dec
-      << " toc=" << i.toc
+      //<< " toc=" << i.toc
       << std::endl;
     wo_samples_with_coord = wo_samples = 0;
 }
 void DebugWriter::onWorkoutEnd(const WorkoutInfo &i) {
-    std::cout << " workout end"
+    std::cout 
+      << " workout end"
       << " samples with gps=" << wo_samples_with_coord
       << " samples=" << wo_samples
       << " avg_time_diff=" << diff_acc/(wo_samples-1)
       << " d=" << i.nsamples*diff_acc/(wo_samples-1)
+      << std::endl
       << std::endl;
 }
 void DebugWriter::onTrack(const TrackInfo &)  {
@@ -48,7 +52,7 @@ void DebugWriter::onTrackEnd(const TrackInfo &)  {
     std::cout << "  track end" << std::endl;
 }
 void DebugWriter::onSample(const SampleInfo &i) {
-    if (i.idx_track == 1 || debug_level > 1) {
+    if (debug_level > 1) {
         std::cout << "   sample info: " 
           << " idx_wo=" << (int)i.idx_wo
           << " idx_track=" << (int)i.idx_track

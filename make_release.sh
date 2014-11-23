@@ -6,6 +6,14 @@ readonly releasedir=release
 readonly iscc="$HOME/.wine/drive_c/Program Files/Inno Setup 5/ISCC.exe"
 
 
+if [[ -e $iscc ]]; then
+  echo "using innosetup compiler at $iscc"
+else
+  echo "inno setup compiler not found"
+  exit 1
+fi
+
+
 release() {
   local title=$1
   local config="$2"
@@ -36,3 +44,5 @@ release win-i686 "--host i686-w64-mingw32 --build i686-pc-linux-gnu"
 release win-x86_64 "--host x86_64-w64-mingw32 --build i686-pc-linux-gnu"
 release linux-i686 ""
 
+
+echo done

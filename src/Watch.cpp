@@ -202,7 +202,7 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
             si.time = (t = si.time_upd);
         }
         else if (si.type == SampleInfo::End) {
-            std::cerr << "  premature end of samples, expected=" << wo.nsamples << " actual=" << idx_wo << " block=" << (int)(it - cb.memory.begin())/0x1000 << std::endl;
+            //std::cerr << "  premature end of samples, expected=" << wo.nsamples << " actual=" << idx_wo << " block=" << (int)(it - cb.memory.begin())/0x1000 << std::endl;
             break;
         }
 

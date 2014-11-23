@@ -7,12 +7,18 @@ AppContact=@PACKAGE_BUGREPORT@
 AppSupportURL=@PACKAGE_URL@
 AppPublisher=mru@sisyphus.teil.cc
 AppPublisherURL=@PACKAGE_URL@
+DefaultGroupName=Gps watch
 
 
 DefaultDirName={pf}\@PACKAGE_STRING@
 
 [Files]
 Source: "crane_gps_watch_client.exe"; DestDir: "{app}"
-;Source: "..\README.md"; DestDir: "{app}"; Flags: isreadme
+Source: "..\data\start_watch_client.bat"; DestDir: "{app}";
 
+[Icons]
+Name: "{group}\Import watch data"; Filename: "{app}\start_watch_client.bat"; WorkingDir: "{userdocs}\Watch data"; Flags: runmaximized
+
+[Dirs]
+Name: "{userdocs}\Watch data"
 
