@@ -21,14 +21,14 @@ install:
 # install a proper compiler, c++11 is required
   - sudo apt-cache search automake
   - sudo apt-get install -y automake build-essential autoconf m4 gnulib
-  - sudo apt-get -qq install -y gcc-4.8 g++-4.8
+  - sudo apt-get install -y gcc-4.8 g++-4.8
   - dpkg -l 'automake*'
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
   - g++ --version
   - automake --version
 # xmllint etc, required for 'make check'
-  - sudo apt-get -qq install -y libxml2-utils
+  - sudo apt-get install -y libxml2-utils
 # windows cross compiler
-  - sudo apt-get -qq install -y wine binutils-mingw-w64-i686 gcc-mingw-w64-i686 g++-mingw-w64-i686
+  - sudo apt-get install -y wine binutils-mingw-w64-i686 gcc-mingw-w64-i686 g++-mingw-w64-i686
 
