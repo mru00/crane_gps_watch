@@ -1,7 +1,7 @@
 #! /bin/bash -xeu
 
-pwd
+source ${srcdir}/common.sh
 
-! $TEST_BINARY --output 006_out --device file-probably-does-not-exist
+! $bin --output 006_out --device file-probably-does-not-exist
 
-! $TEST_BINARY --output 006_out --device ${srcdir}/image.bin
+! $bin --output 006_out --device ${srcdir}/image.bin

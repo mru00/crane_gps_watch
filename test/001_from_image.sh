@@ -1,8 +1,8 @@
 #! /bin/bash -xeu
 
-pwd
+source ${srcdir}/common.sh
 
-$TEST_BINARY --out 001_output.tcx --from_image ${srcdir}/image.bin
+$bin --out 001_output.tcx --from_image ${srcdir}/image.bin
 
 xmllint --schema ${srcdir}/TrainingCenterDatabasev2.xsd --noout 001_output.tcx
 

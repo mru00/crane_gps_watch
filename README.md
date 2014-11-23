@@ -1,9 +1,8 @@
 Crane GPS Watch client v.0.1 (crane_gps_watch_client)
 =====================================================
-16 November 2014
 
+Copyright (C) 2014 Rudolf Mühlbauer <mru@sisyphus.teil.cc>
 
-Developer: Rudolf Mühlbauer <mru@sisyphus.teil.cc>
 
 [![Build Status](https://travis-ci.org/mru00/crane_gps_watch.svg)](https://travis-ci.org/mru00/crane_gps_watch)
 
@@ -85,24 +84,24 @@ Installation:
 
 Crane GPS Watch client uses make to build:
 
-1. Clone source code archive from githup repo:
-
+	# Clone source code archive from githup repo:
 	git clone https://github.com/mru00/crane_gps_watch.git
-    
-
-or download Zip file:
-
+	
+	# or download Zip file:
+	
 	wget https://github.com/mru00/crane_gps_watch/archive/master.zip
 	unzip master.zip
-
-2. cd to unpacking directory
-3. build the software 
-
-	./configure && make
-
-4. install
-
+	
+	
+	cd crane_gps_watch_client
+	
+	# build the software
+	./configure
+	make
+	
+	# install the software
 	sudo make install
+
 
 
 `make check` can be used to run the test suite. The test suite requires 
@@ -111,18 +110,21 @@ additional programs to be installed: `xmllint` from `libxml2-utils`.
 See INSTALL for details. Note that it is possible to install without root rights, use the `./configure --prefix=...` option.
 
 
-Please also have a look at `.travis.yml`, which describes a full build for the [Travis-CI](https://travis-ci.org/mru00/crane_gps_watch) platform.
+Please also have a look at `.travis.yml`, which describes a full build for the 
+[Travis-CI](https://travis-ci.org/mru00/crane_gps_watch) platform, including all dependencies.
 
 
-Cross Compilation for windows:
+Cross compilation for windows:
 ------------------------------
 
-The program also works under windows. Either compile under windows using MinGW, 
-or cross-compile under Linux.
+
+The program also works under windows. 
+Windows installers are available in the `release` directory.
 
 The program works using Wine, except access to the com port. The testsuite on Travis
 also builds and checks the windows executable with the same testcases.
 
+To build for windows, use `mingw-w64`:
 
 	sudo apt-get install mingw-w64
 	./configure --host i686-w64-mingw32 --build i686-linux-pc
@@ -152,7 +154,7 @@ Default is to write a single .tcx file that contains all tracks. When this optio
 is ignored. The files are written in the current directory. The filename is taken from the start time of the workout track.
 If a file already exists, it will be overwritten.
 
-The `--device` option is used to specify the device file, default is '/dev/ttyUSB0'.
+The `--device` option is used to specify the device file, default is '/dev/ttyUSB0' (linux) or 'COM3' (windows).
 
 
 
@@ -184,14 +186,7 @@ to your home as: `~/.gps_watch_onconnect.sh` and
 modify it to your needs.
 
 
-Version History:
-----------------
 
-	0.1:	:initial release.
-
-
-
-Uses [genx xml library](http://www.tbray.org/ongoing/When/200x/2004/02/20/GenxStatus).
 
 See Also:
 ---------
@@ -214,3 +209,9 @@ Similar projects:
 
 * [Kalenji gps watch reader](https://code.google.com/p/kalenji-gps-watch-reader), support for W Kalenji 300, CW Kalenji 700, On Move 500, On Move 700, Kaymaze 700
 * [crane-gps-watch](https://github.com/mru00/GpsWatch), reverse engineering repository of this project, written in perl, easy to hack&test stuff.
+
+
+Uses:
+* [genx xml library](http://www.tbray.org/ongoing/When/200x/2004/02/20/GenxStatus).
+* Inno setup
+

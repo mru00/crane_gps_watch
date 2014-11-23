@@ -1,10 +1,10 @@
 #! /bin/bash -xeu
 
-pwd
+source ${srcdir}/common.sh
 
-$TEST_BINARY --from_image ${srcdir}/image.bin --split
+$bin --from_image ${srcdir}/image.bin --split
 
-for f in 2014*.tcx; do
+for f in *.tcx; do
   xmllint --schema ${srcdir}/TrainingCenterDatabasev2.xsd --noout $f
 done
 

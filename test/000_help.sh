@@ -1,4 +1,6 @@
 #! /bin/bash -xeu
 
-$TEST_BINARY --help
+source ${srcdir}/common.sh
+
+$bin --help
 

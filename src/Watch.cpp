@@ -300,10 +300,7 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
 
     }
     
-    std::cout << "nb: " << (int)*it << std::endl;
-
     if (track_active) {
-
         TrackInfo i;
         br.onTrackEnd(i);
     }

@@ -328,7 +328,7 @@ MOSTLYCLEANFILES = *.tcx
 # gps_watch_monitor.py:
 bin_SCRIPTS = gps_watch_monitor.py
 CLEANFILES = $(bin_SCRIPTS)
-EXTRA_DIST = gps_watch_monitor.py.in
+EXTRA_DIST = gps_watch_monitor.py.in setup.ss.in
 do_subst = sed \
  -e 's,[@]datadir[@],$(datadir),g' \
  -e 's,[@]PACKAGE[@],$(PACKAGE),g' \

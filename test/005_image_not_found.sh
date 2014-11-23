@@ -1,6 +1,6 @@
 #! /bin/bash -xeu
 
-pwd
+source ${srcdir}/common.sh
 
-! $TEST_BINARY --output 005_out --from_image file-probably-does-not-exist
+! $bin --output 005_out --from_image file-probably-does-not-exist
 

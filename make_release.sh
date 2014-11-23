@@ -1,9 +1,11 @@
 #! /bin/bash -xeu
+# Copyright (C) 2014 mru@sisyphus.teil.cc
 
 
 readonly topdir=$(readlink -f $(dirname $0))
 readonly releasedir=release
 readonly iscc="$HOME/.wine/drive_c/Program Files/Inno Setup 5/ISCC.exe"
+readonly build_cpu=$(uname -m)
 
 
 if [[ -e $iscc ]]; then
@@ -25,8 +27,8 @@ release() {
   $topdir/configure $config
   make -j 10
   # only run test suite if architecture matches current architecture
-  if [[ $title =~ $(uname -m) ]]; then
-    make check
+  if [[ $title =~ $build_cpu ]]; then
+    make check -j 10
   fi
   if [[ $title =~ win ]]; then
     "$iscc" src/setup.ss
@@ -40,8 +42,8 @@ rm -rf $releasedir
 mkdir $releasedir
 
 
-release win-i686 "--host i686-w64-mingw32 --build i686-pc-linux-gnu"
-release win-x86_64 "--host x86_64-w64-mingw32 --build i686-pc-linux-gnu"
+release win-i686 "--host i686-w64-mingw32 --build ${build_cpu}-pc-linux-gnu"
+release win-x86_64 "--host x86_64-w64-mingw32 --build ${build_cpu}-pc-linux-gnu"
 release linux-i686 ""
 
 
