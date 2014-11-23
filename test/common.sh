@@ -4,6 +4,7 @@
 bin=$(readlink -f $TEST_BINARY)
 testname=$(basename $0)
 workdir=$(readlink -f .)/${testname}_wd
+srcdir_abs=$(readlink -f $srcdir)
 
 # create working directory, clear automatically on exit
 mkdir -p $workdir
