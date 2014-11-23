@@ -8,7 +8,7 @@ script:
   - sudo make install
 # cross compile for windows
   - make maintainer-clean
-  - ./configure --host i686-w64-mingw32 --build i686-linux-pc
+  - ./configure --host i686-w64-mingw32 --build i686-pc-linux-gnu
   - make check
 before_install:
 # update apt sources, i want a recent automake!
