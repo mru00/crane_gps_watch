@@ -10,7 +10,6 @@ config.h
 
 autom4te.cache
 config.status
-configure.scan
 src/Makefile
 Makefile
 stamp-h1
@@ -18,4 +17,8 @@ stamp-h1
 
 test/*.trs
 test/*.log
+
+release/win-i686
+release/win-x86_64
+release/linux-i686
 

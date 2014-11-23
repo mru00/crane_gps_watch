@@ -29,6 +29,13 @@ As the watch is commonly rebranded, the following Watches might just work:
 I guess that all GPS watches delivered with "GPS Master" software work.
 
 
+[Krippl Watches](http://www.krippl-watches.com/en/wrist-watch/) is probably the importer/brander of the Crane watch.
+The site lists several other re-brands of the GPS watch:
+* ASCOT
+* TWINS
+* Runtastic
+
+
 Output format:
 --------------
 
