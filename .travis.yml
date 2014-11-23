@@ -12,6 +12,7 @@ script:
   - make check
 before_install:
   - sudo cat /etc/apt/sources.list
+  - sudo sh -c 'echo "deb http://us.archive.ubuntu.com/ubuntu/ trusty main" >> /etc/apt/sources.list'
   - sudo sh -c 'echo "deb http://us.archive.ubuntu.com/ubuntu/ trusty universe" >> /etc/apt/sources.list'
   - sudo cat /etc/apt/sources.list
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
