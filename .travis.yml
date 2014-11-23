@@ -6,20 +6,22 @@ script:
   - make 
   - make check
   - sudo make install
-  - make maintainer-clean
 # cross compile for windows
+  - make maintainer-clean
   - ./configure --host i686-w64-mingw32 --build i686-linux-pc
   - make check
 before_install:
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get -qq update
 install:
+# install a proper compiler, c++11 is required
+  - sudo apt-get -qq install automake build-essential autoconf m4 gnulib
   - sudo apt-get -qq install gcc-4.8 g++-4.8
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
+  - g++ --version
+  - automake --version
 # xmllint etc, required for 'make check'
   - sudo apt-get -qq install libxml2-utils
 # windows cross compiler
   - sudo apt-get install wine binutils-mingw-w64-i686 gcc-mingw-w64-i686 g++-mingw-w64-i686
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
-  - g++ --version
-  - automake --version
 
