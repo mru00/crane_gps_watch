@@ -11,24 +11,21 @@ script:
   - ./configure --host i686-w64-mingw32 --build i686-linux-pc
   - make check
 before_install:
-  - sudo cat /etc/apt/sources.list
+# update apt sources, i want a recent automake!
   - sudo sh -c 'echo "deb http://us.archive.ubuntu.com/ubuntu/ trusty main" >> /etc/apt/sources.list'
   - sudo sh -c 'echo "deb http://us.archive.ubuntu.com/ubuntu/ trusty universe" >> /etc/apt/sources.list'
-  - sudo cat /etc/apt/sources.list
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update
 install:
 # install a proper compiler, c++11 is required
-  - sudo apt-cache search automake
   - sudo apt-get install -y automake build-essential autoconf m4 gnulib
   - sudo apt-get install -y gcc-4.8 g++-4.8
-  - dpkg -l 'automake*'
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
   - g++ --version
   - automake --version
 # xmllint etc, required for 'make check'
   - sudo apt-get install -y libxml2-utils
-# windows cross compiler
+# windows cross compiler + wine for 'make check'
   - sudo apt-get install -y wine binutils-mingw-w64-i686 gcc-mingw-w64-i686 g++-mingw-w64-i686
 

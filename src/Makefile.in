@@ -79,6 +79,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+build_triplet = @build@
+host_triplet = @host@
 bin_PROGRAMS = crane_gps_watch_client$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -108,7 +110,7 @@ am_crane_gps_watch_client_OBJECTS =  \
 	crane_gps_watch_client-Watch.$(OBJEXT) genx.$(OBJEXT) \
 	charProps.$(OBJEXT)
 crane_gps_watch_client_OBJECTS = $(am_crane_gps_watch_client_OBJECTS)
-crane_gps_watch_client_DEPENDENCIES =
+crane_gps_watch_client_LDADD = $(LDADD)
 crane_gps_watch_client_LINK = $(CXXLD) \
 	$(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) \
 	$(crane_gps_watch_client_LDFLAGS) $(LDFLAGS) -o $@
@@ -273,14 +275,22 @@ am__quote = @am__quote@
 am__tar = @am__tar@
 am__untar = @am__untar@
 bindir = @bindir@
+build = @build@
 build_alias = @build_alias@
+build_cpu = @build_cpu@
+build_os = @build_os@
+build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
+host = @host@
 host_alias = @host_alias@
+host_cpu = @host_cpu@
+host_os = @host_os@
+host_vendor = @host_vendor@
 htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
@@ -312,15 +322,24 @@ crane_gps_watch_client_SOURCES = crane_gps_watch_client.cpp \
  DebugWriter.hpp DataTypes.hpp MemoryBlock.hpp ImageLink.hpp SerialLink.hpp TcxWriter.hpp Watch.hpp
 
 crane_gps_watch_client_CXXFLAGS = -Wall -Wextra
-crane_gps_watch_client_LDADD = 
 @CROSS_COMPILING_TRUE@crane_gps_watch_client_LDFLAGS = -static-libgcc -static-libstdc++ -static
 MOSTLYCLEANFILES = *.tcx
 
 # gps_watch_monitor.py:
-bin_SCRIPTS = gps_watch_monitor.py
+bin_SCRIPTS = gps_watch_monitor.py setup.ss
 CLEANFILES = $(bin_SCRIPTS)
-EXTRA_DIST = gps_watch_monitor.py.in
-do_subst = sed -e 's,[@]datadir[@],$(datadir),g' -e 's,[@]PACKAGE[@],$(PACKAGE),g' -e 's,[@]PKGDATADIR[@],$(pkgdatadir),g'
+EXTRA_DIST = gps_watch_monitor.py.in setup.ss.in
+do_subst = sed \
+ -e 's,[@]datadir[@],$(datadir),g' \
+ -e 's,[@]PACKAGE[@],$(PACKAGE),g' \
+ -e 's,[@]PACKAGE_VERSION[@],$(PACKAGE_VERSION),g' \
+ -e 's,[@]PACKAGE_STRING[@],$(PACKAGE_STRING),g' \
+ -e 's,[@]PACKAGE_URL[@],$(PACKAGE_URL),g' \
+ -e 's,[@]PACKAGE_BUGREPORT[@],$(PACKAGE_BUGREPORT),g' \
+ -e 's,[@]PACKAGE_COPYRIGHT[@],mru@sisyphus.teil.cc,g' \
+ -e 's,[@]PKGDATADIR[@],$(pkgdatadir),g' \
+ -e 's,[@]HOST_CPU[@],$(host_cpu),g'
+
 all: all-am
 
 .SUFFIXES:
@@ -849,6 +868,9 @@ uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS
 gps_watch_monitor.py: $(srcdir)/gps_watch_monitor.py.in
 	$(do_subst) < $< > $@
 	chmod +x $@
+
+setup.ss: $(srcdir)/setup.ss.in
+	$(do_subst) < $< > $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

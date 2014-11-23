@@ -24,44 +24,34 @@
 #include "SerialLink.hpp"
 
 
-#ifdef __MINGW32__
 std::string formatLastError(const std::string& msg) {
 
+    std::ostringstream ss;
+#ifdef __MINGW32__
     LPVOID lpMsgBuf;
 
     FormatMessage(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-        FORMAT_MESSAGE_FROM_SYSTEM |
-        FORMAT_MESSAGE_IGNORE_INSERTS,
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
         NULL,
         ::GetLastError(),
         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
         (LPTSTR) &lpMsgBuf,
         0, NULL );
 
-    std::ostringstream ss;
     ss << msg << ": " << (char*)lpMsgBuf;
     LocalFree(lpMsgBuf);
-    return ss.str();
-
-}
+#else
+    ss << msg << ": " << strerror(errno);
 #endif
+    return ss.str();
+}
 
 
 SerialLink::SerialLink(const std::string& filename) : filename(filename), fd(HANDLE_NULL) {
 
 #ifdef __MINGW32__
     std::cerr << "opening com port at " << filename << std::endl;
-    fd = ::CreateFile(
-        filename.c_str(),
-        GENERIC_READ|GENERIC_WRITE,
-        0, 
-        0, 
-        OPEN_EXISTING, 
-        0, 
-        0);
-
-    std::cout << (int) fd << std::endl;
+    fd = ::CreateFile(filename.c_str(), GENERIC_READ|GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
 
     if (fd == INVALID_HANDLE_VALUE) {
         throw std::runtime_error(formatLastError("Open COM port"));
@@ -96,15 +86,12 @@ SerialLink::SerialLink(const std::string& filename) : filename(filename), fd(HAN
         throw std::runtime_error(formatLastError("Failed to set COM timeouts"));
     }
 
-    std::cerr << "setup comm connection" << std::endl;
 #else
 
     fd = ::open (filename.c_str(), O_RDWR);
     if (fd == -1) {
-        throw std::runtime_error("failed to open serial port '" + filename + "': " + strerror(errno));
+        throw std::runtime_error(formatLastError("failed to open serial port '" + filename + "'"));
     }
-
-    // http://trainingkits.gweb.io/serial-linux.html
 
     struct termios options;
 
@@ -116,7 +103,7 @@ SerialLink::SerialLink(const std::string& filename) : filename(filename), fd(HAN
     options.c_cc[VTIME] = 50;
 
     if(tcsetattr(fd, TCSANOW, &options) != 0) {
-        throw std::runtime_error("failed to configure serial port '" + filename + "': " + strerror(errno));
+        throw std::runtime_error(formatLastError("failed to configure serial port '" + filename + "'"));
     }
 #endif
     std::cerr << "Connected to watch on " << filename << std::endl;
@@ -200,15 +187,15 @@ unsigned char SerialLink::expect(unsigned char val) {
 
 void SerialLink::write(std::vector<unsigned char>& buf) {
 #ifdef __MINGW32__ 
-    DWORD wc;
-    WriteFile(fd, &buf[0], buf.size(), &wc, 0);
+    DWORD n;
+    WriteFile(fd, &buf[0], buf.size(), &n, 0);
 #else
     ssize_t n;
     n = ::write(fd, &buf[0], buf.size());
+#endif
     if ( (size_t)n != buf.size() ) {
         throw std::runtime_error("Serial link: failed to write expected number of bytes");
     }
-#endif
 }
 
 unsigned char SerialLink::read() {

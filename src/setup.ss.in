@@ -1,0 +1,18 @@
+[Setup]
+AppName=@PACKAGE@
+AppVersion=@PACKAGE_VERSION@ - @HOST_CPU@
+AppVerName=@PACKAGE_STRING@
+AppCopyright=Copyright (C) 2014 mru@sisyphus.teil.cc
+AppContact=@PACKAGE_BUGREPORT@
+AppSupportURL=@PACKAGE_URL@
+AppPublisher=mru@sisyphus.teil.cc
+AppPublisherURL=@PACKAGE_URL@
+
+
+DefaultDirName={pf}\@PACKAGE_STRING@
+
+[Files]
+Source: "crane_gps_watch_client.exe"; DestDir: "{app}"
+;Source: "..\README.md"; DestDir: "{app}"; Flags: isreadme
+
+

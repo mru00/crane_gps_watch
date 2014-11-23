@@ -15,11 +15,11 @@ TESTS = 000_help.sh \
 # variables to be used in test scripts:
 # required to be able to check mingw cross compiles
 AM_TESTS_ENVIRONMENT = \
-	export TEST_BINARY=$(srcdir)/../src/crane_gps_watch_client$(EXEEXT); 
+	export TEST_BINARY=../src/crane_gps_watch_client$(EXEEXT); 
 
 if CROSS_COMPILING
 AM_TESTS_ENVIRONMENT += \
-	regedit quiet.reg; 
+	regedit $(srcdir)/quiet.reg; 
 endif
 
 

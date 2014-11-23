@@ -8,9 +8,9 @@ Developer: Rudolf Mühlbauer <mru@sisyphus.teil.cc>
 [![Build Status](https://travis-ci.org/mru00/crane_gps_watch.svg)](https://travis-ci.org/mru00/crane_gps_watch)
 
 
-Crane GPS Watch client is a Linux client for downloading track files in 
+Crane GPS Watch client is a Linux and Windows client for downloading track files in 
 [TCX  format](http://en.wikipedia.org/wiki/Training_Center_XML)
-from the following GPS watches.
+from the following GPS watches:
 
 Supported Watches:
 * `1.20.22_KRIP0_00` [Crane GPS Watch from Aldi/Hofer](https://www.produktservice.info/20014414/20014414.html)
@@ -38,7 +38,7 @@ The GPS watch is able to record workouts where only heartrate is available, no G
 It is not valid to create GPS records without coordinates. In TCX, this is possible.
 
 If you require a desire a different output format, have a look at [gpsbabel](http://www.gpsbabel.org/).
-The program can convert between many different formats.
+The program can convert between many different formats. Or file a feature request.
 
 Disclaimer:
 -----------
@@ -65,15 +65,19 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details or file COPYING.
 
 
-Bug reports:
-------------
+Bug reports & Feature requests:
+-------------------------------
 
 Please report problems and bugs. If you get compiler errors, please send me the complete compiler output.
 If the generated output files are wrong, please create an image (`--to_image`) and send me the image with a 
 description of the expected output.
 
-I also appreciate positive feedback very much, and "works for me" messages.
-If your watch works, please send me a note so I can update the list of supported watches.
+I also very much appreciate positive feedback, and "works for me" messages.
+If your watch works, please send me a note (with attached image `.bin` file) 
+so I can update the list of supported watches.
+
+If you have feature requests (like parsing the GPS Master's tkl files), send me a mail. I will see what I
+can do.
 
 
 Installation:
@@ -94,26 +98,36 @@ or download Zip file:
 2. cd to unpacking directory
 3. build the software 
 
-	./configure && make && make check
+	./configure && make
 
 4. install
 
 	sudo make install
 
 
+`make check` can be used to run the test suite. The test suite requires 
+additional programs to be installed: `xmllint` from `libxml2-utils`.
+
 See INSTALL for details. Note that it is possible to install without root rights, use the `./configure --prefix=...` option.
 
 
-Please also have a look at `.travis.yml`, which describes a full build for the [Travis-ci](travis-ci.org) CI platform.
+Please also have a look at `.travis.yml`, which describes a full build for the [Travis-CI](https://travis-ci.org/mru00/crane_gps_watch) platform.
 
 
 Cross Compilation for windows:
 ------------------------------
 
+The program also works under windows. Either compile under windows using MinGW, 
+or cross-compile under Linux.
+
+The program works using Wine, except access to the com port. The testsuite on Travis
+also builds and checks the windows executable with the same testcases.
 
 
 	sudo apt-get install mingw-w64
 	./configure --host i686-w64-mingw32 --build i686-linux-pc
+	wine ./src/crane_gps_watch_client.exe --help
+
 
 USAGE:
 ------
@@ -123,7 +137,7 @@ USAGE:
 	crane_gps_watch_client 
     [--output "filename"]            override default filename, write single file for all tracks.
     [--split]                        write file for each track.
-    [--device "/dev/tty..."]         override default device file.
+    [--device "/dev/tty..."]         override default device file / com port.
     [--to_image filename]            write watch data to file <for testing>.
     [--from_image filename]          read watch data from file <for testing>.
     [--verbose]                      write debug output to console. repeat to get more output.

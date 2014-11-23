@@ -40,6 +40,12 @@ std::string format_date_filename() {
 
 int main(int argc, char** argv) {
 
+    std::string default_device;
+#ifdef __MINGW32__
+    default_device = "COM3";
+#else
+    default_device = "/dev/ttyUSB0";
+#endif
 
     try {
 
@@ -76,7 +82,7 @@ int main(int argc, char** argv) {
                   PACKAGE_STRING "\n"
                   "crane_gps_watch_client --help\n"
                   "\n"
-                  "crane_gps_watch_client [--output output-filename | --split] [--device /dev/ttyUSB0 | --from_image image-file] [--to_image image-file] [--verbose]\n" 
+                  "crane_gps_watch_client [--output output-filename | --split] [--device " << default_device << " | --from_image image-file] [--to_image image-file] [--verbose]\n" 
                   "\n"
                   "See README.md or https://github.com/mru00/crane_gps_watch for details\n"
                   "Send bugreports to " PACKAGE_BUGREPORT
@@ -88,13 +94,13 @@ int main(int argc, char** argv) {
                   << std::endl;
                 exit (0);
               case 'd':
-                if (from_image != "") {
+                if (!from_image.empty()) {
                     throw std::runtime_error("cannot use --device and --from_image at the same time");
                 }
                 device_fn = optarg;
                 break;
               case 's':
-                if (output_fn != "") {
+                if (!output_fn.empty()) {
                     throw std::runtime_error("cannot use --output and --split at the same time");
                 }
                 split_by_track = true;
@@ -106,7 +112,7 @@ int main(int argc, char** argv) {
                 output_fn = optarg;
                 break;
               case 'i':
-                if (device_fn != "") {
+                if (!device_fn.empty()) {
                     throw std::runtime_error("cannot use --device and --from_image at the same time");
                 }
                 from_image = optarg;
@@ -126,32 +132,28 @@ int main(int argc, char** argv) {
             }
         }
 
-        if (device_fn == "") {
-#ifdef __MINGW32__
-            device_fn = "COM3";
-#else
-            device_fn = "/dev/ttyUSB0";
-#endif
+        if (device_fn.empty()) {
+            device_fn = default_device;
         }
 
-        if (output_fn == "") {
+        if (output_fn.empty()) {
             // set default output filename
             output_fn = format_date_filename() + ".tcx";
         }
 
 
         std::shared_ptr<DeviceInterface> device;
-        if (from_image != "") {
-            device = std::make_shared<ImageLink>(from_image);
+        if (from_image.empty()) {
+            device = std::make_shared<SerialLink>(device_fn);
         }
         else {
-            device = std::make_shared<SerialLink>(device_fn);
+            device = std::make_shared<ImageLink>(from_image);
         }
 
         Watch watch(device);
 
         watch.addRecipient(std::make_shared<TcxWriter>(output_fn, split_by_track));
-        if (to_image != "") {
+        if (!to_image.empty()) {
             watch.addRecipient(std::make_shared<ImageWriter>(to_image));
         }
         if (debug_level > 0) {
@@ -168,7 +170,7 @@ int main(int argc, char** argv) {
 
     }
     catch(const std::runtime_error& error) {
-        std::cerr << "error: " << error.what() << std::endl;
+        std::cerr << "error: " << error.what() << std::endl << "terminating" << std::endl;
         return 1;
     }
 }
