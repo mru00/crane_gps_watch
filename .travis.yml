@@ -16,7 +16,7 @@ before_install:
 install:
   - sudo apt-get -qq install libxml2-dev gcc-4.8 g++-4.8 libxml2-utils
 # windows cross compiler
-  - sudo apt-get -qq install wine mingw-w64 mingw-w64-i686-dev
+  - sudo apt-get -qq install wine mingw-w64
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
   - g++ --version
   - automake --version
