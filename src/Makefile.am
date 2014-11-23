@@ -10,6 +10,9 @@ crane_gps_watch_client_SOURCES = crane_gps_watch_client.cpp \
 
 crane_gps_watch_client_CXXFLAGS = -Wall -Wextra
 crane_gps_watch_client_LDADD = 
+if CROSS_COMPILING
+crane_gps_watch_client_LDFLAGS = -static-libgcc -static-libstdc++ -static
+endif
 
 
 MOSTLYCLEANFILES = *.tcx

@@ -110,8 +110,8 @@ am_crane_gps_watch_client_OBJECTS =  \
 crane_gps_watch_client_OBJECTS = $(am_crane_gps_watch_client_OBJECTS)
 crane_gps_watch_client_DEPENDENCIES =
 crane_gps_watch_client_LINK = $(CXXLD) \
-	$(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
-	$(LDFLAGS) -o $@
+	$(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) \
+	$(crane_gps_watch_client_LDFLAGS) $(LDFLAGS) -o $@
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -313,6 +313,7 @@ crane_gps_watch_client_SOURCES = crane_gps_watch_client.cpp \
 
 crane_gps_watch_client_CXXFLAGS = -Wall -Wextra
 crane_gps_watch_client_LDADD = 
+@CROSS_COMPILING_TRUE@crane_gps_watch_client_LDFLAGS = -static-libgcc -static-libstdc++ -static
 MOSTLYCLEANFILES = *.tcx
 
 # gps_watch_monitor.py:

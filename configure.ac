@@ -1,5 +1,5 @@
 AC_INIT([crane_gps_watch_client], [0.2], [mru@sisyphus.teil.cc])
-AM_INIT_AUTOMAKE([-Wall -Werror])
+AM_INIT_AUTOMAKE([-Wall])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
                  Makefile
@@ -26,5 +26,7 @@ AC_CHECK_HEADERS([unistd.h])
 #AC_CHECK_HEADER_STDBOOL
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
+
+AM_CONDITIONAL([CROSS_COMPILING], test "$cross_compiling" = yes)
 
 AC_OUTPUT

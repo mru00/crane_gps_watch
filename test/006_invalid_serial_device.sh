@@ -2,6 +2,6 @@
 
 pwd
 
-! ../src/crane_gps_watch_client --output 006_out --device file-probably-does-not-exist
+! $TEST_BINARY --output 006_out --device file-probably-does-not-exist
 
-! ../src/crane_gps_watch_client --output 006_out --device ${srcdir}/image.bin
+! $TEST_BINARY --output 006_out --device ${srcdir}/image.bin

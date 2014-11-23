@@ -104,10 +104,16 @@ or download Zip file:
 See INSTALL for details. Note that it is possible to install without root rights, use the `./configure --prefix=...` option.
 
 
-The software also works in windows; compiled with mingw, using the Bloodshed-dev C++.
-
-
 Please also have a look at `.travis.yml`, which describes a full build for the [Travis-ci](travis-ci.org) CI platform.
+
+
+Cross Compilation for windows:
+------------------------------
+
+
+
+	sudo apt-get install mingw-w64
+	./configure --host i686-w64-mingw32 --build i686-linux-pc
 
 USAGE:
 ------

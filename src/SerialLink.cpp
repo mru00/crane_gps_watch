@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
+#include <sstream>
+
 
 #include <cstring>
 #include <unistd.h>
@@ -22,29 +24,79 @@
 #include "SerialLink.hpp"
 
 
+#ifdef __MINGW32__
+std::string formatLastError(const std::string& msg) {
+
+    LPVOID lpMsgBuf;
+
+    FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+        FORMAT_MESSAGE_FROM_SYSTEM |
+        FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL,
+        ::GetLastError(),
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPTSTR) &lpMsgBuf,
+        0, NULL );
+
+    std::ostringstream ss;
+    ss << msg << ": " << (char*)lpMsgBuf;
+    LocalFree(lpMsgBuf);
+    return ss.str();
+
+}
+#endif
+
+
 SerialLink::SerialLink(const std::string& filename) : filename(filename), fd(HANDLE_NULL) {
 
 #ifdef __MINGW32__
-       fd = ::CreateFile(filename.c_str(),
-       GENERIC_READ|GENERIC_WRITE,
-       0, 0, OPEN_EXISTING, 0, 0);
+    std::cerr << "opening com port at " << filename << std::endl;
+    fd = ::CreateFile(
+        filename.c_str(),
+        GENERIC_READ|GENERIC_WRITE,
+        0, 
+        0, 
+        OPEN_EXISTING, 
+        0, 
+        0);
 
-       DCB dcb;
-       dcb.DCBlength = sizeof(DCB);
+    std::cout << (int) fd << std::endl;
 
-       if (!::GetCommState(fd, &dcb)) {
-           throw std::runtime_error ("failed to get comm state");
-       }
+    if (fd == INVALID_HANDLE_VALUE) {
+        throw std::runtime_error(formatLastError("Open COM port"));
+    }
 
-       dcb.BaudRate = 115200;
-       dcb.ByteSize = 8;
-       dcb.Parity = 0;
-       dcb.StopBits = ONESTOPBIT;
+    DCB dcb;
+    dcb.DCBlength = sizeof(DCB);
 
-       if (!::SetCommState(fd, &dcb)) {
-           throw std::runtime_error ("failed to set comm state");
-       }
-       std::cerr << "setup comm connection" << std::endl;
+    if (!::GetCommState(fd, &dcb)) {
+        throw std::runtime_error(formatLastError("Failed to get COM state"));
+    }
+
+    dcb.BaudRate = 115200;
+    dcb.ByteSize = 8;
+    dcb.Parity = 0;
+    dcb.StopBits = ONESTOPBIT;
+
+    if (!::SetCommState(fd, &dcb)) {
+        throw std::runtime_error(formatLastError("Failed to set COM state"));
+    }
+
+
+    COMMTIMEOUTS ct;
+    if (!::GetCommTimeouts(fd, &ct)) {
+        throw std::runtime_error(formatLastError("Failed to get COM timeouts"));
+    }
+    ct.ReadTotalTimeoutConstant = 20000;
+    ct.ReadTotalTimeoutMultiplier = 20000;
+    ct.WriteTotalTimeoutMultiplier = 20000;
+    ct.WriteTotalTimeoutConstant = 20000;
+    if (!::SetCommTimeouts(fd, &ct)) {
+        throw std::runtime_error(formatLastError("Failed to set COM timeouts"));
+    }
+
+    std::cerr << "setup comm connection" << std::endl;
 #else
 
     fd = ::open (filename.c_str(), O_RDWR);

@@ -27,7 +27,7 @@ void DebugWriter::onWatchEnd(const WatchInfo &) {
 void DebugWriter::onWorkout(const WorkoutInfo &i)  {
     std::cout << " workout info"
       << " t=" << i.start_time.format()
-      << " d=" << put_time(&i.workout_time.time, "%T") << "=" << i.workout_time.time.tm_hour*60*60 + i.workout_time.time.tm_min*60 +i.workout_time.time.tm_sec
+      << " d=" << put_time(&i.workout_time.time, "%H:%M:%S") << "=" << i.workout_time.time.tm_hour*60*60 + i.workout_time.time.tm_min*60 +i.workout_time.time.tm_sec
       << " nsamples=" << i.nsamples << "=0x" << std::hex << i.nsamples << std::dec
       << " toc=" << i.toc
       << std::endl;
