@@ -13,6 +13,7 @@ script:
 before_install:
   - sudo cat /etc/apt/sources.list
   - sudo sh -c 'echo "deb http://at.archive.ubuntu.com/ubuntu/ trusty universe" >> /etc/apt/sources.list'
+  - sudo cat /etc/apt/sources.list
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get -qq update
 install:
