@@ -1,5 +1,5 @@
-Crane GPS Watch client v.0.1 (crane_gps_watch_client)
-=====================================================
+Crane GPS Watch client (crane_gps_watch_client)
+===============================================
 
 Copyright (C) 2014 Rudolf Mühlbauer <mru@sisyphus.teil.cc>
 
@@ -15,6 +15,7 @@ Supported Watches:
 * `1.20.22_KRIP0_00` [Crane GPS Watch from Aldi/Hofer](https://www.produktservice.info/20014414/20014414.html)
 * `1.20.21_DLES0_00` [Conrad GPS Nav II](http://www.conrad.de/ce/de/product/372884/Multi-NAV-2-GPS-Pulsuhr-mit-Brustgurt-Schwarz)
 * `1.20.21_KRIP0_00` [Ultrasport NavRun 500](http://www.ebay.de/itm/Ultrasport-GPS-Pulsuhr-NavRun-500-Uhr-Watch-mit-Brustgurt-/301393562885)
+* `1.20.22_KRIP0_00` [unknown model](http://www.ebay.de/itm/GPS-Uhr-mit-Herzfrequnzmessung-Kompass-PC-Download-Pulsuhr-NEU/300968440724)
 
 
 As the watch is commonly rebranded, the following Watches might just work:
@@ -22,7 +23,6 @@ As the watch is commonly rebranded, the following Watches might just work:
 * [Latitude NAV Master II](http://www.latitude.com.hk/dbimages/document/856/gps_series_catalog.pdf) (probably the original manufacturer)
 * [Pyle Gps watch](http://www.pyleaudio.com/sku/PSWGP405BK/GPS-Watch-w-Coded-Heart-Rate-Transmission,-Navigation,-Speed,-Distance,-Workout-Memory,-Compass,--PC-link--(Black-Color))
 * [Runtastic Gps Watch](https://www.runtastic.com/shop/en/runtastic-gps-watch-with-heart-rate-monitor)
-* [unknown model](http://www.ebay.de/itm/GPS-Uhr-mit-Herzfrequnzmessung-Kompass-PC-Download-Pulsuhr-NEU/300968440724)
 * [Ascen Smart GPS watch GPS300](http://forums.watchuseek.com/f296/new-comer-ascen-gps-watch-comprehensive-review-pics-630057.html)
 * [Tech4O Discover GPS](http://tech4o.shptron.com/p/discover-gps/tech4o_outdoor-multifunction_gps_discover-gps?pp=8)
 
@@ -85,6 +85,9 @@ so I can update the list of supported watches.
 If you have feature requests, send me a mail. I will see what I
 can do.
 
+Please also consider using the github issue tracking system.  You can also submit fixes and enhancements via github pull requests.
+
+I can only test 32bit executables. If you have issues on 64bit systems, please report them.
 
 Installation:
 -------------
@@ -119,6 +122,7 @@ See INSTALL for details. Note that it is possible to install without root rights
 
 Please also have a look at `.travis.yml`, which describes a full build for the 
 [Travis-CI](https://travis-ci.org/mru00/crane_gps_watch) platform, including all dependencies.
+
 
 
 Cross compilation for windows:
@@ -196,8 +200,10 @@ modify it to your needs.
 TODO:
 -----
 
-* Auto-scan for serial port
+* Auto-scan for serial port (WIP)
 * Implement filters (e.g. correct altitude data from online sources)
+* find proper name for the project
+* get more details about the watch itself (manufacturer, architecture)
 
 
 
@@ -211,6 +217,7 @@ GPS Software:
 * [My Tourbook](http://mytourbook.sourceforge.net/mytourbook/) works great with the TCX files. I like it.
 * [Viking GPS data editor and analyzer](http://sourceforge.net/projects/viking/)
 * [Alternatives to My tourbook](http://alternativeto.net/software/my-tourbook/)
+* [Turtle Sport](http://turtlesport.sourceforge.net/EN/home.html)
 * [gpsbabel](http://www.gpsbabel.org/)
 
 Technical links:

@@ -57,12 +57,33 @@ std::string GpsEle::format() const {
     return fmt() << ele;
 }
 
+GpsTime::GpsTime() : time () {
+    // explicit for documentation purposes:
+    // see 'man mktime' for details.
+    /*
+       tm_isdst  A  flag  that  indicates  whether  daylight saving time is in$
+                 effect at the time described.  The value is positive if  day‐$
+                 light  saving time is in effect, zero if it is not, and nega‐$
+                 tive if the information is not available.$
+    */
+    time.tm_isdst = 0;
+}
 
 GpsTime& GpsTime::operator=(const GpsTimeUpd& other) {
     time.tm_min = other.mm;
     time.tm_sec = other.ss;
+    mktime();
     return *this;
 }
+
+time_t GpsTime::mktime() {
+    time_t t = ::mktime(&time);
+    if (t == (time_t) -1) {
+        throw std::runtime_error(fmt() << "failed to mktime: " << strerror(errno));
+    }
+    return t;
+}
+
 std::string GpsTime::format() const {
     return fmt() << put_time(&time, "%Y-%m-%dT%H:%M:%SZ");
     // does not work with windows:

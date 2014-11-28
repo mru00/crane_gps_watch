@@ -1,4 +1,4 @@
-// Copyirght (C) 2014 mru@sisyphus.teil.cc
+// Copyright (C) 2014 mru@sisyphus.teil.cc
 
 #include <memory>
 #include <sstream>
@@ -12,70 +12,148 @@
 
 class SerialPort::SerialPortD {
   public:
+    size_t read(std::vector<unsigned char> & buf) {
+        DWORD n;
+        ReadFile(fd, &buf[0], buf.size(), &n, 0);
+        return (size_t)n;
+    }
+    size_t write(const std::vector<unsigned char> & buf) {
+        DWORD n;
+        WriteFile(fd, &buf[0], buf.size(), &n, 0);
+        return n;
+    }
+    bool isopen() {
+        return fd != nullptr;
+    }
+    void close() {
+        ::CloseHandle(fd);
+        fd = nullptr;
+    }
+    void open(const std::string& filename) {
+        fd = ::CreateFile(filename.c_str(), GENERIC_READ|GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
+
+        if (fd == INVALID_HANDLE_VALUE) {
+            fd = nullptr;
+            throw std::runtime_error(formatLastError("Open COM port"));
+        }
+
+        DCB dcb;
+        dcb.DCBlength = sizeof(DCB);
+
+        if (!::GetCommState(fd, &dcb)) {
+            close();
+            throw std::runtime_error(formatLastError("Failed to get COM state"));
+        }
+
+        dcb.BaudRate = 115200;
+        dcb.ByteSize = 8;
+        dcb.Parity = 0;
+        dcb.StopBits = ONESTOPBIT;
+
+        if (!::SetCommState(fd, &dcb)) {
+            close();
+            throw std::runtime_error(formatLastError("Failed to set COM state"));
+        }
+
+
+        COMMTIMEOUTS ct;
+        if (!::GetCommTimeouts(fd, &ct)) {
+            close();
+            throw std::runtime_error(formatLastError("Failed to get COM timeouts"));
+        }
+        ct.ReadTotalTimeoutConstant = 20000;
+        ct.ReadTotalTimeoutMultiplier = 20000;
+        ct.WriteTotalTimeoutMultiplier = 20000;
+        ct.WriteTotalTimeoutConstant = 20000;
+        if (!::SetCommTimeouts(fd, &ct)) {
+            close();
+            throw std::runtime_error(formatLastError("Failed to set COM timeouts"));
+        }
+    }
     HANDLE fd;
 };
 
-SerialPort::SerialPort()
-{
+#else
 
-  d->fd = nullptr;
-}
+
+#include <unistd.h>
+#include <fcntl.h>
+#include <termios.h>
+
+
+class SerialPort::SerialPortD {
+  public:
+    size_t read(std::vector<unsigned char> & buf) {
+        return ::read(fd, &buf[0], buf.size());
+    }
+    size_t write(const std::vector<unsigned char> & buf) {
+        return ::write(fd, &buf[0], buf.size());
+    }
+    bool isopen() {
+        return fd != -1;
+    }
+    void close() {
+        ::close(fd);
+        fd = -1;
+    }
+    void open(const std::string& filename) {
+    fd = ::open (filename.c_str(), O_RDWR);
+    if (fd == -1) {
+        throw std::runtime_error(formatLastError("failed to open serial port '" + filename + "'"));
+    }
+
+    struct termios options;
+
+    if (tcgetattr(fd, &options) != 0) {
+        close();
+        throw std::runtime_error(formatLastError("failed to configure serial port '" + filename + "'"));
+    }
+
+    cfsetispeed(&options, B115200);
+    cfsetospeed(&options, B115200);
+    cfmakeraw(&options);
+    options.c_cc[VMIN] = 0;
+    options.c_cc[VTIME] = 50;
+
+    if(tcsetattr(fd, TCSANOW, &options) != 0) {
+        close();
+        throw std::runtime_error(formatLastError("failed to configure serial port '" + filename + "'"));
+    }
+    }
+  public:
+    int fd;
+};
+
+
+#endif
+
+
+SerialPort::SerialPort() : d(new SerialPortD()) { }
 
 void SerialPort::open(const std::string& filename) {
     std::cerr << "opening com port at " << filename << std::endl;
-    d->fd = ::CreateFile(filename.c_str(), GENERIC_READ|GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
+    d->open(filename);
 
-    if (d->fd == INVALID_HANDLE_VALUE) {
-        throw std::runtime_error(formatLastError("Open COM port"));
-    }
-
-    DCB dcb;
-    dcb.DCBlength = sizeof(DCB);
-
-    if (!::GetCommState(d->fd, &dcb)) {
-        throw std::runtime_error(formatLastError("Failed to get COM state"));
-    }
-
-    dcb.BaudRate = 115200;
-    dcb.ByteSize = 8;
-    dcb.Parity = 0;
-    dcb.StopBits = ONESTOPBIT;
-
-    if (!::SetCommState(d->fd, &dcb)) {
-        throw std::runtime_error(formatLastError("Failed to set COM state"));
-    }
-
-
-    COMMTIMEOUTS ct;
-    if (!::GetCommTimeouts(d->fd, &ct)) {
-        throw std::runtime_error(formatLastError("Failed to get COM timeouts"));
-    }
-    ct.ReadTotalTimeoutConstant = 20000;
-    ct.ReadTotalTimeoutMultiplier = 20000;
-    ct.WriteTotalTimeoutMultiplier = 20000;
-    ct.WriteTotalTimeoutConstant = 20000;
-    if (!::SetCommTimeouts(d->fd, &ct)) {
-        throw std::runtime_error(formatLastError("Failed to set COM timeouts"));
-    }
 }
 
 void SerialPort::close() {
-    ::CloseHandle(d->fd);
-    d->fd = nullptr;
+    d->close();
 }
 
 void SerialPort::read(std::vector<unsigned char>& buf) {
-    DWORD n;
-    ReadFile(d->fd, &buf[0], buf.size(), &n, 0);
-    if ( (size_t)n != buf.size() ) {
+    if (!d->isopen()) {
+        throw std::runtime_error("trying to read from closed serial port");
+    }
+    if ( d->read(buf) != buf.size() ) {
         throw std::runtime_error(formatLastError("Serial link: failed to read expected number of bytes"));
     }
 }
 
 void SerialPort::write(const std::vector<unsigned char>& buf) {
-    DWORD n;
-    WriteFile(d->fd, &buf[0], buf.size(), &n, 0);
-    if ( (size_t)n != buf.size() ) {
+    if (!d->isopen()) {
+        throw std::runtime_error("trying to write on closed serial port");
+    }
+    if ( d->write(buf) != buf.size() ) {
         throw std::runtime_error(formatLastError("Serial link: failed to write expected number of bytes"));
     }
 }
@@ -98,70 +176,7 @@ std::vector<std::string> SerialPort::enumeratePorts() {
     return ports;
 }
 
-#else
 
-
-#include <unistd.h>
-#include <fcntl.h>
-#include <termios.h>
-
-
-class SerialPort::SerialPortD {
-  public:
-    int fd;
-};
-
-SerialPort::SerialPort()
-{
-  d->fd = -1;
-}
-
-void SerialPort::open(const std::string& filename) {
-
-    d->fd = ::open (filename.c_str(), O_RDWR);
-    if (d->fd == -1) {
-        throw std::runtime_error(formatLastError("failed to open serial port '" + filename + "'"));
-    }
-
-    struct termios options;
-
-    tcgetattr(d->fd, &options);
-    cfsetispeed(&options, B115200);
-    cfsetospeed(&options, B115200);
-    cfmakeraw(&options);
-    options.c_cc[VMIN] = 0;
-    options.c_cc[VTIME] = 50;
-
-    if(tcsetattr(d->fd, TCSANOW, &options) != 0) {
-        throw std::runtime_error(formatLastError("failed to configure serial port '" + filename + "'"));
-    }
-}
-
-void SerialPort::close() {
-    ::close(d->fd);
-    d->fd = -1;
-}
-
-void SerialPort::read(std::vector<unsigned char>& buf) {
-    ssize_t n = ::read(d->fd, &buf[0], buf.size());
-    if ( (size_t)n != buf.size() ) {
-        throw std::runtime_error(formatLastError("Serial link: failed to read expected number of bytes"));
-    }
-}
-
-void SerialPort::write(const std::vector<unsigned char>& buf) {
-    ssize_t n;
-    n = ::write(d->fd, &buf[0], buf.size());
-    if ( (size_t)n != buf.size() ) {
-        throw std::runtime_error(formatLastError("Serial link: failed to write expected number of bytes"));
-    }
-}
-std::vector<std::string> SerialPort::enumeratePorts() {
-    std::vector<std::string> ports;
-
-    return ports;
-}
-#endif
 
 
 

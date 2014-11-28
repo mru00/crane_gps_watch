@@ -52,6 +52,7 @@ void Watch::parseGpsTime(GpsTime& t, WatchMemoryBlock::mem_it_t it) {
     t.time.tm_hour = *it++;
     t.time.tm_min = *it++;
     t.time.tm_sec = *it++;
+    t.mktime();
 }
 void Watch::parseSample(SampleInfo& si, WatchMemoryBlock::mem_it_t& it) {
 
