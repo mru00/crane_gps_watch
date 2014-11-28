@@ -33,6 +33,11 @@ void GpsLint::onSample(const SampleInfo &i) {
         assert ( (double)i.lat != 200);
     }
 
+    tm t = i.time.time;
+    if ( mktime(&t) == (time_t) -1 ) {
+        throw std::runtime_error("failed to parse time correclty");
+    }
+
     // around this year
     assert ( std::abs(i.time.time.tm_year-114) < 5);
 

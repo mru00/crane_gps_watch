@@ -31,7 +31,7 @@ void XmlFileWriter::open(const std::string& filename) {
     w = genxNew(NULL, NULL, NULL);
 }
 
-bool XmlFileWriter::isOpen() {
+bool XmlFileWriter::isOpen() const {
     return w != nullptr;
 }
 

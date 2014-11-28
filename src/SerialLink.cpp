@@ -11,101 +11,18 @@
 
 
 #include <cstring>
-#include <unistd.h>
-#include <fcntl.h>
 
 
-#ifdef  __MINGW32__
-#else
-# include <termios.h>
-#endif
 
+#include "SerialPort.hpp"
 
 #include "SerialLink.hpp"
 
 
-std::string formatLastError(const std::string& msg) {
-
-    std::ostringstream ss;
-#ifdef __MINGW32__
-    LPVOID lpMsgBuf;
-
-    FormatMessage(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL,
-        ::GetLastError(),
-        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPTSTR) &lpMsgBuf,
-        0, NULL );
-
-    ss << msg << ": " << (char*)lpMsgBuf;
-    LocalFree(lpMsgBuf);
-#else
-    ss << msg << ": " << strerror(errno);
-#endif
-    return ss.str();
-}
 
 
-SerialLink::SerialLink(const std::string& filename) : filename(filename), fd(HANDLE_NULL) {
-
-#ifdef __MINGW32__
-    std::cerr << "opening com port at " << filename << std::endl;
-    fd = ::CreateFile(filename.c_str(), GENERIC_READ|GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
-
-    if (fd == INVALID_HANDLE_VALUE) {
-        throw std::runtime_error(formatLastError("Open COM port"));
-    }
-
-    DCB dcb;
-    dcb.DCBlength = sizeof(DCB);
-
-    if (!::GetCommState(fd, &dcb)) {
-        throw std::runtime_error(formatLastError("Failed to get COM state"));
-    }
-
-    dcb.BaudRate = 115200;
-    dcb.ByteSize = 8;
-    dcb.Parity = 0;
-    dcb.StopBits = ONESTOPBIT;
-
-    if (!::SetCommState(fd, &dcb)) {
-        throw std::runtime_error(formatLastError("Failed to set COM state"));
-    }
-
-
-    COMMTIMEOUTS ct;
-    if (!::GetCommTimeouts(fd, &ct)) {
-        throw std::runtime_error(formatLastError("Failed to get COM timeouts"));
-    }
-    ct.ReadTotalTimeoutConstant = 20000;
-    ct.ReadTotalTimeoutMultiplier = 20000;
-    ct.WriteTotalTimeoutMultiplier = 20000;
-    ct.WriteTotalTimeoutConstant = 20000;
-    if (!::SetCommTimeouts(fd, &ct)) {
-        throw std::runtime_error(formatLastError("Failed to set COM timeouts"));
-    }
-
-#else
-
-    fd = ::open (filename.c_str(), O_RDWR);
-    if (fd == -1) {
-        throw std::runtime_error(formatLastError("failed to open serial port '" + filename + "'"));
-    }
-
-    struct termios options;
-
-    tcgetattr(fd, &options);
-    cfsetispeed(&options, B115200);
-    cfsetospeed(&options, B115200);
-    cfmakeraw(&options);
-    options.c_cc[VMIN] = 0;
-    options.c_cc[VTIME] = 50;
-
-    if(tcsetattr(fd, TCSANOW, &options) != 0) {
-        throw std::runtime_error(formatLastError("failed to configure serial port '" + filename + "'"));
-    }
-#endif
+SerialLink::SerialLink(const std::string& filename) : filename(filename) {
+    port.open(filename);
     std::cerr << "Connected to watch on " << filename << std::endl;
 }
 
@@ -124,7 +41,6 @@ void SerialLink::readMemory(unsigned addr, unsigned count, unsigned char* it) {
 }
 
 std::string SerialLink::readVersion() {
-    assertOpen();
     std::vector<unsigned char> version;
     unsigned char opcode;
     sendCommand(0x10, std::vector<unsigned char>());
@@ -137,7 +53,6 @@ std::string SerialLink::readVersion() {
 
 
 void SerialLink::sendCommand(unsigned char opcode, std::vector<unsigned char> payload) {
-    assertOpen();
 
     std::vector<unsigned char> frame(2+2+1+ payload.size() +2+2);
     std::vector<unsigned char>::iterator it = frame.begin();
@@ -160,7 +75,6 @@ void SerialLink::sendCommand(unsigned char opcode, std::vector<unsigned char> pa
 }
 
 void SerialLink::receiveReply(unsigned char& opcode, std::vector<unsigned char>& target) {
-    assertOpen();
     unsigned short l;
     unsigned short cs;
     expect(0xa0);
@@ -186,45 +100,17 @@ unsigned char SerialLink::expect(unsigned char val) {
 }
 
 void SerialLink::write(std::vector<unsigned char>& buf) {
-#ifdef __MINGW32__ 
-    DWORD n;
-    WriteFile(fd, &buf[0], buf.size(), &n, 0);
-#else
-    ssize_t n;
-    n = ::write(fd, &buf[0], buf.size());
-#endif
-    if ( (size_t)n != buf.size() ) {
-        throw std::runtime_error("Serial link: failed to write expected number of bytes");
-    }
+    port.write(buf);
 }
 
 unsigned char SerialLink::read() {
-#ifdef __MINGW32__
-    DWORD n;
-    unsigned char val;
-    ReadFile(fd, &val, 1, &n, 0);
-#else
-    assertOpen();
-    unsigned char val;
-    ssize_t n = ::read(fd, &val, 1);
-#endif
-    if ( n != 1 ) {
-        throw std::runtime_error("Serial link: no answer from device");
-    }
-    return val;
+    std::vector<unsigned char> buf(1);
+    port.read(buf);
+    return buf[0];
 }
 
 void SerialLink::read(std::vector<unsigned char>& buf) {
-#ifdef __MINGW32__
-    DWORD n;
-    ReadFile(fd, &buf[0], buf.size(), &n, 0);
-#else
-    assertOpen();
-    ssize_t n = ::read(fd, &buf[0], buf.size());
-#endif
-    if ( (size_t)n != buf.size() ) {
-        throw std::runtime_error("Serial link: failed to read expected number of bytes");
-    }
+    port.read(buf);
 }
 
 unsigned short SerialLink::checksum(unsigned char opcode, std::vector<unsigned char> payload) {
@@ -236,8 +122,3 @@ unsigned short SerialLink::checksum(unsigned char opcode, std::vector<unsigned c
     return cs;
 }
 
-void SerialLink::assertOpen() {
-    if (fd == HANDLE_NULL) {
-        throw std::runtime_error("Illegal operation on closed serial port");
-    }
-}

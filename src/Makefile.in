@@ -106,6 +106,7 @@ am_crane_gps_watch_client_OBJECTS =  \
 	crane_gps_watch_client-MemoryBlock.$(OBJEXT) \
 	crane_gps_watch_client-ImageLink.$(OBJEXT) \
 	crane_gps_watch_client-SerialLink.$(OBJEXT) \
+	crane_gps_watch_client-SerialPort.$(OBJEXT) \
 	crane_gps_watch_client-TcxWriter.$(OBJEXT) \
 	crane_gps_watch_client-Watch.$(OBJEXT) genx.$(OBJEXT) \
 	charProps.$(OBJEXT)
@@ -316,10 +317,12 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 crane_gps_watch_client_SOURCES = crane_gps_watch_client.cpp \
  GpsLint.cpp XmlFileWriter.cpp ImageWriter.cpp \
- DebugWriter.cpp DataTypes.cpp MemoryBlock.cpp ImageLink.cpp SerialLink.cpp TcxWriter.cpp Watch.cpp \
+ DebugWriter.cpp DataTypes.cpp MemoryBlock.cpp \
+ ImageLink.cpp SerialLink.cpp SerialPort.cpp TcxWriter.cpp Watch.cpp \
  genx.c charProps.c \
  Callback.hpp GpsLint.hpp XmlFileWriter.hpp ImageWriter.hpp \
- DebugWriter.hpp DataTypes.hpp MemoryBlock.hpp ImageLink.hpp SerialLink.hpp TcxWriter.hpp Watch.hpp
+ DebugWriter.hpp DataTypes.hpp MemoryBlock.hpp \
+ ImageLink.hpp SerialLink.hpp SerialPort.hpp TcxWriter.hpp Watch.hpp
 
 crane_gps_watch_client_CXXFLAGS = -Wall -Wextra
 @CROSS_COMPILING_TRUE@crane_gps_watch_client_LDFLAGS = -static-libgcc -static-libstdc++ -static
@@ -470,6 +473,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-ImageWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-MemoryBlock.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-SerialLink.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-SerialPort.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-TcxWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-Watch.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-XmlFileWriter.Po@am__quote@
@@ -629,6 +633,20 @@ crane_gps_watch_client-SerialLink.obj: SerialLink.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SerialLink.cpp' object='crane_gps_watch_client-SerialLink.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -c -o crane_gps_watch_client-SerialLink.obj `if test -f 'SerialLink.cpp'; then $(CYGPATH_W) 'SerialLink.cpp'; else $(CYGPATH_W) '$(srcdir)/SerialLink.cpp'; fi`
+
+crane_gps_watch_client-SerialPort.o: SerialPort.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -MT crane_gps_watch_client-SerialPort.o -MD -MP -MF $(DEPDIR)/crane_gps_watch_client-SerialPort.Tpo -c -o crane_gps_watch_client-SerialPort.o `test -f 'SerialPort.cpp' || echo '$(srcdir)/'`SerialPort.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/crane_gps_watch_client-SerialPort.Tpo $(DEPDIR)/crane_gps_watch_client-SerialPort.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SerialPort.cpp' object='crane_gps_watch_client-SerialPort.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -c -o crane_gps_watch_client-SerialPort.o `test -f 'SerialPort.cpp' || echo '$(srcdir)/'`SerialPort.cpp
+
+crane_gps_watch_client-SerialPort.obj: SerialPort.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -MT crane_gps_watch_client-SerialPort.obj -MD -MP -MF $(DEPDIR)/crane_gps_watch_client-SerialPort.Tpo -c -o crane_gps_watch_client-SerialPort.obj `if test -f 'SerialPort.cpp'; then $(CYGPATH_W) 'SerialPort.cpp'; else $(CYGPATH_W) '$(srcdir)/SerialPort.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/crane_gps_watch_client-SerialPort.Tpo $(DEPDIR)/crane_gps_watch_client-SerialPort.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SerialPort.cpp' object='crane_gps_watch_client-SerialPort.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -c -o crane_gps_watch_client-SerialPort.obj `if test -f 'SerialPort.cpp'; then $(CYGPATH_W) 'SerialPort.cpp'; else $(CYGPATH_W) '$(srcdir)/SerialPort.cpp'; fi`
 
 crane_gps_watch_client-TcxWriter.o: TcxWriter.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -MT crane_gps_watch_client-TcxWriter.o -MD -MP -MF $(DEPDIR)/crane_gps_watch_client-TcxWriter.Tpo -c -o crane_gps_watch_client-TcxWriter.o `test -f 'TcxWriter.cpp' || echo '$(srcdir)/'`TcxWriter.cpp

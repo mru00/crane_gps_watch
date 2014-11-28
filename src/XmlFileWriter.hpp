@@ -17,7 +17,7 @@ class XmlFileWriter {
     ~XmlFileWriter();
 
     void open(const std::string& filename);
-    bool isOpen();
+    bool isOpen() const;
     void close();
     void startDocument(const std::string& encoding = "UTF-8");
     void startElement(const std::string& name);

@@ -42,9 +42,10 @@ rm -rf $releasedir
 mkdir $releasedir
 
 
+#release linux-x86_64 "--host x86_64-pc-linux-gnu --build ${build_cpu}-pc-linux-gnu"
 release win-i686 "--host i686-w64-mingw32 --build ${build_cpu}-pc-linux-gnu"
 release win-x86_64 "--host x86_64-w64-mingw32 --build ${build_cpu}-pc-linux-gnu"
-release linux-i686 ""
+release linux-i686 "--host i686-pc-linux-gnu --build ${build_cpu}-pc-linux-gnu"
 
 
 echo done

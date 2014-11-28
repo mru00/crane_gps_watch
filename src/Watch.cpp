@@ -184,7 +184,7 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
         idx_track++;
 
 
-        if (si.type == SampleInfo::Full || si.type == SampleInfo::HrOnly) {
+        if (si.type == SampleInfo::None || si.type == SampleInfo::Full || si.type == SampleInfo::HrOnly) {
             t = si.time;
         }
         else if (si.type == SampleInfo::Diff || si.type == SampleInfo::TimeOnly) {
@@ -206,78 +206,39 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
             break;
         }
 
-        if (1) {
 
-            bool has_position = false;
-            if (si.type == SampleInfo::Full) {
+        bool has_position = false;
+        if (si.type == SampleInfo::Full) {
+            lon = si.lon;
+            lat = si.lat;
+            ele = si.ele;
+            has_full_fix = true;
+            has_position = true;
+        }
+        else if (si.type == SampleInfo::Diff) {
+            si.lon = (lon += si.lon);
+            si.lat = (lat += si.lat);
+            si.ele = (ele += si.ele);
+            has_position = has_full_fix;
+        }
+        else if (si.type == SampleInfo::None) {
+            if (si.fix) {
+                // not sure about this
                 lon = si.lon;
                 lat = si.lat;
                 ele = si.ele;
-                has_full_fix = true;
-                has_position = true;
             }
-            else if (si.type == SampleInfo::Diff) {
-                si.lon = (lon += si.lon);
-                si.lat = (lat += si.lat);
-                si.ele = (ele += si.ele);
-                has_position = has_full_fix;
-            }
-            else if (si.type == SampleInfo::None) {
-                if (si.fix) {
-                    // not sure about this
-                    lon = si.lon;
-                    lat = si.lat;
-                    ele = si.ele;
-                }
-                has_position = has_full_fix = si.fix != 0;
-            }
-            else {
-                // certainly not:
-                // there can be a HrOnly/0x03, followed only by a Diff/0x01
-                //has_position = has_full_fix = false;
-            }
-
-
-            if (!has_position) {
-                si.fix = 0;
-            }
+            has_position = has_full_fix = si.fix != 0;
         }
         else {
+            // certainly not:
+            // there can be a HrOnly/0x03, followed only by a Diff/0x01
+            //has_position = has_full_fix = false;
+        }
 
-            if (si.fix != 0) {
-                if (si.type == SampleInfo::Full) {
-                    lon = si.lon;
-                    lat = si.lat;
-                    ele = si.ele;
-                    has_full_fix = true;
-                }
-                else if (si.type == SampleInfo::Diff) {
-                    si.lon = (lon += si.lon);
-                    si.lat = (lat += si.lat);
-                    si.ele = (ele += si.ele);
-                }
-                else if (si.type == SampleInfo::None) {
-                    lon = si.lon;
-                    lat = si.lat;
-                    ele = si.ele;
-                    has_full_fix = true;
-                }
-                else {
-                    has_full_fix = false;
-                }
-            }
-            else {
-                has_full_fix = false;
-            }
 
-            if (!has_full_fix) {
-                si.lon.loc = lon.loc = 0;
-                si.lat.loc = lat.loc = 0;
-                si.ele.ele = ele.ele = 0;
-
-                si.fix = 0;
-            }
-
+        if (!has_position) {
+            si.fix = 0;
         }
 
         if (track_active && si.type == SampleInfo::None) {
@@ -299,7 +260,7 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
         br.onSample(si);
 
     }
-    
+
     if (track_active) {
         TrackInfo i;
         br.onTrackEnd(i);
@@ -318,7 +279,7 @@ void Watch::parseBlock0() {
     wi.version = version;
 
     WatchMemoryBlock::mem_it_t mem_it = mb.memory.begin();
-    
+
     unsigned char cs = *mem_it;
     unsigned char cs_v = *(mem_it+1);
     if ( cs != (unsigned char)(~cs_v) ) {
@@ -328,7 +289,7 @@ void Watch::parseBlock0() {
     wi.timezone = *(mem_it + 3);
     wi.sample_interval = *(mem_it + 14);
     wi.selected_profile = *(mem_it + 0x10+10);
-    
+
     mem_it += 0x60;
     wi.firmware.resize(16, '\0');
     std::copy(mem_it, mem_it+16, wi.firmware.begin());

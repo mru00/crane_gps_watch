@@ -9,15 +9,8 @@
 #include <vector>
 #include <string>
 
-#ifdef __MINGW32__
-# include <windows.h>
-typedef HANDLE handle_t;
-# define HANDLE_NULL nullptr
-#else
-typedef int handle_t;
-# define HANDLE_NULL (-1)
-#endif
 
+#include "SerialPort.hpp"
 #include "DeviceInterface.hpp"
 
 class SerialLink : public DeviceInterface {
@@ -38,9 +31,6 @@ class SerialLink : public DeviceInterface {
     unsigned short checksum(unsigned char opcode, std::vector<unsigned char> payload);
 
   private:
-    void assertOpen();
-
-  private:
     std::string filename;
-    handle_t fd;
+    SerialPort port;
 };

@@ -14,6 +14,7 @@ from the following GPS watches:
 Supported Watches:
 * `1.20.22_KRIP0_00` [Crane GPS Watch from Aldi/Hofer](https://www.produktservice.info/20014414/20014414.html)
 * `1.20.21_DLES0_00` [Conrad GPS Nav II](http://www.conrad.de/ce/de/product/372884/Multi-NAV-2-GPS-Pulsuhr-mit-Brustgurt-Schwarz)
+* `1.20.21_KRIP0_00` [Ultrasport NavRun 500](http://www.ebay.de/itm/Ultrasport-GPS-Pulsuhr-NavRun-500-Uhr-Watch-mit-Brustgurt-/301393562885)
 
 
 As the watch is commonly rebranded, the following Watches might just work:
@@ -21,7 +22,6 @@ As the watch is commonly rebranded, the following Watches might just work:
 * [Latitude NAV Master II](http://www.latitude.com.hk/dbimages/document/856/gps_series_catalog.pdf) (probably the original manufacturer)
 * [Pyle Gps watch](http://www.pyleaudio.com/sku/PSWGP405BK/GPS-Watch-w-Coded-Heart-Rate-Transmission,-Navigation,-Speed,-Distance,-Workout-Memory,-Compass,--PC-link--(Black-Color))
 * [Runtastic Gps Watch](https://www.runtastic.com/shop/en/runtastic-gps-watch-with-heart-rate-monitor)
-* [Ultrasport NavRun 500](http://www.ebay.de/itm/Ultrasport-GPS-Pulsuhr-NavRun-500-Uhr-Watch-mit-Brustgurt-/301393562885)
 * [unknown model](http://www.ebay.de/itm/GPS-Uhr-mit-Herzfrequnzmessung-Kompass-PC-Download-Pulsuhr-NEU/300968440724)
 * [Ascen Smart GPS watch GPS300](http://forums.watchuseek.com/f296/new-comer-ascen-gps-watch-comprehensive-review-pics-630057.html)
 * [Tech4O Discover GPS](http://tech4o.shptron.com/p/discover-gps/tech4o_outdoor-multifunction_gps_discover-gps?pp=8)
@@ -82,7 +82,7 @@ I also very much appreciate positive feedback, and "works for me" messages.
 If your watch works, please send me a note (with attached image `.bin` file) 
 so I can update the list of supported watches.
 
-If you have feature requests (like parsing the GPS Master's tkl files), send me a mail. I will see what I
+If you have feature requests, send me a mail. I will see what I
 can do.
 
 
@@ -192,6 +192,12 @@ copy the script (usually `/usr/local/share/crane_gps_watch_client/gps_watch_onco
 to your home as: `~/.gps_watch_onconnect.sh` and 
 modify it to your needs.
 
+
+TODO:
+-----
+
+* Auto-scan for serial port
+* Implement filters (e.g. correct altitude data from online sources)
 
 
 

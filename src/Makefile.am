@@ -3,10 +3,12 @@
 bin_PROGRAMS = crane_gps_watch_client
 crane_gps_watch_client_SOURCES = crane_gps_watch_client.cpp \
  GpsLint.cpp XmlFileWriter.cpp ImageWriter.cpp \
- DebugWriter.cpp DataTypes.cpp MemoryBlock.cpp ImageLink.cpp SerialLink.cpp TcxWriter.cpp Watch.cpp \
+ DebugWriter.cpp DataTypes.cpp MemoryBlock.cpp \
+ ImageLink.cpp SerialLink.cpp SerialPort.cpp TcxWriter.cpp Watch.cpp \
  genx.c charProps.c \
  Callback.hpp GpsLint.hpp XmlFileWriter.hpp ImageWriter.hpp \
- DebugWriter.hpp DataTypes.hpp MemoryBlock.hpp ImageLink.hpp SerialLink.hpp TcxWriter.hpp Watch.hpp
+ DebugWriter.hpp DataTypes.hpp MemoryBlock.hpp \
+ ImageLink.hpp SerialLink.hpp SerialPort.hpp TcxWriter.hpp Watch.hpp
 
 crane_gps_watch_client_CXXFLAGS = -Wall -Wextra
 
