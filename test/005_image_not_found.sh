@@ -2,5 +2,5 @@
 
 source ${srcdir}/common.sh
 
-! $bin --output 005_out --from_image file-probably-does-not-exist
+expect_exit 1 $bin --output 005_out --from_image file-probably-does-not-exist
 

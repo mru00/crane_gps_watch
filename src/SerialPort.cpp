@@ -3,7 +3,11 @@
 #include <memory>
 #include <sstream>
 #include <iostream>
+
+
 #include <cstring>
+#include <cassert>
+
 #include "SerialPort.hpp"
 
 #ifdef  __MINGW32__
@@ -175,9 +179,6 @@ std::vector<std::string> SerialPort::enumeratePorts() {
 */
     return ports;
 }
-
-
-
 
 
 std::string formatLastError(const std::string& msg) {

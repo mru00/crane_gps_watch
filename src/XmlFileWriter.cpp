@@ -7,6 +7,9 @@
 #include <iostream>
 #include <sstream>
 
+#include <cstring>
+
+
 #include "XmlFileWriter.hpp"
 
 
@@ -27,6 +30,9 @@ XmlFileWriter::~XmlFileWriter() {
 void XmlFileWriter::open(const std::string& filename) {
     std::cerr << "XmlFileWriter: writing to " << filename << std::endl;
     wf = fopen(filename.c_str(), "w");
+    if (wf == nullptr) {
+        throw std::runtime_error(strerror(errno));
+    }
     fprintf(wf, "<?xml version=\"1.0\"?>\n");
     w = genxNew(NULL, NULL, NULL);
 }

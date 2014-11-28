@@ -2,5 +2,5 @@
 
 source ${srcdir}/common.sh
 
-! $bin --output /dir-probably-does-not-exist/005_out --from_image ${srcdir_abs}/image.bin
+expect_exit 1 $bin --output /dir-probably-does-not-exist/005_out --from_image ${srcdir_abs}/image.bin
 

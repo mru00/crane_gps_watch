@@ -2,6 +2,6 @@
 
 source ${srcdir}/common.sh
 
-! $bin --output 006_out --device file-probably-does-not-exist
+expect_exit 1 $bin --output 006_out --device file-probably-does-not-exist
 
-! $bin --output 006_out --device ${srcdir_abs}/image.bin
+expect_exit 1 $bin --output 006_out --device ${srcdir_abs}/image.bin

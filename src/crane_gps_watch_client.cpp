@@ -4,6 +4,7 @@
 //
 
 
+#include <fstream>
 #include <iostream>
 #include <memory>
 
@@ -170,6 +171,10 @@ int main(int argc, char** argv) {
 
     }
     catch(const std::runtime_error& error) {
+        std::cerr << "error: " << error.what() << std::endl << "terminating" << std::endl;
+        return 1;
+    }
+    catch(const std::ifstream::failure& error) {
         std::cerr << "error: " << error.what() << std::endl << "terminating" << std::endl;
         return 1;
     }

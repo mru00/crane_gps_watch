@@ -5,8 +5,12 @@
 
 #include <fstream>
 #include <string>
+#include <stdexcept>
+#include <iostream>
 
 #include "ImageLink.hpp"
+
+
 
 
 ImageLink::ImageLink(const std::string& filename) : f() {

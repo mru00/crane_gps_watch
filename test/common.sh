@@ -15,3 +15,21 @@ cd $workdir
 pwd
 
 
+expect_exit() {
+  local expected=$1
+  shift
+
+  set +e
+
+  #valgrind --error-exitcode=3  "$@"
+  "$@"
+
+  code=$?;
+
+  if [[ $code -ne $expected ]]; then
+    echo "testcase did not exit with expected code; actual=$code, expected=$expected"
+    exit 1
+  fi
+
+}
+
