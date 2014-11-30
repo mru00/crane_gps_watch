@@ -19,6 +19,10 @@
 
 
 
+// this need to be configurable
+const char* sports = "Other";
+
+
 TcxWriter::TcxWriter(std::string filename, bool split_by_track) :  writer(), filename(filename), current_wo(), split_by_track(split_by_track) {
 }
 TcxWriter::~TcxWriter() {
@@ -59,27 +63,27 @@ void TcxWriter::onWorkout(const WorkoutInfo &i)  {
 
     current_wo = i;
     writer.startElement("Activity");
-    writer.writeAttribute("Sport", "Other");
-    writer.writeElement("Id", i.start_time.format());
-    writer.startElement("Lap");
-    writer.writeAttribute("StartTime", i.start_time.format());
-    writer.writeElement("TotalTimeSeconds", "0");
-    writer.writeElement("DistanceMeters", "0");
+    writer. writeAttribute("Sport", sports);
+    writer. writeElement("Id", i.start_time.format());
+    writer. startElement("Lap");
+    writer. writeAttribute("StartTime", i.start_time.format());
+    writer. writeElement("TotalTimeSeconds", "0");
+    writer. writeElement("DistanceMeters", "0");
       {
         std::ostringstream ss;
         ss<< (int)(i.calories/100);
         writer.writeElement("Calories", ss.str());
       }
-    writer.writeElement("Intensity", "Active");
-    writer.writeElement("TriggerMethod", "Manual");
+    writer.  writeElement("Intensity", "Active");
+    writer.  writeElement("TriggerMethod", "Manual");
 }
 void TcxWriter::onWorkoutEnd(const WorkoutInfo &)  { 
-    writer.writeElement("Notes", current_wo.start_time.format());
-    writer.endElement("Lap");
+    writer.  writeElement("Notes", current_wo.start_time.format());
+    writer. endElement("Lap");
     writer.endElement("Activity");
 
     if (split_by_track) {
-        writer.endElement("Activities");
+        writer. endElement("Activities");
         writer.endElement("TrainingCenterDatabase");
         writer.endDocument();
     }
@@ -92,20 +96,23 @@ void TcxWriter::onTrackEnd(const TrackInfo&) {
 }
 void TcxWriter::onSample(const SampleInfo &i) { 
     writer.startElement("Trackpoint");
-    writer.writeElement("Time", i.time.format());
+    writer. writeElement("Time", i.time.format());
     if (i.fix != 0) {
-        writer.startElement("Position");
-        writer.writeElement("LatitudeDegrees", i.lat.format());
-        writer.writeElement("LongitudeDegrees", i.lon.format());
-        writer.endElement("Position");
-        writer.writeElement("AltitudeMeters", i.ele.format());
+        writer. startElement("Position");
+        writer.  writeElement("LatitudeDegrees", i.lat.format());
+        writer.  writeElement("LongitudeDegrees", i.lon.format());
+        writer. endElement("Position");
+        writer. writeElement("AltitudeMeters", i.ele.format());
+
+        // required for turtle sports
+        writer. writeElement("DistanceMeters", "0");
     }
     if (i.hr != 0) {
         std::ostringstream ss;
         ss << (int)i.hr;
-        writer.startElement("HeartRateBpm");
-        writer.writeElement("Value", ss.str());
-        writer.endElement("HeartRateBpm");
+        writer. startElement("HeartRateBpm");
+        writer.  writeElement("Value", ss.str());
+        writer. endElement("HeartRateBpm");
     }
     writer.endElement("Trackpoint");
 }

@@ -3,6 +3,7 @@
 #include <memory>
 #include <sstream>
 #include <iostream>
+#include <list>
 
 
 #include <cstring>
@@ -13,6 +14,7 @@
 #ifdef  __MINGW32__
 
 #include <windows.h>
+#include <tchar.h>
 
 class SerialPort::SerialPortD {
   public:
@@ -65,14 +67,30 @@ class SerialPort::SerialPortD {
             close();
             throw std::runtime_error(formatLastError("Failed to get COM timeouts"));
         }
-        ct.ReadTotalTimeoutConstant = 20000;
-        ct.ReadTotalTimeoutMultiplier = 20000;
-        ct.WriteTotalTimeoutMultiplier = 20000;
-        ct.WriteTotalTimeoutConstant = 20000;
+        ct.ReadTotalTimeoutConstant = 2000;
+        ct.ReadTotalTimeoutMultiplier = 2000;
+        ct.WriteTotalTimeoutMultiplier = 2000;
+        ct.WriteTotalTimeoutConstant = 2000;
         if (!::SetCommTimeouts(fd, &ct)) {
             close();
             throw std::runtime_error(formatLastError("Failed to set COM timeouts"));
         }
+    }
+
+    std::list<std::string> enumeratePorts() {
+        std::list<std::string> ports;
+
+        const size_t bufsize = 100000;
+        LPTSTR buf = new TCHAR[bufsize];
+        ::QueryDosDevice(NULL, buf, bufsize);
+
+        while (*buf != '\0') {
+            if (_tcsncmp(buf, _T("COM"), 3) == 0 || _tcsncmp(buf, _T("\\\\.\\COM"), 7) == 0) {
+                ports.push_back(buf);
+            }
+            buf += _tcslen(buf) + 1;
+        }
+        return ports;
     }
     HANDLE fd;
 };
@@ -80,6 +98,8 @@ class SerialPort::SerialPortD {
 #else
 
 
+#include <sys/stat.h>
+#include <dirent.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
@@ -101,28 +121,67 @@ class SerialPort::SerialPortD {
         fd = -1;
     }
     void open(const std::string& filename) {
-    fd = ::open (filename.c_str(), O_RDWR);
-    if (fd == -1) {
-        throw std::runtime_error(formatLastError("failed to open serial port '" + filename + "'"));
+        fd = ::open (filename.c_str(), O_RDWR);
+        if (fd == -1) {
+            throw std::runtime_error(formatLastError("failed to open serial port '" + filename + "'"));
+        }
+
+        struct termios options;
+
+        if (tcgetattr(fd, &options) != 0) {
+            close();
+            throw std::runtime_error(formatLastError("failed to configure serial port '" + filename + "'"));
+        }
+
+        cfsetispeed(&options, B115200);
+        cfsetospeed(&options, B115200);
+        cfmakeraw(&options);
+        options.c_cc[VMIN] = 0;
+        options.c_cc[VTIME] = 50;
+
+        if(tcsetattr(fd, TCSANOW, &options) != 0) {
+            close();
+            throw std::runtime_error(formatLastError("failed to configure serial port '" + filename + "'"));
+        }
     }
+    std::list<std::string> enumeratePorts() {
+        // http://stackoverflow.com/questions/2530096/how-to-find-all-serial-devices-ttys-ttyusb-on-linux-without-opening-them
+        std::list<std::string> retval;
+        const std::string sys_tty = "/sys/class/tty";
+        struct dirent* de;
+        DIR *ds = opendir (sys_tty.c_str());
+        if (ds == nullptr) {
+            throw std::runtime_error(formatLastError("Failed to enumerate " + sys_tty));
+        }
+        while((de=readdir(ds)) != nullptr) {
+            if(!strcmp(de->d_name, ".") || !strcmp(de->d_name, "..")) {
+              continue;
+            }
 
-    struct termios options;
+            std::string fn = sys_tty + "/" + de->d_name;
+            struct stat st;
+            if (::stat(fn.c_str(), &st) == -1) {
+                throw std::runtime_error(formatLastError("stat " + fn));
+            }
+            if(!S_ISDIR(st.st_mode)) {
+                continue;
+            }
 
-    if (tcgetattr(fd, &options) != 0) {
-        close();
-        throw std::runtime_error(formatLastError("failed to configure serial port '" + filename + "'"));
-    }
+            std::string link(1024, '\0');
+            if (readlink((fn + "/device/driver").c_str(), &link[0], 1024) == -1) {
+                continue;
+            }
 
-    cfsetispeed(&options, B115200);
-    cfsetospeed(&options, B115200);
-    cfmakeraw(&options);
-    options.c_cc[VMIN] = 0;
-    options.c_cc[VTIME] = 50;
+            std::string driver = basename(link.c_str());
+            if (driver != "cp210x") {
+                continue;
+            }
 
-    if(tcsetattr(fd, TCSANOW, &options) != 0) {
-        close();
-        throw std::runtime_error(formatLastError("failed to configure serial port '" + filename + "'"));
-    }
+            std::string devfn = std::string("/dev/") + de->d_name;
+            retval.push_back(devfn);
+        }
+        ::closedir(ds);
+        return retval;
     }
   public:
     int fd;
@@ -132,7 +191,8 @@ class SerialPort::SerialPortD {
 #endif
 
 
-SerialPort::SerialPort() : d(new SerialPortD()) { }
+SerialPort::SerialPort() : d(new SerialPortD()) {
+}
 
 void SerialPort::open(const std::string& filename) {
     std::cerr << "opening com port at " << filename << std::endl;
@@ -162,24 +222,10 @@ void SerialPort::write(const std::vector<unsigned char>& buf) {
     }
 }
 
-std::vector<std::string> SerialPort::enumeratePorts() {
-    std::vector<std::string> ports;
-
-    /*
-    const size_t bufsize = 100000;
-    LPTSTR buf = new TCHAR[bufsize];
-    ::QueryDosDevice(NULL, buf, bufsize);
-
-    while (*buf != '\0') {
-        if (_tcsncmp(buf, L"COM", 3) == 0) {
-            ports.push_back(buf);
-        }
-        buf += _tcslen(buf) + 1;
-    }
-*/
-    return ports;
+std::list<std::string> SerialPort::enumeratePorts() {
+    std::shared_ptr<SerialPortD> p(new SerialPortD());
+    return p->enumeratePorts();
 }
-
 
 std::string formatLastError(const std::string& msg) {
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <vector>
+#include <list>
 #include <string>
 
 
@@ -18,7 +19,7 @@ class SerialPort {
     void read(std::vector<unsigned char>& buf);
     void write(const std::vector<unsigned char>& buf);
 
-    static std::vector<std::string> enumeratePorts();
+    static std::list<std::string> enumeratePorts();
   private:
     class SerialPortD;
     std::auto_ptr<SerialPortD> d;

@@ -201,9 +201,10 @@ TODO:
 -----
 
 * Auto-scan for serial port (WIP)
-* Implement filters (e.g. correct altitude data from online sources)
 * find proper name for the project
-* get more details about the watch itself (manufacturer, architecture)
+* get more details about the watch itself (manufacturer, architecture), firmware upgrade server...
+* clear watch memory (need help for that, please submit windows/original software serial sniff logs)
+* Implement filters (e.g. correct altitude data from online sources)
 
 
 
@@ -217,7 +218,7 @@ GPS Software:
 * [My Tourbook](http://mytourbook.sourceforge.net/mytourbook/) works great with the TCX files. I like it.
 * [Viking GPS data editor and analyzer](http://sourceforge.net/projects/viking/)
 * [Alternatives to My tourbook](http://alternativeto.net/software/my-tourbook/)
-* [Turtle Sport](http://turtlesport.sourceforge.net/EN/home.html)
+* [Turtle Sport](http://turtlesport.sourceforge.net/EN/home.html) does currently not work with the tcx files, due to a bug. Use gpsbabel tcx->gpx and import gpx instead.
 * [gpsbabel](http://www.gpsbabel.org/)
 
 Technical links:
@@ -234,4 +235,11 @@ Similar projects:
 Uses:
 * [genx xml library](http://www.tbray.org/ongoing/When/200x/2004/02/20/GenxStatus).
 * Inno setup
+
+
+Thanks:
+-------
+
+* Yarema
+* Wolfram
 

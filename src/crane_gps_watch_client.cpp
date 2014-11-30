@@ -27,8 +27,24 @@
 #include "Watch.hpp"
 #include "SerialLink.hpp"
 #include "ImageLink.hpp"
+#include "SerialPort.hpp"
 
 
+std::shared_ptr<DeviceInterface> scan_serial_ports() {
+    std::cerr << "autodetecting serial ports" << std::endl;
+    const std::list<std::string>& candidates = SerialPort::enumeratePorts();
+    for (auto port : candidates) {
+        try {
+            std::shared_ptr<DeviceInterface> device = std::make_shared<SerialLink>(port);
+            device->readVersion();
+            return device;
+        }
+        catch (const std::runtime_error& e) {
+            std::cerr << "autodetect failed: " << e.what() << std::endl;
+        }
+    }
+    return std::shared_ptr<DeviceInterface>();
+}
 
 std::string format_date_filename() {
     auto t = std::time(nullptr);
@@ -40,13 +56,6 @@ std::string format_date_filename() {
 }
 
 int main(int argc, char** argv) {
-
-    std::string default_device;
-#ifdef __MINGW32__
-    default_device = "COM3";
-#else
-    default_device = "/dev/ttyUSB0";
-#endif
 
     try {
 
@@ -83,7 +92,7 @@ int main(int argc, char** argv) {
                   PACKAGE_STRING "\n"
                   "crane_gps_watch_client --help\n"
                   "\n"
-                  "crane_gps_watch_client [--output output-filename | --split] [--device " << default_device << " | --from_image image-file] [--to_image image-file] [--verbose]\n" 
+                  "crane_gps_watch_client [--output output-filename | --split] [--device auto | --from_image image-file] [--to_image image-file] [--verbose]\n" 
                   "\n"
                   "See README.md or https://github.com/mru00/crane_gps_watch for details\n"
                   "Send bugreports to " PACKAGE_BUGREPORT
@@ -134,18 +143,30 @@ int main(int argc, char** argv) {
         }
 
         if (device_fn.empty()) {
-            device_fn = default_device;
+            // XXX device_fn = "auto";
+#ifdef __MINGW32__
+            device_fn = "COM5";
+#else
+            device_fn = "/dev/ttyUSB0";
+#endif
         }
 
         if (output_fn.empty()) {
-            // set default output filename
             output_fn = format_date_filename() + ".tcx";
         }
 
 
         std::shared_ptr<DeviceInterface> device;
         if (from_image.empty()) {
-            device = std::make_shared<SerialLink>(device_fn);
+            if (device_fn == "auto") {
+                device = scan_serial_ports();
+                if (!device) {
+                    throw std::runtime_error("failed to auto-detect serial port, please check connection");
+                }
+            }
+            else {
+                device = std::make_shared<SerialLink>(device_fn);
+            }
         }
         else {
             device = std::make_shared<ImageLink>(from_image);
