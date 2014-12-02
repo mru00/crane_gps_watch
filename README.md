@@ -113,6 +113,10 @@ Crane GPS Watch client uses make to build:
 	sudo make install
 
 
+Make sure you have the rights to access the serial port. Usually you have to
+be member of the `dialout` group (debian based distros). Consult a 
+[search engine](https://duckduckgo.com/?q=serial+port+access+group+linux) 
+to find a solution for other distros and let me know so I can update this documentation.
 
 `make check` can be used to run the test suite. The test suite requires 
 additional programs to be installed: `xmllint` from `libxml2-utils`.

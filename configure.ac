@@ -1,6 +1,6 @@
 # Copyright (C) 2014 mru@sisyphus.teil.cc
 
-AC_INIT([crane_gps_watch_client], [0.2], [mru@sisyphus.teil.cc], [crane_gps_watch_client], [https://github.com/mru00/crane_gps_watch])
+AC_INIT([crane_gps_watch_client], [0.2-d], [mru@sisyphus.teil.cc], [crane_gps_watch_client], [https://github.com/mru00/crane_gps_watch])
 AM_INIT_AUTOMAKE([-Wall])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
