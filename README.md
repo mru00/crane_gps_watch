@@ -184,15 +184,16 @@ Enjoy!
 Auto import
 -----------
 
-Note: this is experimental and not well documented and badly implemented and not intended for the end-user.
+Note: this is experimental and not well documented and badly implemented and not intended for the end-user. You have been warned ;)
 
 The script requires the package `python-pyudev` to be installed.
 
-This package also ships the script `gps_watch_monitor.py` and `gps_watch_onconnect.sh`.
+This repository also ships the scripts `gps_watch_monitor.py` and `gps_watch_onconnect.sh`.
 
 
 `gps_watch_monitor.py` is intended to be auto-started with your X session.
-To enable auto-start copy the file `gps_watch_monitor.desktop` (usually in `/usr/local/share/crane_gps_watch_client`) 
+To enable auto-start copy the file `gps_watch_monitor.desktop` (usually in 
+`/usr/local/share/crane_gps_watch_client` after installation) 
 to `~/.config/autostart`. 
 
 It monitors the UDEV bus for

@@ -36,16 +36,19 @@ crane_gps_watch_client --device $serial_device --verbose --split --clear
 
 echo
 
-tb=~/opt/tourbook/mytourbook/mytourbook
+# start mytourbook
 
-# if mytourbook is not started, start it
+tb=~/opt/tourbook/mytourbook/mytourbook
 if [[ -z "$(pgrep -f $tb)" ]]; then
+  # if mytourbook is not started, start it
   echo "starting $tb"
   nohup $tb &
 else
   # else bring it to front
   wmctrl -a $(basename $tb) || true
 fi
+
+
 
 echo
 echo "completed"
