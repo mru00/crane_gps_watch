@@ -148,6 +148,7 @@ USAGE:
 	crane_gps_watch_client --help      show the help screen
 
 	crane_gps_watch_client 
+    [--clear]                        delete workout info on watch. still experimental.
     [--output "filename"]            override default filename, write single file for all tracks.
     [--split]                        write file for each track.
     [--device "/dev/tty..."]         override default device file / com port.
@@ -165,7 +166,11 @@ Default is to write a single .tcx file that contains all tracks. When this optio
 is ignored. The files are written in the current directory. The filename is taken from the start time of the workout track.
 If a file already exists, it will be overwritten.
 
-The `--device` option is used to specify the device file, default is '/dev/ttyUSB0' (linux) or 'COM3' (windows).
+The `--device` option is used to specify the device file, default is 'auto'. 'auto' enables
+the automatic port detection. If auto-detect does not work for you, please file a bug report.
+
+`--clear` clears the workouts from the watch *after* they are successfully transfered.
+
 
 
 
@@ -200,11 +205,12 @@ modify it to your needs.
 TODO:
 -----
 
-* Auto-scan for serial port (WIP)
+* Auto-scan for serial port (in testing)
 * find proper name for the project
-* get more details about the watch itself (manufacturer, architecture), firmware upgrade server...
-* clear watch memory (need help for that, please submit windows/original software serial sniff logs)
+* get more details about the watch itself (manufacturer, architecture), firmware upgrade server... (WIP)
+* clear watch memory (need help for that, please submit windows/original software serial sniff logs) (in testing)
 * Implement filters (e.g. correct altitude data from online sources)
+* http://www.movable-type.co.uk/scripts/latlong.html for distances in tcx files. would be required for turtle sports
 
 
 

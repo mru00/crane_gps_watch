@@ -1,7 +1,7 @@
 # Copyright (C) 2014 mru@sisyphus.teil.cc
 
 bin_PROGRAMS = crane_gps_watch_client
-crane_gps_watch_client_SOURCES = crane_gps_watch_client.cpp \
+crane_gps_watch_client_SOURCES = main.cpp \
  GpsLint.cpp XmlFileWriter.cpp ImageWriter.cpp \
  DebugWriter.cpp DataTypes.cpp MemoryBlock.cpp \
  ImageLink.cpp SerialLink.cpp SerialPort.cpp TcxWriter.cpp Watch.cpp \

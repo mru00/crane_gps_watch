@@ -17,6 +17,7 @@ DebugWriter::DebugWriter(int level) : debug_level(level) , wo_samples_with_coord
 void DebugWriter::onWatch(const WatchInfo &i) {
     std::cout << "watch begin"
       << " version='" << i.version << "'"
+      << " version2='" << i.version2 << "'"
       << " firmware='" << i.firmware << "'"
       << " timezone=" << (int)i.timezone << "=0x" << std::hex << (int)i.timezone << std::dec
       << std::endl;

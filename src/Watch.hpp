@@ -19,8 +19,9 @@ class Watch {
 
   public:
     Watch(std::shared_ptr<DeviceInterface> device);
-    void parse();
     void addRecipient(std::shared_ptr<Callback> c);
+    void parse();
+    void clearWorkouts();
   private:
 
     void parseGpsEle(GpsEle& l, WatchMemoryBlock::mem_it_t it);
@@ -29,8 +30,11 @@ class Watch {
     void parseGpsTime(GpsTime& t, WatchMemoryBlock::mem_it_t it);
     void parseSample(SampleInfo& si, WatchMemoryBlock::mem_it_t& it);
     void parseWO(WorkoutInfo& wo, int first, int count);
+    void parseToc(Toc& toc, WatchMemoryBlock::mem_it_t it);
     void parseBlock0();
+
     void readBlock(WatchMemoryBlock& b);
+    void writeBlock(WatchMemoryBlock& b);
 
   private:
     Broadcaster br;

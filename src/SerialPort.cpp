@@ -195,9 +195,8 @@ SerialPort::SerialPort() : d(new SerialPortD()) {
 }
 
 void SerialPort::open(const std::string& filename) {
-    std::cerr << "opening com port at " << filename << std::endl;
+    std::cerr << "Opening serial port '" << filename << "'" << std::endl;
     d->open(filename);
-
 }
 
 void SerialPort::close() {

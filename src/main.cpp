@@ -59,8 +59,9 @@ int main(int argc, char** argv) {
 
     try {
 
-        bool do_lint = false;
-        bool split_by_track = false;
+        auto do_lint = false;
+        auto split_by_track = false;
+        auto clear_workouts = false;
         int debug_level = 0;
 
         std::string from_image;
@@ -72,6 +73,7 @@ int main(int argc, char** argv) {
             static struct option long_options[] = {
                   {"help", no_argument, 0, 'h'},
                   {"output", required_argument, 0, 'f'},
+                  {"clear", no_argument, 0, 'c'},
                   {"device", required_argument, 0, 'd'},
                   {"from_image", required_argument, 0, 'i'},
                   {"to_image", required_argument, 0, 't'},
@@ -109,6 +111,9 @@ int main(int argc, char** argv) {
                 }
                 device_fn = optarg;
                 break;
+              case 'c':
+                clear_workouts = true;
+                break;
               case 's':
                 if (!output_fn.empty()) {
                     throw std::runtime_error("cannot use --output and --split at the same time");
@@ -143,12 +148,7 @@ int main(int argc, char** argv) {
         }
 
         if (device_fn.empty()) {
-            // XXX device_fn = "auto";
-#ifdef __MINGW32__
-            device_fn = "COM5";
-#else
-            device_fn = "/dev/ttyUSB0";
-#endif
+            device_fn = "auto";
         }
 
         if (output_fn.empty()) {
@@ -187,6 +187,11 @@ int main(int argc, char** argv) {
 
         watch.parse();
 
+        if (clear_workouts) {
+            std::cerr << "clearing watch data" << std::endl;
+            watch.clearWorkouts();
+            std::cerr << "watch data cleared" << std::endl;
+        }
 
         return 0;
 

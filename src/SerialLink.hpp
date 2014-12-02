@@ -17,18 +17,22 @@ class SerialLink : public DeviceInterface {
   public:
     SerialLink(const std::string& filename);
     virtual ~SerialLink() {};
-    virtual void readMemory(unsigned addr, unsigned count, unsigned char* it);
-    virtual std::string readVersion();
+    void readMemory(unsigned addr, unsigned count, unsigned char* it) override;
+    void writeMemory(unsigned addr, unsigned count, unsigned char* it) override ;
+    std::string readVersion() override;
+    std::string readVersion2() override;
+    void clearFlash1() override;
+    void clearFlash2() override;
 
   private:
 
-    void sendCommand(unsigned char opcode, std::vector<unsigned char> payload);
-    void receiveReply(unsigned char& opcode, std::vector<unsigned char>& target);
+    void sendCommand(const unsigned char opcode, const std::vector<unsigned char>& payload);
+    void receiveReply(const unsigned char opcode, std::vector<unsigned char>& target);
     unsigned char expect(unsigned char val);
     void write(std::vector<unsigned char>& buf);
     unsigned char read();
     void read(std::vector<unsigned char>& buf);
-    unsigned short checksum(unsigned char opcode, std::vector<unsigned char> payload);
+    unsigned short checksum(unsigned char opcode, const std::vector<unsigned char>& payload);
 
   private:
     std::string filename;

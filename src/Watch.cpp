@@ -23,13 +23,34 @@
 Watch::Watch(std::shared_ptr<DeviceInterface> device) : br(), device(device) {
 }
 
+void Watch::addRecipient(std::shared_ptr<Callback> c) {
+    br.addRecipient(c);
+}
+
 void Watch::parse() {
     parseBlock0();
 }
 
-void Watch::addRecipient(std::shared_ptr<Callback> c) {
-    br.addRecipient(c);
+void Watch::clearWorkouts() {
+    // ensure we are connected
+    std::string version = device->readVersion();
+
+    // XXX don't read the block0 twice if read already
+
+
+    // read block 0, we need to write it back later
+    WatchMemoryBlock cb(0, 1);
+    readBlock(cb);
+
+    device->clearFlash1();
+    device->clearFlash2();
+
+    // download settings again - and only settings. 
+    // toc etc stays untouched
+    cb.memory.resize(0x100);
+    writeBlock(cb);
 }
+
 
 void Watch::parseGpsEle(GpsEle& l, WatchMemoryBlock::mem_it_t it) {
     l.ele = *it++;
@@ -176,6 +197,7 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
     bool has_full_fix = false;
 
 
+    // something is wrong with nsamples - trusting "0xff" works better
     for (unsigned i =0; /*i< wo.nsamples*/;i++) {
 
         assert (it < cb.memory.end());
@@ -270,14 +292,38 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
 
     br.onWorkoutEnd(wo);
 }
+void Watch::parseToc(Toc& toc, WatchMemoryBlock::mem_it_t it) {
+    toc.clear();
+
+    for (;;) {
+        std::ostringstream ss;
+
+        unsigned char cur;
+        unsigned char first;
+        cur = first = *it++;
+        if (first == 0xff) {
+            break;
+        }
+
+        ss << (int)cur;
+        while (*it != 0xff) {
+            cur = *it++;
+            ss << "," << (int)cur;
+        }
+
+        toc.push_back(1+cur-first);
+        ++it;
+    }
+}
 void Watch::parseBlock0() {
 
-    std::string version = device->readVersion();
-    WatchMemoryBlock mb(0, 1);
-    readBlock(mb);
     WatchInfo wi;
 
-    wi.version = version;
+    wi.version = device->readVersion();
+    wi.version2 = device->readVersion2();
+
+    WatchMemoryBlock mb(0, 1);
+    readBlock(mb);
 
     WatchMemoryBlock::mem_it_t mem_it = mb.memory.begin();
 
@@ -300,26 +346,13 @@ void Watch::parseBlock0() {
     br.onWatch(wi);
 
     mem_it = mb.memory.begin() + 0x100;
-    for (;;) {
-        std::ostringstream ss;
+    parseToc(wi.toc, mem_it);
 
-        unsigned char cur;
-        unsigned char first;
-        cur = first = *mem_it++;
-        if (first == 0xff) {
-            break;
-        }
-
-        ss << (int)cur;
-        while (*mem_it != 0xff) {
-            cur = *mem_it++;
-            ss << "," << (int)cur;
-        }
-
+    int f = 1;
+    for (auto t : wi.toc) {
         WorkoutInfo wo;
-        wo.toc = ss.str();
-        parseWO(wo, first, 1+cur-first);
-        ++mem_it;
+        parseWO(wo, f, t);
+        f+=t;
     }
 
     br.onWatchEnd(wi);
@@ -349,4 +382,24 @@ void Watch::readBlock(WatchMemoryBlock& b) {
     }
 }
 
+void Watch::writeBlock(WatchMemoryBlock& b) {
+    // read b.count bytes from block# b.id
+    const unsigned readSize = 0x80;
+    const unsigned rcount = b.blockSize / readSize;
+
+    WatchMemoryBlock::mem_it_t mem_it = b.memory.begin();
+    for (unsigned block = 0; block < b.count; block++) {
+        unsigned block_start = (b.id+block)*b.blockSize;
+
+        for (unsigned nbyte = 0; nbyte < rcount; nbyte++) {
+
+            // special case for write settings after flash clear:
+            // only download the first 0x100 bytes, not the full segment
+
+            if (mem_it >= b.memory.end()) return;
+            device->writeMemory(block_start + nbyte*readSize, readSize, &*mem_it);
+            mem_it += readSize;
+        }
+    }
+}
 

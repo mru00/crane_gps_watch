@@ -31,7 +31,7 @@ sleep 1
 echo "importing data"
 echo
 
-crane_gps_watch_client --device $serial_device --verbose --to_image ~/dev/crane_gps_watch_client/test/images/image-${now_fn}.bin
+crane_gps_watch_client --device $serial_device --verbose --split --clear
 
 
 echo

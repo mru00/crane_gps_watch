@@ -47,6 +47,13 @@ struct GpsTime {
 };
 
 
+// Toc is a list of numbers;
+// each entry designates one workout record.
+// the number is the number of memory blocks for that record.
+struct Toc : public std::vector<int> {
+};
+
+
 struct SampleInfo {
     enum {
         Full = 0x00,
@@ -79,7 +86,6 @@ struct WorkoutInfo {
     double speed_avg;
     double speed_max;
     double calories;
-    std::string toc;
 };
 
 struct TrackInfo {
@@ -93,7 +99,9 @@ struct WatchInfo {
     std::vector<std::string> path_names;
     std::vector<std::string> profile_names;
     std::string version;
+    std::string version2;
     std::string firmware;
+    Toc toc;
 };
 
 
