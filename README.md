@@ -226,6 +226,7 @@ GPS Software:
 * [Alternatives to My tourbook](http://alternativeto.net/software/my-tourbook/)
 * [Turtle Sport](http://turtlesport.sourceforge.net/EN/home.html) does currently not work with the tcx files, due to a bug. Use gpsbabel tcx->gpx and import gpx instead.
 * [gpsbabel](http://www.gpsbabel.org/)
+* [serial port monitor](http://www.serial-port-monitor.com/)
 
 Technical links:
 

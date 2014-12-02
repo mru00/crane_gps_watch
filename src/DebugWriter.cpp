@@ -11,7 +11,7 @@
 #include "DataTypes.hpp"
 #include "DebugWriter.hpp"
 
-DebugWriter::DebugWriter(int level) : debug_level(level) , wo_samples_with_coord(0), wo_samples(0) {
+DebugWriter::DebugWriter(int level) : debug_level(level) , wo_samples_with_coord(0), wo_samples(0), num_workouts(0) {
 }
 
 void DebugWriter::onWatch(const WatchInfo &i) {
@@ -23,34 +23,46 @@ void DebugWriter::onWatch(const WatchInfo &i) {
       << std::endl;
 }
 void DebugWriter::onWatchEnd(const WatchInfo &) {
-    std::cout << "watch end" << std::endl;
+    if (debug_level > 0) {
+        std::cout << "watch end" << std::endl;
+    }
+    std::cout << num_workouts << " workouts read from watch" << std::endl;
 }
 void DebugWriter::onWorkout(const WorkoutInfo &i)  {
-    std::cout 
-      << std::endl
-      << " workout info"
-      << " t=" << i.start_time.format()
-      << " d=" << put_time(&i.workout_time.time, "%H:%M:%S") << "=" << i.workout_time.time.tm_hour*60*60 + i.workout_time.time.tm_min*60 +i.workout_time.time.tm_sec
-      << " nsamples=" << i.nsamples << "=0x" << std::hex << i.nsamples << std::dec
-      //<< " toc=" << i.toc
-      << std::endl;
+    if (debug_level > 0) {
+        std::cout 
+          << std::endl
+          << " workout info"
+          << " t=" << i.start_time.format()
+          << " d=" << put_time(&i.workout_time.time, "%H:%M:%S") << "=" << i.workout_time.time.tm_hour*60*60 + i.workout_time.time.tm_min*60 +i.workout_time.time.tm_sec
+          << " nsamples=" << i.nsamples << "=0x" << std::hex << i.nsamples << std::dec
+          //<< " toc=" << i.toc
+          << std::endl;
+    }
     wo_samples_with_coord = wo_samples = 0;
+    num_workouts ++;
 }
 void DebugWriter::onWorkoutEnd(const WorkoutInfo &i) {
-    std::cout 
-      << " workout end"
-      << " samples with gps=" << wo_samples_with_coord
-      << " samples=" << wo_samples
-      << " avg_time_diff=" << diff_acc/(wo_samples-1)
-      << " d=" << i.nsamples*diff_acc/(wo_samples-1)
-      << std::endl
-      << std::endl;
+    if (debug_level > 0) {
+        std::cout 
+          << " workout end"
+          << " samples with gps=" << wo_samples_with_coord
+          << " samples=" << wo_samples
+          << " avg_time_diff=" << diff_acc/(wo_samples-1)
+          << " d=" << i.nsamples*diff_acc/(wo_samples-1)
+          << std::endl
+          << std::endl;
+    }
 }
 void DebugWriter::onTrack(const TrackInfo &)  {
-    std::cout << "  track begin" << std::endl;
+    if (debug_level > 0) {
+        std::cout << "  track begin" << std::endl;
+    }
 }
 void DebugWriter::onTrackEnd(const TrackInfo &)  {
-    std::cout << "  track end" << std::endl;
+    if (debug_level > 0) {
+        std::cout << "  track end" << std::endl;
+    }
 }
 void DebugWriter::onSample(const SampleInfo &i) {
     if (debug_level > 1) {
@@ -88,7 +100,9 @@ void DebugWriter::onSample(const SampleInfo &i) {
 
 }
 void DebugWriter::onReadBlocks(int id, int count) {
-    std::cout << "memory block #" << id << " + " << count-1 << std::endl;
+    if (debug_level > 0) {
+        std::cout << "memory block #" << id << " + " << count-1 << std::endl;
+    }
 }
 void DebugWriter::onReadBlock(int id, int addr, unsigned char*, size_t) {
     if (debug_level > 1) {

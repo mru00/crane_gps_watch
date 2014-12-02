@@ -33,16 +33,10 @@ TcxWriter::~TcxWriter() {
     }
 }
 void TcxWriter::onWatch(const WatchInfo &) {
-    if (!split_by_track) {
-        writer.open(filename);
-        writer.startDocument();
-        writer.startElement("TrainingCenterDatabase");
-        writer.writeAttribute("xmlns", "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2");
-        writer.startElement("Activities");
-    }
 }
 void TcxWriter::onWatchEnd(const WatchInfo &) {
-    if (!split_by_track) {
+    // only close when at least one workout was written... if the writer is open
+    if (!split_by_track && writer.isOpen()) {
         writer.endElement("Activities");
         writer.endElement("TrainingCenterDatabase");
         writer.endDocument();
@@ -59,6 +53,17 @@ void TcxWriter::onWorkout(const WorkoutInfo &i)  {
         writer.startElement("TrainingCenterDatabase");
         writer.writeAttribute("xmlns", "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2");
         writer.startElement("Activities");
+    }
+    else {
+        // open document on the first workout for non-split mode
+
+        if (!writer.isOpen()) {
+            writer.open(filename);
+            writer.startDocument();
+            writer.startElement("TrainingCenterDatabase");
+            writer.writeAttribute("xmlns", "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2");
+            writer.startElement("Activities");
+        }
     }
 
     current_wo = i;

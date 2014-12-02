@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
                   PACKAGE_STRING "\n"
                   "crane_gps_watch_client --help\n"
                   "\n"
-                  "crane_gps_watch_client [--output output-filename | --split] [--device auto | --from_image image-file] [--to_image image-file] [--verbose]\n" 
+                  "crane_gps_watch_client [--clear] [--output output-filename | --split] [--device auto | --from_image image-file] [--to_image image-file] [--verbose]\n" 
                   "\n"
                   "See README.md or https://github.com/mru00/crane_gps_watch for details\n"
                   "Send bugreports to " PACKAGE_BUGREPORT
@@ -178,9 +178,7 @@ int main(int argc, char** argv) {
         if (!to_image.empty()) {
             watch.addRecipient(std::make_shared<ImageWriter>(to_image));
         }
-        if (debug_level > 0) {
-            watch.addRecipient(std::make_shared<DebugWriter>(debug_level));
-        }
+        watch.addRecipient(std::make_shared<DebugWriter>(debug_level));
         if (do_lint) {
             watch.addRecipient(std::make_shared<GpsLint>());
         }
