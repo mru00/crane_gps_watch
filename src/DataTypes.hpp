@@ -46,6 +46,45 @@ struct GpsTime {
     std::string format() const;
 };
 
+enum DisplayItems {
+    Altitude,
+    Calories,
+    Distance,
+    Heading,
+    HR_Avg, HR_Max, HR_Min, HR,
+    HRZ_Abv, HRZ_Blw, HRZ_In,
+    LapDist, LapNo, LapTime,
+    PaceAvg, PaceMax, Pace,
+    SpeedAvg, SpeedMax, Speed,
+    TimeOfDay,
+    WkoutTime,
+    WP
+};
+
+struct Language {
+    enum language_t {
+        English,
+        French,
+        Spanish,
+        German,
+        Italiano
+    } language;
+    Language& operator= (unsigned char);
+    std::string format() const;
+};
+
+struct Profile {
+    enum profile_e {
+        Running, 
+        Cycling, 
+        Hiking,
+        Sailing,
+        User
+    } profile;
+
+    Profile& operator= (unsigned char);
+    std::string format() const;
+};
 
 // Toc is a list of numbers;
 // each entry designates one workout record.
@@ -81,7 +120,7 @@ struct WorkoutInfo {
     unsigned lapcount;
     GpsTime start_time;
     GpsTime workout_time;
-    unsigned profile;
+    Profile profile;
     double total_km;
     double speed_avg;
     double speed_max;
@@ -94,7 +133,8 @@ struct TrackInfo {
 struct WatchInfo {
     unsigned timezone;
     unsigned sample_interval;
-    unsigned selected_profile;
+    Profile selected_profile;
+    Language language;
     unsigned nblocks;
     std::vector<std::string> path_names;
     std::vector<std::string> profile_names;

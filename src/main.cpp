@@ -57,6 +57,8 @@ std::string format_date_filename() {
 
 int main(int argc, char** argv) {
 
+    errno = 0;
+
     try {
 
         auto do_lint = false;

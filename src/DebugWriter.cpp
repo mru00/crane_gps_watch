@@ -16,6 +16,8 @@ DebugWriter::DebugWriter(int level) : debug_level(level) , wo_samples_with_coord
 
 void DebugWriter::onWatch(const WatchInfo &i) {
     std::cout << "watch begin"
+      << " p=" << i.selected_profile.format()
+      << " l=" << i.language.format()
       << " version='" << i.version << "'"
       << " version2='" << i.version2 << "'"
       << " firmware='" << i.firmware << "'"
@@ -33,6 +35,7 @@ void DebugWriter::onWorkout(const WorkoutInfo &i)  {
         std::cout 
           << std::endl
           << " workout info"
+          << " p=" << i.profile.format()
           << " t=" << i.start_time.format()
           << " d=" << put_time(&i.workout_time.time, "%H:%M:%S") << "=" << i.workout_time.time.tm_hour*60*60 + i.workout_time.time.tm_min*60 +i.workout_time.time.tm_sec
           << " nsamples=" << i.nsamples << "=0x" << std::hex << i.nsamples << std::dec

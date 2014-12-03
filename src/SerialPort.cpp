@@ -107,10 +107,11 @@ class SerialPort::SerialPortD {
 
 class SerialPort::SerialPortD {
   public:
-    size_t read(std::vector<unsigned char> & buf) {
+    ssize_t read(std::vector<unsigned char> & buf) {
+        errno = 0;
         return ::read(fd, &buf[0], buf.size());
     }
-    size_t write(const std::vector<unsigned char> & buf) {
+    ssize_t write(const std::vector<unsigned char> & buf) {
         return ::write(fd, &buf[0], buf.size());
     }
     bool isopen() {
@@ -207,8 +208,13 @@ void SerialPort::read(std::vector<unsigned char>& buf) {
     if (!d->isopen()) {
         throw std::runtime_error("trying to read from closed serial port");
     }
-    if ( d->read(buf) != buf.size() ) {
-        throw std::runtime_error(formatLastError("Serial link: failed to read expected number of bytes"));
+    ssize_t nread = d->read(buf);
+    if ( nread != (ssize_t)buf.size() ) {
+        std::stringstream ss;
+        ss << "Serial link: failed to read expected number of bytes"
+          << " expected: " << (int) buf.size()
+          << " actual: " << (int) nread;
+        throw std::runtime_error(formatLastError(ss.str()));
     }
 }
 
@@ -216,7 +222,8 @@ void SerialPort::write(const std::vector<unsigned char>& buf) {
     if (!d->isopen()) {
         throw std::runtime_error("trying to write on closed serial port");
     }
-    if ( d->write(buf) != buf.size() ) {
+    ssize_t nwrite = d->write(buf);
+    if ( nwrite != (ssize_t)buf.size() ) {
         throw std::runtime_error(formatLastError("Serial link: failed to write expected number of bytes"));
     }
 }

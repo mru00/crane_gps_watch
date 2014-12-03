@@ -28,7 +28,7 @@ class SerialLink : public DeviceInterface {
 
     void sendCommand(const unsigned char opcode, const std::vector<unsigned char>& payload);
     void receiveReply(const unsigned char opcode, std::vector<unsigned char>& target);
-    unsigned char expect(unsigned char val);
+    unsigned char expect(unsigned char val, const std::string& desc);
     void write(std::vector<unsigned char>& buf);
     unsigned char read();
     void read(std::vector<unsigned char>& buf);

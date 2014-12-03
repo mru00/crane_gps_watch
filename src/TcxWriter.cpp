@@ -18,11 +18,6 @@
 #include "TcxWriter.hpp"
 
 
-
-// this need to be configurable
-const char* sports = "Other";
-
-
 TcxWriter::TcxWriter(std::string filename, bool split_by_track) :  writer(), filename(filename), current_wo(), split_by_track(split_by_track) {
 }
 TcxWriter::~TcxWriter() {
@@ -66,9 +61,21 @@ void TcxWriter::onWorkout(const WorkoutInfo &i)  {
         }
     }
 
+    std::string sport;
+    switch (i.profile.profile) {
+      case Profile::Running:
+        sport = "Running";
+        break;
+      case Profile::Cycling:
+        sport = "Biking";
+        break;
+      default:
+        sport = "Other";
+    }
+
     current_wo = i;
     writer.startElement("Activity");
-    writer. writeAttribute("Sport", sports);
+    writer. writeAttribute("Sport", sport);
     writer. writeElement("Id", i.start_time.format());
     writer. startElement("Lap");
     writer. writeAttribute("StartTime", i.start_time.format());

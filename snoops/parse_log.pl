@@ -131,6 +131,7 @@ foreach my $entry (@$entries) {
     my $opcode = $+{opcode};
     my $data = $+{payload};
 
+    print "#$opcode ";
 
     if ($opcode eq "10") {
       print "q: version";
@@ -150,10 +151,10 @@ foreach my $entry (@$entries) {
       print $read_fh pack('H*', $data);
     }
     elsif ($opcode eq "2C") {
-      print "q: unknown1";
+      print "q: version long";
     }
     elsif ($opcode eq "2D") {
-     print "a: unknown1";
+     print "a: version long";
     }
     elsif ($opcode eq "16") {
       $data =~ /(?<w_addr>......)(?<w_len>..)(?<w_data>(..)*)/;
@@ -161,7 +162,7 @@ foreach my $entry (@$entries) {
       my $w_len = hex $+{w_len};
       my $w_data = $+{w_data};
       $w_addr =~ s/(..)(..)(..)/$3$2$1/;
-      print "q: write data $w_addr $w_len $w_data";
+      print "q: write data $w_addr $w_len";
       seek($write_fh, hex $w_addr, 0);
       print $write_fh pack('H*', $w_data);
 
@@ -175,7 +176,8 @@ foreach my $entry (@$entries) {
     }
 
     my $len = (hex $+{len}) - 1;
-    print " #$opcode [$+{payload}][$len]\n";
+    #print " #$opcode [$+{payload}][$len]";
+    print "\n";
 
   }
   else {

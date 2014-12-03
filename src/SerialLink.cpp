@@ -10,17 +10,10 @@
 #include <stdexcept>
 #include <sstream>
 
-
 #include <cstring>
 
-
-
 #include "SerialPort.hpp"
-
 #include "SerialLink.hpp"
-
-
-const bool inhibit_clear = false;
 
 
 SerialLink::SerialLink(const std::string& filename) : filename(filename) {
@@ -43,17 +36,19 @@ void SerialLink::readMemory(unsigned addr, unsigned count, unsigned char* it) {
 
 void SerialLink::writeMemory(unsigned addr, unsigned count, unsigned char* it) {
     std::cerr << "sending write 0x16 " << addr << "/" << count << std::endl;
-    if (inhibit_clear) {
-        return;
-    }
-
-    std::vector<unsigned char> tx(8 + count);
+    std::vector<unsigned char> tx(4 + count);
     std::vector<unsigned char> rx;
     tx[0] = addr;
     tx[1] = addr >> 8;
     tx[2] = addr >> 16;
     tx[3] = count;
     std::copy(it, it+count, &tx[0]+4);
+    if (0) {
+        for (auto v : tx) {
+            std::cout << std::setw(2) << std::setfill('0') << std::hex << (int) v << " ";
+        }
+        std::cout << std::endl;
+    }
     sendCommand(0x16, tx);
     receiveReply(0x17, rx);
     // XXX assert rx.size == 0
@@ -82,19 +77,13 @@ std::string SerialLink::readVersion2() {
 }
 void SerialLink::clearFlash1() {
     std::cerr << "sending clear1 0x24" << std::endl;
-    if (inhibit_clear) {
-        return;
-    }
-    std::vector<unsigned char> tmp;
+    std::vector<unsigned char> tmp(0);
     sendCommand(0x24, std::vector<unsigned char>());
     receiveReply(0x25, tmp);
 }
 void SerialLink::clearFlash2() {
     std::cerr << "sending clear2 0x14" << std::endl;
-    if (inhibit_clear) {
-        return;
-    }
-    std::vector<unsigned char> tmp;
+    std::vector<unsigned char> tmp(0);
     std::vector<unsigned char> data(4, 0x00);
     sendCommand(0x14, data);
     receiveReply(0x15, tmp);
@@ -129,24 +118,29 @@ void SerialLink::sendCommand(const unsigned char opcode, const std::vector<unsig
 void SerialLink::receiveReply(const unsigned char opcode, std::vector<unsigned char>& target) {
     unsigned short l;
     unsigned short cs;
-    expect(0xa0);
-    expect(0xa2);
+    expect(0xa0, "frame leader 1");
+    expect(0xa2, "frame leader 2");
     l = read() << 8;
     l += read();
-    expect(opcode);
+    expect(opcode, "opcode");
     target.resize(l-1);
     read(target);
     cs = checksum(opcode, target);
-    expect(cs >> 8 &0xff);
-    expect(cs & 0xff);
-    expect(0xb0);
-    expect(0xb3);
+    expect(cs >> 8 &0xff, "checksum 1");
+    expect(cs & 0xff, "checksum 2");
+    expect(0xb0, "frame trailer 1");
+    expect(0xb3, "frame trailer 2");
 }
 
-unsigned char SerialLink::expect(unsigned char val) {
+unsigned char SerialLink::expect(unsigned char val, const std::string& desc) {
     unsigned char rcv = read();
     if ( rcv != val ) {
-        throw std::runtime_error("Serial link: protocol error: unexpected answer");
+        std::stringstream ss;
+        ss << "Serial link: protocol error in '"
+          << desc << "'"
+          << " expected: " << (int) val
+          << " received: " << (int) rcv;
+        throw std::runtime_error(ss.str());
     }
     return rcv;
 }

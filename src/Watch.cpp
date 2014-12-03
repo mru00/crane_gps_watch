@@ -42,12 +42,22 @@ void Watch::clearWorkouts() {
     WatchMemoryBlock cb(0, 1);
     readBlock(cb);
 
+    std::fill(cb.memory.begin()+0xe0, cb.memory.begin()+0xe0+0x10, 0xff);
+    *(cb.memory.begin()+0xe0) = 0xfe;
+
+    //std::fill(cb.memory.begin()+0x100, cb.memory.begin()+0x100+0x100, 0xff);
+    // enables clear flash, clearFlash2 fails without clearFlash1
     device->clearFlash1();
+
+    // really clears flash - everything, also settings
     device->clearFlash2();
 
-    // download settings again - and only settings. 
-    // toc etc stays untouched
+    // strip to settings.
+    // when i try to write the full block, the watch 
+    // does not communicate properly
     cb.memory.resize(0x100);
+
+    // download settings again - and only settings. 
     writeBlock(cb);
 }
 
@@ -172,7 +182,7 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
     it += 6;
 
     it += 3; // total workout time [9..12]
-    it += 1; // profile [15]
+    wo.profile = *(cb.memory.begin()+15); // profile [15]
 
     it = cb.memory.begin() + 16;
     it += 4; // km [16..19]
@@ -333,9 +343,17 @@ void Watch::parseBlock0() {
         throw std::runtime_error ("checksum mismatch");
     }
 
+    // timezones:
+    // - 1.00 = 0x16
+    //   0.00 = 0x18
+    // + 1.00 = 0x1a
+    // + 2.00 = 0x1c
+    // + 2.30 = 0x1d
     wi.timezone = *(mem_it + 3);
     wi.sample_interval = *(mem_it + 14);
     wi.selected_profile = *(mem_it + 0x10+10);
+
+    wi.language = *(mem_it + 0x50 + 13);
 
     mem_it += 0x60;
     wi.firmware.resize(16, '\0');
@@ -397,6 +415,7 @@ void Watch::writeBlock(WatchMemoryBlock& b) {
             // only download the first 0x100 bytes, not the full segment
 
             if (mem_it >= b.memory.end()) return;
+
             device->writeMemory(block_start + nbyte*readSize, readSize, &*mem_it);
             mem_it += readSize;
         }

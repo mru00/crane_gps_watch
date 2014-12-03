@@ -4,6 +4,7 @@
 //
 
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <stdexcept>
 #include <sstream>
@@ -23,8 +24,11 @@ WatchMemoryBlock::WatchMemoryBlock(const unsigned id, const unsigned count)
 void WatchMemoryBlock::dump() {
     std::cerr << "memory:" << memory.size()  <<std::endl;
     mem_it_t it = memory.begin();
+    int i = 0;
     while (it != memory.end()) {
-        std::cerr << std::hex << (int)*it++ << ",";
+        std::cerr << std::setw(2) << std::setfill('0') <<std::hex << (int)*it++ << " ";
+        if ( ++i % 16 == 0 )
+          std::cerr << std::endl;
     }
     std::cerr << std::endl;
 }
