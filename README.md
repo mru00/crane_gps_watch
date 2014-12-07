@@ -210,14 +210,18 @@ modify it to your needs.
 TODO:
 -----
 
-* Auto-scan for serial port (in testing)
-* find proper name for the project
+WIP:
 * get more details about the watch itself (manufacturer, architecture), firmware upgrade server... (WIP)
+* AGPS download
+
+In testing:
+* Auto-scan for serial port (in testing)
 * clear watch memory (need help for that, please submit windows/original software serial sniff logs) (in testing)
+
+Low-prio:
+* find proper name for the project
 * Implement filters (e.g. correct altitude data from online sources)
 * http://www.movable-type.co.uk/scripts/latlong.html for distances in tcx files. would be required for turtle sports
-
-
 
 See Also:
 ---------

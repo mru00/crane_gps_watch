@@ -65,8 +65,10 @@ while ( read($epo, $data, 8) ) {
 
     print " t: cs=" . sprintf("%x", $cs). " ". to_hex($data) . "\n";
 
-    open (my $block_out, ">", $ARGV[0].".block_$count_block");
-    print $block_out $block_data;
+    if (0) {
+      open (my $block_out, ">", $ARGV[0].".block_$count_block");
+      print $block_out $block_data;
+    }
     $count_block ++;
   }
 
