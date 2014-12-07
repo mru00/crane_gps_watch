@@ -156,6 +156,17 @@ foreach my $entry (@$entries) {
     elsif ($opcode eq "2D") {
      print "a: version long";
     }
+    elsif ($opcode eq "2E") {
+      my $w_addr = $data;
+      $w_addr =~ /(..)(..)(..)/;
+      my $year = hex $1;
+      my $month = hex $2;
+      my $unk = hex $3;
+      print "q: unknown, after EPO download $w_addr $year/$month/$unk [$3]";
+    }
+    elsif ($opcode eq "2F") {
+     print "a: unknown, after EPO download $data";
+    }
     elsif ($opcode eq "16") {
       $data =~ /(?<w_addr>......)(?<w_len>..)(?<w_data>(..)*)/;
       my $w_addr = $+{w_addr};
@@ -169,10 +180,23 @@ foreach my $entry (@$entries) {
     }
     elsif ($opcode eq "17") {
       print "a: write data";
-
+    }
+    elsif ($opcode eq "24") {
+     print "q: clear flash 1";
+    }
+    elsif ($opcode eq "25") {
+      print "a: clear flash 1";
+    }
+    elsif ($opcode eq "14") {
+      my $w_addr = $data;
+      $w_addr =~ s/(..)(..)(..)/$3$2$1/;
+      print "q: clear flash 2 $w_addr";
+    }
+    elsif ($opcode eq "15") {
+      print "a: clear flash 2";
     }
     else {
-      print "unknown: $opcode";
+      print "unknown: $opcode <$data>";
     }
 
     my $len = (hex $+{len}) - 1;
