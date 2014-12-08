@@ -1,6 +1,8 @@
 // Copyright (C) 2014 mru@sisyphus.teil.cc
 //
-// linux client for crane gps watch, runtastic gps watch.
+// Watch interface: read data from device, parse it.
+//
+// Provides all parsed data via the "Callback" interface.
 //
 
 
@@ -50,7 +52,7 @@ void Watch::clearWorkouts() {
     device->clearFlash1();
 
     // really clears flash - everything, also settings
-    device->clearFlash2();
+    device->clearFlash2(0x000000);
 
     // strip to settings.
     // when i try to write the full block, the watch 
@@ -235,7 +237,6 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
             si.time = (t = si.time_upd);
         }
         else if (si.type == SampleInfo::End) {
-            //std::cerr << "  premature end of samples, expected=" << wo.nsamples << " actual=" << idx_wo << " block=" << (int)(it - cb.memory.begin())/0x1000 << std::endl;
             break;
         }
 

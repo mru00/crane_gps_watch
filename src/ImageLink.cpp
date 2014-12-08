@@ -52,5 +52,5 @@ void ImageLink::clearFlash1() {
 }
 
 
-void ImageLink::clearFlash2() {
+void ImageLink::clearFlash2(unsigned int) {
 }

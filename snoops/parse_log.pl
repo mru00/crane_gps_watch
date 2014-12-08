@@ -137,7 +137,7 @@ foreach my $entry (@$entries) {
       print "q: version";
     }
     elsif ($opcode eq "11") {
-      print "a: version";
+      print "a: version $data";
     }
     elsif ($opcode eq "12") {
       print "q: data";
@@ -154,18 +154,18 @@ foreach my $entry (@$entries) {
       print "q: version long";
     }
     elsif ($opcode eq "2D") {
-     print "a: version long";
+     print "a: version long $data";
     }
     elsif ($opcode eq "2E") {
       my $w_addr = $data;
       $w_addr =~ /(..)(..)(..)/;
       my $year = hex $1;
       my $month = hex $2;
-      my $unk = hex $3;
-      print "q: unknown, after EPO download $w_addr $year/$month/$unk [$3]";
+      my $day = hex $3;
+      print "q: set epo best before $w_addr $year/$month/$day";
     }
     elsif ($opcode eq "2F") {
-     print "a: unknown, after EPO download $data";
+     print "a: set epo best before $data";
     }
     elsif ($opcode eq "16") {
       $data =~ /(?<w_addr>......)(?<w_len>..)(?<w_data>(..)*)/;

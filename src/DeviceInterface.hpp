@@ -31,5 +31,6 @@ class DeviceInterface {
     virtual void clearFlash1() = 0;
 
     // opcode 0x14, 0x15
-    virtual void clearFlash2() = 0;
+    // 3 byte segment address
+    virtual void clearFlash2(unsigned int segment) = 0;
 };

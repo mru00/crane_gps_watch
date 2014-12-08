@@ -81,10 +81,11 @@ void SerialLink::clearFlash1() {
     sendCommand(0x24, std::vector<unsigned char>());
     receiveReply(0x25, tmp);
 }
-void SerialLink::clearFlash2() {
+void SerialLink::clearFlash2(unsigned int) {
     std::cerr << "sending clear2 0x14" << std::endl;
     std::vector<unsigned char> tmp(0);
     std::vector<unsigned char> data(4, 0x00);
+    // XXX copy segment to data
     sendCommand(0x14, data);
     receiveReply(0x15, tmp);
 }

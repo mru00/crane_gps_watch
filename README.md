@@ -36,6 +36,8 @@ The site lists several other re-brands of the GPS watch:
 * Runtastic
 
 
+Communication protocol: http://www.usglobalsat.com/downloads/SiRF_Binary_Protocol.pdf
+
 Output format:
 --------------
 
@@ -240,7 +242,7 @@ GPS Software:
 Technical links:
 
 * [Tcx files](http://en.wikipedia.org/wiki/Training_Center_XML)
-
+* [sirf](http://www.usglobalsat.com/downloads/SiRF_Binary_Protocol.pdf)
 
 Similar projects:
 

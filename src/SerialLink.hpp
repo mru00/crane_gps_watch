@@ -22,7 +22,7 @@ class SerialLink : public DeviceInterface {
     std::string readVersion() override;
     std::string readVersion2() override;
     void clearFlash1() override;
-    void clearFlash2() override;
+    void clearFlash2(unsigned int segment) override;
 
   private:
 
