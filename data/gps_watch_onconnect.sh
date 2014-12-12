@@ -54,6 +54,7 @@ else
 fi
 
 
+wait
 
 echo
 echo "completed"

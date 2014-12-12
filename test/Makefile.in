@@ -436,7 +436,7 @@ TESTS = 000_help.sh \
 AM_TESTS_ENVIRONMENT = export \
 	TEST_BINARY=../src/crane_gps_watch_client$(EXEEXT); \
 	$(am__append_1)
-EXTRA_DIST = TrainingCenterDatabasev2.xsd $(TESTS) common.sh lint_images/*.bin *.bin
+EXTRA_DIST = TrainingCenterDatabasev2.xsd $(TESTS) common.sh $(wildcard lint_images/*.bin *.bin)
 MOSTLYCLEANFILES = *.tcx 002_image2.bin
 all: all-am
 
