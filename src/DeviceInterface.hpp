@@ -33,4 +33,6 @@ class DeviceInterface {
     // opcode 0x14, 0x15
     // 3 byte segment address
     virtual void clearFlash2(unsigned int segment) = 0;
+
+    virtual void setEpoEol(unsigned char, unsigned char, unsigned char) = 0;
 };

@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <stdexcept>
 #include <sstream>
+#include <fstream>
 
 #include <cstring>
 
@@ -16,9 +17,14 @@
 #include "SerialLink.hpp"
 
 
+std::ofstream f_tx;
+
+
 SerialLink::SerialLink(const std::string& filename) : filename(filename) {
     port.open(filename);
     std::cerr << "Connected to watch on '" << filename << "'" << std::endl;
+
+    f_tx.open("tx.txt");
 }
 
 
@@ -35,7 +41,7 @@ void SerialLink::readMemory(unsigned addr, unsigned count, unsigned char* it) {
 }
 
 void SerialLink::writeMemory(unsigned addr, unsigned count, unsigned char* it) {
-    std::cerr << "sending write 0x16 " << addr << "/" << count << std::endl;
+    //std::cerr << "sending write 0x16 " << std::hex << addr << "/" << count << std::endl;
     std::vector<unsigned char> tx(4 + count);
     std::vector<unsigned char> rx;
     tx[0] = addr;
@@ -76,20 +82,35 @@ std::string SerialLink::readVersion2() {
     return ss.str();
 }
 void SerialLink::clearFlash1() {
-    std::cerr << "sending clear1 0x24" << std::endl;
+    //std::cerr << "sending clear1 0x24" << std::endl;
     std::vector<unsigned char> tmp(0);
     sendCommand(0x24, std::vector<unsigned char>());
     receiveReply(0x25, tmp);
 }
-void SerialLink::clearFlash2(unsigned int) {
-    std::cerr << "sending clear2 0x14" << std::endl;
+void SerialLink::clearFlash2(unsigned int segment) {
+    //std::cerr << "sending clear2 0x14" << std::endl;
     std::vector<unsigned char> tmp(0);
-    std::vector<unsigned char> data(4, 0x00);
+    std::vector<unsigned char> data(3);
     // XXX copy segment to data
+    data[0] = segment;
+    data[1] = segment >> 8;
+    data[2] = segment >> 16;
     sendCommand(0x14, data);
     receiveReply(0x15, tmp);
 }
 
+void SerialLink::setEpoEol(unsigned char year, unsigned char month, unsigned char day) {
+
+    //std::cerr << "sending epo eol" << std::endl;
+    std::vector<unsigned char> tmp(0);
+    std::vector<unsigned char> data(3);
+    // XXX copy segment to data
+    data[0] = year;
+    data[1] = month;
+    data[2] = day;
+    sendCommand(0x2e, data);
+    receiveReply(0x2f, tmp);
+}
 
 
 // privates:
@@ -114,6 +135,15 @@ void SerialLink::sendCommand(const unsigned char opcode, const std::vector<unsig
     *it++ = 0xb3;
 
     write(frame);
+
+    int i = 0;
+    for (auto v: frame) {
+        f_tx << std::hex << std::setw(2) << std::setfill('0') << (int)v << " ";
+        if ( ++i % 16 == 0 ) {
+            f_tx << std::endl;
+        }
+    }
+    f_tx << std::endl << std::endl;
 }
 
 void SerialLink::receiveReply(const unsigned char opcode, std::vector<unsigned char>& target) {
@@ -166,6 +196,6 @@ unsigned short SerialLink::checksum(unsigned char opcode, const std::vector<unsi
     for (auto v : payload) {
         cs += v;
     }
-    return cs;
+    return cs & 0x7fff;
 }
 

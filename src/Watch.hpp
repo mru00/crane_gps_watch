@@ -22,6 +22,7 @@ class Watch {
     void addRecipient(std::shared_ptr<Callback> c);
     void parse();
     void clearWorkouts();
+    void downloadEPO(const std::string& epo_fn);
   private:
 
     void parseGpsEle(GpsEle& l, WatchMemoryBlock::mem_it_t it);

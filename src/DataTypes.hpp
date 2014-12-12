@@ -65,8 +65,8 @@ struct Language {
     enum language_t {
         English,
         French,
-        Spanish,
         German,
+        Spanish,
         Italiano
     } language;
     Language& operator= (unsigned char);

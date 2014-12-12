@@ -320,9 +320,11 @@ crane_gps_watch_client_SOURCES = main.cpp \
  DebugWriter.cpp DataTypes.cpp MemoryBlock.cpp \
  ImageLink.cpp SerialLink.cpp SerialPort.cpp TcxWriter.cpp Watch.cpp \
  genx.c charProps.c \
+ DeviceInterface.hpp \
  Callback.hpp GpsLint.hpp XmlFileWriter.hpp ImageWriter.hpp \
  DebugWriter.hpp DataTypes.hpp MemoryBlock.hpp \
- ImageLink.hpp SerialLink.hpp SerialPort.hpp TcxWriter.hpp Watch.hpp
+ ImageLink.hpp SerialLink.hpp SerialPort.hpp TcxWriter.hpp Watch.hpp \
+ genx.h
 
 crane_gps_watch_client_CXXFLAGS = -Wall -Wextra
 @CROSS_COMPILING_TRUE@crane_gps_watch_client_LDFLAGS = -static-libgcc -static-libstdc++ -static

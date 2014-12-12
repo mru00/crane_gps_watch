@@ -47,6 +47,41 @@ It is not valid to create GPS records without coordinates. In TCX, this is possi
 
 If you require a desire a different output format, have a look at [gpsbabel](http://www.gpsbabel.org/).
 The program can convert between many different formats. Or file a feature request.
+USAGE:
+------
+
+	crane_gps_watch_client --help      show the help screen
+
+	crane_gps_watch_client 
+    [--clear]                        delete workout info on watch. still experimental.
+    [--output "filename"]            override default filename, write single file for all tracks.
+    [--epo "epo-file"]               download epo data
+    [--split]                        write file for each track.
+    [--device "/dev/tty..."]         override default device file / com port.
+    [--to_image filename]            write watch data to file <for testing>.
+    [--from_image filename]          read watch data from file <for testing>.
+    [--verbose]                      write debug output to console. repeat to get more output.
+
+As default, the output file is written in the current working directory.
+The filename is created from the current time and date. Use the `--output` option
+to specify a different filename.
+
+
+`--split` makes the program write a single .tcx for every track currently stored on the watch.
+Default is to write a single .tcx file that contains all tracks. When this option is used, the `--output` option 
+is ignored. The files are written in the current directory. The filename is taken from the start time of the workout track.
+If a file already exists, it will be overwritten.
+
+The `--device` option is used to specify the device file, default is 'auto'. 'auto' enables
+the automatic port detection. If auto-detect does not work for you, please file a bug report.
+
+`--clear` clears the workouts from the watch *after* they are successfully transfered.
+
+`--epo` allows you to download EPO data (MTK7d.EPO) for AGPS. This feature is still in development. I still don't know the proper way to obtain MTK7d.EPO files.
+
+
+Enjoy!
+
 
 Disclaimer:
 -----------
@@ -96,24 +131,25 @@ Installation:
 
 Crane GPS Watch client uses make to build:
 
-	# Clone source code archive from githup repo:
-	git clone https://github.com/mru00/crane_gps_watch.git
-	
-	# or download Zip file:
-	
-	wget https://github.com/mru00/crane_gps_watch/archive/master.zip
-	unzip master.zip
-	
-	
-	cd crane_gps_watch_client
-	
-	# build the software
-	./configure
-	make
-	
-	# install the software
-	sudo make install
+```bash
+# Clone source code archive from githup repo:
+git clone https://github.com/mru00/crane_gps_watch.git
 
+# or download Zip file:
+
+wget https://github.com/mru00/crane_gps_watch/archive/master.zip
+unzip master.zip
+
+
+cd crane_gps_watch_client
+
+# build the software
+./configure
+make
+
+# install the software
+sudo make install
+```
 
 Make sure you have the rights to access the serial port. Usually you have to
 be member of the `dialout` group (debian based distros). Consult a 
@@ -143,44 +179,11 @@ also builds and checks the windows executable with the same testcases.
 
 To build for windows, use `mingw-w64`:
 
-	sudo apt-get install mingw-w64
-	./configure --host i686-w64-mingw32 --build i686-linux-pc
-	wine ./src/crane_gps_watch_client.exe --help
-
-
-USAGE:
-------
-
-	crane_gps_watch_client --help      show the help screen
-
-	crane_gps_watch_client 
-    [--clear]                        delete workout info on watch. still experimental.
-    [--output "filename"]            override default filename, write single file for all tracks.
-    [--split]                        write file for each track.
-    [--device "/dev/tty..."]         override default device file / com port.
-    [--to_image filename]            write watch data to file <for testing>.
-    [--from_image filename]          read watch data from file <for testing>.
-    [--verbose]                      write debug output to console. repeat to get more output.
-
-As default, the output file is written in the current working directory.
-The filename is created from the current time and date. Use the `--output` option
-to specify a different filename.
-
-
-`--split` makes the program write a single .tcx for every track currently stored on the watch.
-Default is to write a single .tcx file that contains all tracks. When this option is used, the `--output` option 
-is ignored. The files are written in the current directory. The filename is taken from the start time of the workout track.
-If a file already exists, it will be overwritten.
-
-The `--device` option is used to specify the device file, default is 'auto'. 'auto' enables
-the automatic port detection. If auto-detect does not work for you, please file a bug report.
-
-`--clear` clears the workouts from the watch *after* they are successfully transfered.
-
-
-
-
-Enjoy!
+```bash
+sudo apt-get install mingw-w64
+./configure --host i686-w64-mingw32 --build i686-linux-pc
+wine ./src/crane_gps_watch_client.exe --help
+```
 
 
 Auto import
@@ -196,7 +199,7 @@ This repository also ships the scripts `gps_watch_monitor.py` and `gps_watch_onc
 `gps_watch_monitor.py` is intended to be auto-started with your X session.
 To enable auto-start copy the file `gps_watch_monitor.desktop` (usually in 
 `/usr/local/share/crane_gps_watch_client` after installation) 
-to `~/.config/autostart`. 
+to `~/.config/autostart`.
 
 It monitors the UDEV bus for
 new connections on the USB bus. If the watch is connected, 
@@ -214,10 +217,11 @@ TODO:
 
 WIP:
 * get more details about the watch itself (manufacturer, architecture), firmware upgrade server... (WIP)
-* AGPS download
+
 
 In testing:
-* Auto-scan for serial port (in testing)
+* AGPS download
+* Auto-scan for serial port
 * clear watch memory (need help for that, please submit windows/original software serial sniff logs) (in testing)
 
 Low-prio:

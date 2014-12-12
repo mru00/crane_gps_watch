@@ -10,10 +10,13 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <list>
 #include <iomanip>
 #include <stdexcept>
+#include <fstream>
 
 #include <cassert>
+#include <ctime>
 
 #include "DataTypes.hpp"
 #include "MemoryBlock.hpp"
@@ -48,19 +51,130 @@ void Watch::clearWorkouts() {
     *(cb.memory.begin()+0xe0) = 0xfe;
 
     //std::fill(cb.memory.begin()+0x100, cb.memory.begin()+0x100+0x100, 0xff);
-    // enables clear flash, clearFlash2 fails without clearFlash1
-    device->clearFlash1();
 
-    // really clears flash - everything, also settings
-    device->clearFlash2(0x000000);
-
-    // strip to settings.
-    // when i try to write the full block, the watch 
-    // does not communicate properly
-    cb.memory.resize(0x100);
-
-    // download settings again - and only settings. 
+    // download settings again
     writeBlock(cb);
+}
+
+void Watch::downloadEPO(const std::string& epo_fn) {
+    // XXX not very trustworthy!
+    // there are probably bugs in here.
+    std::ifstream epo;
+    epo.open(epo_fn, std::ios_base::in | std::ios_base::binary);
+    if (! epo.good()) {
+        throw std::runtime_error("failed to open epo file");
+    }
+
+    std::list<std::vector<char> > epo_entries;
+    const size_t epo_entry_size = 0x3c;
+    std::vector<char> epo_entry(epo_entry_size, 0x00);
+    while ( epo.read(&epo_entry[0], epo_entry_size)) {
+        epo_entries.push_back(epo_entry);
+    }
+
+    std::fill(epo_entry.begin(), epo_entry.end(), 0);
+    epo_entries.push_back(epo_entry);
+    epo_entries.push_back(epo_entry);
+    epo_entries.push_back(epo_entry);
+    epo_entries.push_back(epo_entry);
+
+    WatchMemoryBlock mb(0xe6, 1 + 0xf3 - 0xe6);
+
+    WatchMemoryBlock::mem_it_t it = mb.memory.begin();
+
+    int idx = 0;
+    while (epo_entries.size()) {
+
+        WatchMemoryBlock::mem_it_t cs_begin;
+
+        *it++ = 0x04;
+        *it++ = 0x24;
+        *it++ = 0xbf;
+        *it++ = 0x00;
+        cs_begin = it;
+        *it++ = 0xd2;
+        *it++ = 0x02;
+
+        if (epo_entries.size() == 3) {
+            *it++ = 0xff;
+            *it++ = 0xff;
+        }
+        else {
+            *it++ = idx;
+            *it++ = idx >> 8;
+        }
+
+        for (int i = 0; i < 3; i++) {
+            for (auto v: epo_entries.front()) {
+                *it++ = v;
+            }
+            epo_entries.pop_front();
+        }
+
+        char cs = 0;
+        while (cs_begin < it) {
+            cs ^= *cs_begin++;
+        }
+
+        *it++ = cs;
+        *it++ = 0x0d;
+        *it++ = 0x0a;
+    }
+
+    *it++ = 0x2C;
+    *it++ = 0x01;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x0D;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0xF3;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0xB0;
+    *it++ = 0xEE;
+    *it++ = 0x2E;
+    *it++ = 0x02;
+    *it++ = 0xDC;
+    *it++ = 0xAE;
+    *it++ = 0x57;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x01;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    *it++ = 0x00;
+    writeBlock(mb);
+    
+    time_t now;
+    ::time (&now);
+
+    struct tm* new_tm = ::localtime(&now);
+    new_tm->tm_mday += 7;
+    ::mktime(new_tm);
+
+    device->setEpoEol(new_tm->tm_year - 100, new_tm->tm_mon, new_tm->tm_mday);
 }
 
 
@@ -408,7 +522,16 @@ void Watch::writeBlock(WatchMemoryBlock& b) {
 
     WatchMemoryBlock::mem_it_t mem_it = b.memory.begin();
     for (unsigned block = 0; block < b.count; block++) {
+
+
         unsigned block_start = (b.id+block)*b.blockSize;
+
+        // enables clear flash, clearFlash2 fails without clearFlash1
+        device->clearFlash1();
+
+        // really clears flash - everything, also settings
+        device->clearFlash2(block_start);
+
 
         for (unsigned nbyte = 0; nbyte < rcount; nbyte++) {
 

@@ -31,7 +31,7 @@
 
 
 std::shared_ptr<DeviceInterface> scan_serial_ports() {
-    std::cerr << "autodetecting serial ports" << std::endl;
+    std::cerr << "Autodetecting serial ports" << std::endl;
     const std::list<std::string>& candidates = SerialPort::enumeratePorts();
     for (auto port : candidates) {
         try {
@@ -70,11 +70,13 @@ int main(int argc, char** argv) {
         std::string to_image;
         std::string device_fn;
         std::string output_fn;
+        std::string epo_fn;
         opterr = 0;
         while (1) {
             static struct option long_options[] = {
                   {"help", no_argument, 0, 'h'},
                   {"output", required_argument, 0, 'f'},
+                  {"epo", required_argument, 0, 'e'},
                   {"clear", no_argument, 0, 'c'},
                   {"device", required_argument, 0, 'd'},
                   {"from_image", required_argument, 0, 'i'},
@@ -96,7 +98,7 @@ int main(int argc, char** argv) {
                   PACKAGE_STRING "\n"
                   "crane_gps_watch_client --help\n"
                   "\n"
-                  "crane_gps_watch_client [--clear] [--output output-filename | --split] [--device auto | --from_image image-file] [--to_image image-file] [--verbose]\n" 
+                  "crane_gps_watch_client [--clear] [--epo epo-filename] [--output output-filename | --split] [--device auto | --from_image image-file] [--to_image image-file] [--verbose]\n" 
                   "\n"
                   "See README.md or https://github.com/mru00/crane_gps_watch for details\n"
                   "Send bugreports to " PACKAGE_BUGREPORT
@@ -115,6 +117,9 @@ int main(int argc, char** argv) {
                 break;
               case 'c':
                 clear_workouts = true;
+                break;
+              case 'e':
+                epo_fn = optarg;
                 break;
               case 's':
                 if (!output_fn.empty()) {
@@ -163,7 +168,7 @@ int main(int argc, char** argv) {
             if (device_fn == "auto") {
                 device = scan_serial_ports();
                 if (!device) {
-                    throw std::runtime_error("failed to auto-detect serial port, please check connection");
+                    throw std::runtime_error("Failed to auto-detect serial port. Please check connection and access rights; consider using the '--device' option to skip autodetect and specify the serial port manually.");
                 }
             }
             else {
@@ -190,18 +195,24 @@ int main(int argc, char** argv) {
         if (clear_workouts) {
             std::cerr << "clearing watch data" << std::endl;
             watch.clearWorkouts();
-            std::cerr << "watch data cleared" << std::endl;
+            std::cerr << "clearing watch data: done" << std::endl;
+        }
+
+        if (! epo_fn.empty() ) {
+            std::cerr << "downloading EPO data" << std::endl;
+            watch.downloadEPO(epo_fn);
+            std::cerr << "downloading EPO data: done" << std::endl;
         }
 
         return 0;
 
     }
     catch(const std::runtime_error& error) {
-        std::cerr << "error: " << error.what() << std::endl << "terminating" << std::endl;
+        std::cerr << "error: " << error.what() << std::endl << "Terminating" << std::endl;
         return 1;
     }
     catch(const std::ifstream::failure& error) {
-        std::cerr << "error: " << error.what() << std::endl << "terminating" << std::endl;
+        std::cerr << "error: " << error.what() << std::endl << "Terminating" << std::endl;
         return 1;
     }
 }

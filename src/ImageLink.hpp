@@ -21,6 +21,7 @@ class ImageLink : public DeviceInterface {
     std::string readVersion2() override;
     void clearFlash1() override;
     void clearFlash2(unsigned int segment) override;
+    void setEpoEol(unsigned char, unsigned char, unsigned char) override {}
 
   private:
     std::ifstream from_watch;

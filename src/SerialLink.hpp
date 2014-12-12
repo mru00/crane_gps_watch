@@ -23,6 +23,7 @@ class SerialLink : public DeviceInterface {
     std::string readVersion2() override;
     void clearFlash1() override;
     void clearFlash2(unsigned int segment) override;
+    void setEpoEol(unsigned char year, unsigned char month, unsigned char day);
 
   private:
 
