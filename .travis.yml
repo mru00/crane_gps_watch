@@ -15,8 +15,8 @@ script:
   - make distcheck
 before_install:
 # update apt sources, i want a recent automake!
-  - echo "deb http://us.archive.ubuntu.com/ubuntu/ trusty main" | sudo tee -a /etc/apt/sources.list'
-  - echo "deb http://us.archive.ubuntu.com/ubuntu/ trusty universe" | sudo tee -a /etc/apt/sources.list'
+  - echo "deb http://us.archive.ubuntu.com/ubuntu/ trusty main" | sudo tee -a /etc/apt/sources.list
+  - echo "deb http://us.archive.ubuntu.com/ubuntu/ trusty universe" | sudo tee -a /etc/apt/sources.list
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update
 install:
