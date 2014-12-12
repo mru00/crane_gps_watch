@@ -222,7 +222,7 @@ WIP:
 In testing:
 * AGPS download
 * Auto-scan for serial port
-* clear watch memory (need help for that, please submit windows/original software serial sniff logs) (in testing)
+* clear watch memory
 
 Low-prio:
 * find proper name for the project
