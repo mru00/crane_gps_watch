@@ -28,10 +28,15 @@ echo "failed to receive watch data";
 
 sleep 1
 
+echo "downloading MTK7d.EPO"
+echo 
+curl -u krippl-gps-master:master -o MTK7d.EPO ftp://ftp.krippl-watches.com/AGPS/MTK7d.EPO
+echo
+
 echo "importing data"
 echo
 
-crane_gps_watch_client --device $serial_device --verbose --split --clear
+crane_gps_watch_client --device $serial_device --verbose --split --clear --epo MTK7d.EPO
 
 
 echo

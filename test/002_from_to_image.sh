@@ -3,7 +3,9 @@
 
 source ${srcdir}/common.sh
 
-expect_exit 0 $bin --out 002_output1.tcx --from_image ${srcdir_abs}/image.bin --to_image 002_image2.bin
+ln -s ${srcdir_abs}/image.bin
+
+expect_exit 0 $bin --out 002_output1.tcx --from_image image.bin --to_image 002_image2.bin
 expect_exit 0 $bin --out 002_output2.tcx --from_image 002_image2.bin
 
 

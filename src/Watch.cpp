@@ -50,7 +50,8 @@ void Watch::clearWorkouts() {
     std::fill(cb.memory.begin()+0xe0, cb.memory.begin()+0xe0+0x10, 0xff);
     *(cb.memory.begin()+0xe0) = 0xfe;
 
-    //std::fill(cb.memory.begin()+0x100, cb.memory.begin()+0x100+0x100, 0xff);
+    // clear toc
+    std::fill(cb.memory.begin()+0x100, cb.memory.begin()+0x100+0x100, 0xff);
 
     // download settings again
     writeBlock(cb);
@@ -174,7 +175,7 @@ void Watch::downloadEPO(const std::string& epo_fn) {
     new_tm->tm_mday += 7;
     ::mktime(new_tm);
 
-    device->setEpoEol(new_tm->tm_year - 100, new_tm->tm_mon, new_tm->tm_mday);
+    device->setEpoEol(new_tm->tm_year - 100, new_tm->tm_mon+1, new_tm->tm_mday);
 }
 
 

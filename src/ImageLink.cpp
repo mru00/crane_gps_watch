@@ -7,6 +7,7 @@
 #include <string>
 #include <stdexcept>
 #include <iostream>
+#include <sstream>
 
 #include "ImageLink.hpp"
 
@@ -19,8 +20,11 @@ ImageLink::ImageLink(const std::string& filename) {
         from_watch.open(filename, std::ios_base::binary|std::ios_base::in);
     }
     catch (const std::ifstream::failure & e) {
-        throw std::runtime_error (std::string("failed to open image file from_watch for writing: ") + e.what());
+        std::stringstream ss;
+        ss << "Failed to open image file '" << filename << "' for reading: " << e.what();
+        throw std::runtime_error (ss.str());
     }
+
     try {
         to_watch.exceptions(std::ifstream::badbit | std::ifstream::failbit);
         to_watch.open(filename + ".to", std::ios_base::binary|std::ios_base::out);
