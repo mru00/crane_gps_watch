@@ -64,10 +64,10 @@ enum DisplayItems {
 struct Language {
     enum language_t {
         English,
-        French,
+        Italiano,
         German,
+        French,
         Spanish,
-        Italiano
     } language;
     Language& operator= (unsigned char);
     std::string format() const;
