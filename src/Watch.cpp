@@ -63,15 +63,40 @@ void Watch::downloadEPO(const std::string& epo_fn) {
     std::ifstream epo;
     epo.open(epo_fn, std::ios_base::in | std::ios_base::binary);
     if (! epo.good()) {
-        throw std::runtime_error("failed to open epo file");
+        throw std::runtime_error("Failed to open EPO file");
     }
 
+    struct tm epo_eol;
     std::list<std::vector<char> > epo_entries;
     const size_t epo_entry_size = 0x3c;
     std::vector<char> epo_entry(epo_entry_size, 0x00);
+
+    // parse epo file
     while ( epo.read(&epo_entry[0], epo_entry_size)) {
         epo_entries.push_back(epo_entry);
     }
+
+    // only support MTK7d.EPO .. .7 days a 4 records a 32 entries
+    if (epo_entries.size() != 896) {
+        throw std::runtime_error("Failed to parse EPO file, wrong number of entries.");
+    }
+
+
+    // just a guess: the first three bytes of the entry 
+    // contain the number of hours since the first GPS epoch, 
+    // which started 06.jan.1980.
+    int hours = (unsigned char)epo_entry[0] + ( ((unsigned char)epo_entry[1]) << 8) + ( ((unsigned char)epo_entry[2]) << 16);
+
+    epo_eol.tm_sec =  epo_eol.tm_min = 0;
+    epo_eol.tm_hour = hours;
+    epo_eol.tm_mday = 6;
+    epo_eol.tm_mon = 0;
+    epo_eol.tm_year = 80;
+    epo_eol.tm_wday = epo_eol.tm_yday = epo_eol.tm_isdst = 0;
+    ::mktime(&epo_eol);
+
+    std::cout << "EPO data valid until " << asctime(&epo_eol) << std::endl;
+
 
     std::fill(epo_entry.begin(), epo_entry.end(), 0);
     epo_entries.push_back(epo_entry);
@@ -88,23 +113,23 @@ void Watch::downloadEPO(const std::string& epo_fn) {
 
         WatchMemoryBlock::mem_it_t cs_begin;
 
-        *it++ = 0x04;
-        *it++ = 0x24;
-        *it++ = 0xbf;
-        *it++ = 0x00;
-        cs_begin = it;
-        *it++ = 0xd2;
-        *it++ = 0x02;
+        // leader:
+        *it++ = 0x04; *it++ = 0x24; *it++ = 0xbf; *it++ = 0x00;
 
+        cs_begin = it;
+
+        // data begin:
+        *it++ = 0xd2; *it++ = 0x02;
+
+        // index: 0xffff if last entry, else index
         if (epo_entries.size() == 3) {
-            *it++ = 0xff;
-            *it++ = 0xff;
+            *it++ = 0xff; *it++ = 0xff;
         }
         else {
-            *it++ = idx;
-            *it++ = idx >> 8;
+            *it++ = idx; *it++ = idx >> 8;
         }
 
+        // copy 3 epo entries to the output
         for (int i = 0; i < 3; i++) {
             for (auto v: epo_entries.front()) {
                 *it++ = v;
@@ -117,65 +142,29 @@ void Watch::downloadEPO(const std::string& epo_fn) {
             cs ^= *cs_begin++;
         }
 
-        *it++ = cs;
-        *it++ = 0x0d;
-        *it++ = 0x0a;
+        // trailer: checksum + \r\n
+        *it++ = cs; *it++ = 0x0d; *it++ = 0x0a;
     }
 
-    *it++ = 0x2C;
-    *it++ = 0x01;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x0D;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0xF3;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0xB0;
-    *it++ = 0xEE;
-    *it++ = 0x2E;
-    *it++ = 0x02;
-    *it++ = 0xDC;
-    *it++ = 0xAE;
-    *it++ = 0x57;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x01;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
-    *it++ = 0x00;
+    // some unknown data...
+    *it++ = 0x2C; *it++ = 0x01; *it++ = 0x00; *it++ = 0x00;
+    *it++ = 0x00; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
+    *it++ = 0x0D; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
+    *it++ = 0xF3; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
+    *it++ = 0x00; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
+    *it++ = 0xB0; *it++ = 0xEE; *it++ = 0x2E; *it++ = 0x02;
+    *it++ = 0xDC; *it++ = 0xAE; *it++ = 0x57; *it++ = 0x00;
+    *it++ = 0x00; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
+    *it++ = 0x01; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
+    *it++ = 0x00; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
+    *it++ = 0x00; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
+
+    // download data
     writeBlock(mb);
     
-    time_t now;
-    ::time (&now);
-
-    struct tm* new_tm = ::localtime(&now);
-    new_tm->tm_mday += 7;
-    ::mktime(new_tm);
-
-    device->setEpoEol(new_tm->tm_year - 100, new_tm->tm_mon+1, new_tm->tm_mday);
+    // update "valid through" of agps data.
+    // i think this value is only for display purposes (menu..gps..agps..expiry).
+    device->setEpoEol(epo_eol.tm_year - 100, epo_eol.tm_mon + 1, epo_eol.tm_mday);
 }
 
 

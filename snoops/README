@@ -1,0 +1,104 @@
+
+gen_dl_epo.pl: generate downloadable watch data from epo file
+
+parse_epo.pl: parse MTK*.EPO into single entries
+
+parse_epo_dl.pl: parse .to_watch data, and extract .epo data
+
+parse_epo2.pl: parse EPO.DAT into single entries
+
+block_cs.cpp: rev-eng checksum block
+
+
+
+MTK7d.EPO ... 53760B  7 days
+MTK14.EPO ... 107520B 14 days
+EPO.DAT       276480 = 5 * 53760
+
+to_watch_agps: 42368B
+
+128 entries per day;
+1 entry = 0x3c = 60 bytes
+
+entry: block_num year
+
+block_num: block of 32 entries; block-num is counted from beginning of year (beginning of calendar week)
+
+
+
+EPO.DAT is the same format as sony 'assistme.dat', https://duckduckgo.com/l/?kh=-1&uddg=http%3A%2F%2Fcontrol.d-imaging.sony.co.jp%2FGPS%2Fassistme.dat
+
+http://homepage2.nifty.com/k8/gps/
+http://www.csgnetwork.com/multitimedisp.html <-- get gps week
+http://www.ngs.noaa.gov/CORS/Gpscal.shtml <-- gps week calendar
+https://geekblog.kevredon.org/?p=556 <-- AGPS download tool
+
+http://www.gtop-tech.com/en/software/Software_Services_07.html
+
+http://sourceforge.net/p/bt747/feature-requests/17/
+
+http://forum.xda-developers.com/wiki/Fairphone_Fairphone/Guides
+
+https://docs.google.com/file/d/0ByI4WbhJsiyqZjVjNTczNWEtZjczYi00YjY4LTlmMTgtNGIxZDcxZmFhMjEw/edit?hl=en&pli=1
+
+ftp://ftp.leadtek.com.tw/gps/9023/G-monitor%203.26/User%20Manual/EPO%20Format%20and%20Protocol/LEADTEK%20EPO%20Format%20and%20Protocol%20Reference%20Manual%20V1.0.pdf
+
+http://www.bt747.org/article/agps-servers
+
+
+
+-- MTK7d.EPO
+
+1 record - 0x3c bytes
+4 records a day
+
+
+file = 28 records = 896 entries
+1 record = 32 entries
+
+record has a number; 2 bytes, number is hours since some point in time = unclear
+
+
+start time still unclear... there is some offset
+
+record number: 44096, Sat Dec 13 07:00:00 2014
+record number: 44102, Sat Dec 13 13:00:00 2014
+record number: 44108, Sat Dec 13 19:00:00 2014
+record number: 44114, Sun Dec 14 01:00:00 2014
+record number: 44120, Sun Dec 14 07:00:00 2014
+record number: 44126, Sun Dec 14 13:00:00 2014
+record number: 44132, Sun Dec 14 19:00:00 2014
+record number: 44138, Mon Dec 15 01:00:00 2014
+record number: 44144, Mon Dec 15 07:00:00 2014
+record number: 44150, Mon Dec 15 13:00:00 2014
+record number: 44156, Mon Dec 15 19:00:00 2014
+record number: 44162, Tue Dec 16 01:00:00 2014
+record number: 44168, Tue Dec 16 07:00:00 2014
+record number: 44174, Tue Dec 16 13:00:00 2014
+record number: 44180, Tue Dec 16 19:00:00 2014
+record number: 44186, Wed Dec 17 01:00:00 2014
+record number: 44192, Wed Dec 17 07:00:00 2014
+record number: 44198, Wed Dec 17 13:00:00 2014
+record number: 44204, Wed Dec 17 19:00:00 2014
+record number: 44210, Thu Dec 18 01:00:00 2014
+record number: 44216, Thu Dec 18 07:00:00 2014
+record number: 44222, Thu Dec 18 13:00:00 2014
+record number: 44228, Thu Dec 18 19:00:00 2014
+record number: 44234, Fri Dec 19 01:00:00 2014
+record number: 44240, Fri Dec 19 07:00:00 2014
+record number: 44246, Fri Dec 19 13:00:00 2014
+record number: 44252, Fri Dec 19 19:00:00 2014
+record number: 44258, Sat Dec 20 01:00:00 2014
+
+max_num - min_num = 162, difference always 6
+
+
+-- EPO.DAT
+
+1 record = 0x48 bytes
+
+
+-- downloadable
+
+3 entries grouped in one nmea command
+
