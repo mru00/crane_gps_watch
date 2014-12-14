@@ -18,7 +18,7 @@ Supported Watches:
 * `1.20.22_KRIP0_00` [unknown model](http://www.ebay.de/itm/GPS-Uhr-mit-Herzfrequnzmessung-Kompass-PC-Download-Pulsuhr-NEU/300968440724)
 
 
-As the watch is commonly rebranded, the following Watches might just work:
+As the watch is commonly rebranded, the following watches might just work:
 
 * [Latitude NAV Master II](http://www.latitude.com.hk/dbimages/document/856/gps_series_catalog.pdf) (probably the original manufacturer)
 * [Pyle Gps watch](http://www.pyleaudio.com/sku/PSWGP405BK/GPS-Watch-w-Coded-Heart-Rate-Transmission,-Navigation,-Speed,-Distance,-Workout-Memory,-Compass,--PC-link--(Black-Color))
@@ -50,17 +50,20 @@ The program can convert between many different formats. Or file a feature reques
 USAGE:
 ------
 
-	crane_gps_watch_client --help      show the help screen
+```bash
+crane_gps_watch_client --help       # show the help screen
 
-	crane_gps_watch_client 
-    [--clear]                        delete workout info on watch. still experimental.
-    [--output "filename"]            override default filename, write single file for all tracks.
-    [--epo "epo-file"]               download epo data
-    [--split]                        write file for each track.
-    [--device "/dev/tty..."]         override default device file / com port.
-    [--to_image filename]            write watch data to file <for testing>.
-    [--from_image filename]          read watch data from file <for testing>.
-    [--verbose]                      write debug output to console. repeat to get more output.
+crane_gps_watch_client 
+    [--clear]                       # delete workout info on watch. still experimental.
+    [--output "filename"]           # override default filename, write single file for all tracks.
+    [--epo "epo-file"]              # download epo data
+    [--split]                       # write file for each track.
+    [--device "/dev/tty..."]        # override default device file / com port.
+    [--to_image filename]           # write watch data to file <for testing>.
+    [--from_image filename]         # read watch data from file <for testing>.
+    [--verbose]                     # write debug output to console. repeat to get more output.
+```
+
 
 As default, the output file is written in the current working directory.
 The filename is created from the current time and date. Use the `--output` option
@@ -77,7 +80,9 @@ the automatic port detection. If auto-detect does not work for you, please file 
 
 `--clear` clears the workouts from the watch *after* they are successfully transfered.
 
-`--epo` allows you to download EPO data (MTK7d.EPO) for AGPS. This feature is still in development. I still don't know the proper way to obtain MTK7d.EPO files.
+`--epo` allows you to download EPO data (MTK7d.EPO) for AGPS. This feature is still in development. 
+I still don't know the proper way to obtain MTK7d.EPO files. The article https://geekblog.kevredon.org/?p=556 lists
+one server.
 
 
 Enjoy!
@@ -171,7 +176,7 @@ Cross compilation for windows:
 ------------------------------
 
 
-The program also works under windows. 
+The program also works under windows.
 Windows installers are available in the `release` directory.
 
 The program works using Wine, except access to the com port. The testsuite on Travis
@@ -188,8 +193,6 @@ wine ./src/crane_gps_watch_client.exe --help
 
 Auto import
 -----------
-
-Note: this is experimental and not well documented and badly implemented and not intended for the end-user. You have been warned ;)
 
 The script requires the package `python-pyudev` to be installed.
 
@@ -216,7 +219,7 @@ TODO:
 -----
 
 WIP:
-* get more details about the watch itself (manufacturer, architecture), firmware upgrade server... (WIP)
+* get more details about the watch itself (manufacturer, architecture), firmware upgrade server...
 
 
 In testing:

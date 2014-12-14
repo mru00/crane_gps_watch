@@ -14,6 +14,9 @@ src/Makefile
 Makefile
 stamp-h1
 
+*.bin.to
+
+test/images/
 
 test/*.trs
 test/*.log

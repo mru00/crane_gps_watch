@@ -56,41 +56,38 @@ http://www.bt747.org/article/agps-servers
 file = 28 records = 896 entries
 1 record = 32 entries
 
-record has a number; 2 bytes, number is hours since some point in time = unclear
+the first three bytes of an entry are the seconds since the first gps epoch, 06.01.1980.
 
 
-start time still unclear... there is some offset
-
-record number: 44096, Sat Dec 13 07:00:00 2014
-record number: 44102, Sat Dec 13 13:00:00 2014
-record number: 44108, Sat Dec 13 19:00:00 2014
-record number: 44114, Sun Dec 14 01:00:00 2014
-record number: 44120, Sun Dec 14 07:00:00 2014
-record number: 44126, Sun Dec 14 13:00:00 2014
-record number: 44132, Sun Dec 14 19:00:00 2014
-record number: 44138, Mon Dec 15 01:00:00 2014
-record number: 44144, Mon Dec 15 07:00:00 2014
-record number: 44150, Mon Dec 15 13:00:00 2014
-record number: 44156, Mon Dec 15 19:00:00 2014
-record number: 44162, Tue Dec 16 01:00:00 2014
-record number: 44168, Tue Dec 16 07:00:00 2014
-record number: 44174, Tue Dec 16 13:00:00 2014
-record number: 44180, Tue Dec 16 19:00:00 2014
-record number: 44186, Wed Dec 17 01:00:00 2014
-record number: 44192, Wed Dec 17 07:00:00 2014
-record number: 44198, Wed Dec 17 13:00:00 2014
-record number: 44204, Wed Dec 17 19:00:00 2014
-record number: 44210, Thu Dec 18 01:00:00 2014
-record number: 44216, Thu Dec 18 07:00:00 2014
-record number: 44222, Thu Dec 18 13:00:00 2014
-record number: 44228, Thu Dec 18 19:00:00 2014
-record number: 44234, Fri Dec 19 01:00:00 2014
-record number: 44240, Fri Dec 19 07:00:00 2014
-record number: 44246, Fri Dec 19 13:00:00 2014
-record number: 44252, Fri Dec 19 19:00:00 2014
-record number: 44258, Sat Dec 20 01:00:00 2014
-
-max_num - min_num = 162, difference always 6
+record number: 306264, Sun Dec 14 00:00:00 2014
+record number: 306270, Sun Dec 14 06:00:00 2014
+record number: 306276, Sun Dec 14 12:00:00 2014
+record number: 306282, Sun Dec 14 18:00:00 2014
+record number: 306288, Mon Dec 15 00:00:00 2014
+record number: 306294, Mon Dec 15 06:00:00 2014
+record number: 306300, Mon Dec 15 12:00:00 2014
+record number: 306306, Mon Dec 15 18:00:00 2014
+record number: 306312, Tue Dec 16 00:00:00 2014
+record number: 306318, Tue Dec 16 06:00:00 2014
+record number: 306324, Tue Dec 16 12:00:00 2014
+record number: 306330, Tue Dec 16 18:00:00 2014
+record number: 306336, Wed Dec 17 00:00:00 2014
+record number: 306342, Wed Dec 17 06:00:00 2014
+record number: 306348, Wed Dec 17 12:00:00 2014
+record number: 306354, Wed Dec 17 18:00:00 2014
+record number: 306360, Thu Dec 18 00:00:00 2014
+record number: 306366, Thu Dec 18 06:00:00 2014
+record number: 306372, Thu Dec 18 12:00:00 2014
+record number: 306378, Thu Dec 18 18:00:00 2014
+record number: 306384, Fri Dec 19 00:00:00 2014
+record number: 306390, Fri Dec 19 06:00:00 2014
+record number: 306396, Fri Dec 19 12:00:00 2014
+record number: 306402, Fri Dec 19 18:00:00 2014
+record number: 306408, Sat Dec 20 00:00:00 2014
+record number: 306414, Sat Dec 20 06:00:00 2014
+record number: 306420, Sat Dec 20 12:00:00 2014
+record number: 306426, Sat Dec 20 18:00:00 2014
+hours since 6 1 1980 306281
 
 
 -- EPO.DAT
