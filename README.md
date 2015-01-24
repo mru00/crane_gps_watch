@@ -1,7 +1,7 @@
 Crane GPS Watch client (crane_gps_watch_client)
 ===============================================
 
-Copyright (C) 2014 Rudolf Mühlbauer <mru@sisyphus.teil.cc>
+Copyright (C) 2014 <mru@sisyphus.teil.cc>
 
 
 [![Build Status](https://travis-ci.org/mru00/crane_gps_watch.svg)](https://travis-ci.org/mru00/crane_gps_watch)
@@ -51,17 +51,17 @@ USAGE:
 ------
 
 ```bash
-crane_gps_watch_client --help       # show the help screen
+crane_gps_watch_client --help  # show the help screen
 
 crane_gps_watch_client 
-    [--clear]                       # delete workout info on watch. still experimental.
-    [--output "filename"]           # override default filename, write single file for all tracks.
-    [--epo "epo-file"]              # download epo data
-    [--split]                       # write file for each track.
-    [--device "/dev/tty..."]        # override default device file / com port.
-    [--to_image filename]           # write watch data to file <for testing>.
-    [--from_image filename]         # read watch data from file <for testing>.
-    [--verbose]                     # write debug output to console. repeat to get more output.
+    [--clear]                  # delete workout info on watch.
+    [--output "filename"]      # override default filename, write single file for all tracks.
+    [--epo "epo-file"]         # download epo data
+    [--split]                  # write file for each track.
+    [--device "/dev/tty..."]   # override default device file / com port.
+    [--to_image filename]      # write watch data to file <for testing>.
+    [--from_image filename]    # read watch data from file <for testing>.
+    [--verbose]                # write debug output to console. repeat to get more output.
 ```
 
 
@@ -116,18 +116,13 @@ See the GNU General Public License for more details or file COPYING.
 Bug reports & Feature requests:
 -------------------------------
 
-Please report problems and bugs. If you get compiler errors, please send me the complete compiler output.
+Please report problems, bugs, feature requests and success 
+messages either via the
+github issue tracker or mail.
+
 If the generated output files are wrong, please create an image (`--to_image`) and send me the image with a 
 description of the expected output.
 
-I also very much appreciate positive feedback, and "works for me" messages.
-If your watch works, please send me a note (with attached image `.bin` file) 
-so I can update the list of supported watches.
-
-If you have feature requests, send me a mail. I will see what I
-can do.
-
-Please also consider using the github issue tracking system.  You can also submit fixes and enhancements via github pull requests.
 
 I can only test 32bit executables. If you have issues on 64bit systems, please report them.
 
@@ -250,6 +245,7 @@ Technical links:
 
 * [Tcx files](http://en.wikipedia.org/wiki/Training_Center_XML)
 * [sirf](http://www.usglobalsat.com/downloads/SiRF_Binary_Protocol.pdf)
+* [EPO format](ftp://ftp.leadtek.com/gps/9023/G-monitor%203.26/User%20Manual/EPO%20Format%20and%20Protocol/LEADTEK%20EPO%20Format%20and%20Protocol%20Reference%20Manual%20V1.0.pdf)
 
 Similar projects:
 

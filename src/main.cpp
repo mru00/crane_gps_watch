@@ -89,10 +89,16 @@ int main(int argc, char** argv) {
             };
 
             int option_index = 0;
-            int c = getopt_long(argc, argv, "h", long_options, &option_index);
+            int c = getopt_long(argc, argv, ":h", long_options, &option_index);
             if (c == -1) break;
 
             switch (c) {
+              case ':':
+                std::cerr << "missing argument" << std::endl;
+                exit (EXIT_FAILURE);
+              case '?':
+                std::cerr << "unknown option" << std::endl;
+                exit (EXIT_FAILURE);
               case 'h':
                 std::cerr <<
                   PACKAGE_STRING "\n"
@@ -103,12 +109,12 @@ int main(int argc, char** argv) {
                   "See README.md or https://github.com/mru00/crane_gps_watch for details\n"
                   "Send bugreports to " PACKAGE_BUGREPORT
                   << std::endl;
-                exit (0);
+                exit (EXIT_SUCCESS);
               case 'w':
                 std::cerr <<
                   PACKAGE_STRING
                   << std::endl;
-                exit (0);
+                exit (EXIT_SUCCESS);
               case 'd':
                 if (!from_image.empty()) {
                     throw std::runtime_error("cannot use --device and --from_image at the same time");
@@ -150,7 +156,7 @@ int main(int argc, char** argv) {
                 break;
               default:
                 std::cerr << "unknown option" << std::endl;
-                exit(1);
+                exit(EXIT_FAILURE);
             }
         }
 

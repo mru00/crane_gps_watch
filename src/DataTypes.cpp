@@ -85,7 +85,7 @@ time_t GpsTime::mktime() {
 }
 
 std::string GpsTime::format() const {
-    return fmt() << put_time(&time, "%Y-%m-%dT%H:%M:%SZ");
+    return fmt() << put_time(&time, "%Y-%m-%dT%H:%M:%S");
     // does not work with windows:
     //return fmt() << put_time(&time, "%FT%TZ");
 }

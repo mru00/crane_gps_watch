@@ -58,6 +58,9 @@ void Watch::clearWorkouts() {
 }
 
 void Watch::downloadEPO(const std::string& epo_fn) {
+    //
+    // ftp://ftp.leadtek.com/gps/9023/G-monitor%203.26/User%20Manual/EPO%20Format%20and%20Protocol/LEADTEK%20EPO%20Format%20and%20Protocol%20Reference%20Manual%20V1.0.pdf
+    //
     // XXX not very trustworthy!
     // there are probably bugs in here.
     std::ifstream epo;
