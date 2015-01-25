@@ -14,6 +14,7 @@ from the following GPS watches:
 Supported Watches:
 * `1.20.22_KRIP0_00` [Crane GPS Watch from Aldi/Hofer](https://www.produktservice.info/20014414/20014414.html)
 * `1.20.21_DLES0_00` [Conrad GPS Nav II](http://www.conrad.de/ce/de/product/372884/Multi-NAV-2-GPS-Pulsuhr-mit-Brustgurt-Schwarz)
+* Conrad Multi NAV-3
 * `1.20.21_KRIP0_00` [Ultrasport NavRun 500](http://www.ebay.de/itm/Ultrasport-GPS-Pulsuhr-NavRun-500-Uhr-Watch-mit-Brustgurt-/301393562885)
 * `1.20.22_KRIP0_00` [unknown model](http://www.ebay.de/itm/GPS-Uhr-mit-Herzfrequnzmessung-Kompass-PC-Download-Pulsuhr-NEU/300968440724)
 
@@ -124,7 +125,7 @@ If the generated output files are wrong, please create an image (`--to_image`) a
 description of the expected output.
 
 
-I can only test 32bit executables. If you have issues on 64bit systems, please report them.
+I can only test 32bit executables, but users built and run successfully on 64bit. If you have issues on 64bit systems, please report them.
 
 Installation:
 -------------
@@ -263,4 +264,5 @@ Thanks:
 
 * Yarema
 * Wolfram
+* Peter
 
