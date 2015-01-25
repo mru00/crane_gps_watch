@@ -4,7 +4,10 @@ Crane GPS Watch client (crane_gps_watch_client)
 Copyright (C) 2014 <mru@sisyphus.teil.cc>
 
 
-[![Build Status](https://travis-ci.org/mru00/crane_gps_watch.svg)](https://travis-ci.org/mru00/crane_gps_watch)
+[![Build Status](https://travis-ci.org/mru00/crane_gps_watch.svg)](https://travis-ci.org/mru00/crane_gps_watch) 
+
+
+[Donate](https://cdn.rawgit.com/mru00/crane_gps_watch/master/donate.html)
 
 
 Crane GPS Watch client is a Linux and Windows client for downloading track files in 
