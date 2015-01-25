@@ -49,8 +49,9 @@ The TCX format is used instead the popular GPX format, for the following reason:
 The GPS watch is able to record workouts where only heartrate is available, no GPS.
 It is not valid to create GPS records without coordinates. In TCX, this is possible.
 
-If you require a desire a different output format, have a look at [gpsbabel](http://www.gpsbabel.org/).
-The program can convert between many different formats. Or file a feature request.
+If you require a different output format, have a look at [gpsbabel](http://www.gpsbabel.org/).
+The program can convert between many different formats (e.g. GPX). Or file a feature request.
+
 USAGE:
 ------
 
