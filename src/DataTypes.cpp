@@ -85,7 +85,13 @@ time_t GpsTime::mktime() {
 }
 
 std::string GpsTime::format() const {
-    return fmt() << put_time(&time, "%Y-%m-%dT%H:%M:%S");
+    std::string fmt_time = fmt() << put_time(&time, "%Y-%m-%dT%H:%M:%S%z");
+    if(fmt_time.length() >= 24){
+	    //insert missing ':' in the time zone. put_time timezone:"+0100"
+        //                                     XML      timezone:"+01:00"
+        fmt_time.insert((fmt_time.length() -2) ,":");
+    } 
+    return fmt_time;
     // does not work with windows:
     //return fmt() << put_time(&time, "%FT%TZ");
 }

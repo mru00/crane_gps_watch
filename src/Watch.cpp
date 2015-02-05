@@ -185,16 +185,17 @@ void Watch::parseGpsTimeUpd(GpsTimeUpd& t, WatchMemoryBlock::mem_it_t it) {
     t.mm = *it++;
     t.ss = *it++;
 }
-void Watch::parseGpsTime(GpsTime& t, WatchMemoryBlock::mem_it_t it) {
+void Watch::parseGpsTime(GpsTime& t, WatchMemoryBlock::mem_it_t it, unsigned timezone) {
     t.time.tm_year = 100 + *it++;
     t.time.tm_mon = *it++ - 1;
     t.time.tm_mday = *it++;
     t.time.tm_hour = *it++;
     t.time.tm_min = *it++;
     t.time.tm_sec = *it++;
+    t.time.tm_gmtoff = ((timezone - 24)/2)*3600 + ((timezone - 24)%2)*1800;
     t.mktime();
 }
-void Watch::parseSample(SampleInfo& si, WatchMemoryBlock::mem_it_t& it) {
+void Watch::parseSample(WatchInfo& wi, SampleInfo& si, WatchMemoryBlock::mem_it_t& it) {
 
     auto type = *it;
     si.fb = type;
@@ -205,7 +206,7 @@ void Watch::parseSample(SampleInfo& si, WatchMemoryBlock::mem_it_t& it) {
             si.type = SampleInfo::Full;
             si.hr = *(it+24);
             si.fix = si.sb;
-            parseGpsTime(si.time, it+2);
+            parseGpsTime(si.time, it+2, wi.timezone);
             parseGpsLocation(si.lon, it+8);
             parseGpsLocation(si.lat, it+12);
             parseGpsEle(si.ele, it+16);
@@ -238,7 +239,7 @@ void Watch::parseSample(SampleInfo& si, WatchMemoryBlock::mem_it_t& it) {
             si.type = SampleInfo::HrOnly;
             si.hr = *(it+7);
             si.fix = 0;
-            parseGpsTime(si.time, it+1);
+            parseGpsTime(si.time, it+1, wi.timezone);
             it += 8;
             break;
           }
@@ -247,7 +248,7 @@ void Watch::parseSample(SampleInfo& si, WatchMemoryBlock::mem_it_t& it) {
             si.type = SampleInfo::None;
             si.hr = *(it+24);
             si.fix = si.sb;
-            parseGpsTime(si.time, it+2);
+            parseGpsTime(si.time, it+2, wi.timezone);
             parseGpsLocation(si.lon, it+8);
             parseGpsLocation(si.lat, it+12);
             parseGpsEle(si.ele, it+16);
@@ -266,8 +267,9 @@ void Watch::parseSample(SampleInfo& si, WatchMemoryBlock::mem_it_t& it) {
           }
     }
 }
-void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
+void Watch::parseWO(WatchInfo& wi, int first, int count) {
 
+    WorkoutInfo wo;
     WatchMemoryBlock cb(first, count);
     readBlock(cb);
 
@@ -281,12 +283,12 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
     // [3..8]
     std::vector<unsigned char> reverse_time(6);
     std::reverse_copy(it, it +6, reverse_time.begin());
-    parseGpsTime(wo.start_time, reverse_time.begin());
+    parseGpsTime(wo.start_time, reverse_time.begin(), wi.timezone);
 
 
     // [9..11] workout time
     std::reverse_copy(it+6, it +9, reverse_time.begin()+3);
-    parseGpsTime(wo.workout_time, reverse_time.begin());
+    parseGpsTime(wo.workout_time, reverse_time.begin(), wi.timezone);
 
     it += 6;
 
@@ -302,6 +304,12 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
     it = cb.memory.begin() + 32;
     wo.calories = *it++; // [32..33]
     wo.calories+= *it++ << 8;
+    wo.calories+= *it++ << 16;
+    wo.calories+= *it++ << 24;
+
+    it = cb.memory.begin() + 64;
+    
+    //now every 16bytes is a laptime 1=hour 2=minutes 3=seconds 4+5=microseconds 10+9 lap distance 13=lapspeed in km/h
 
     br.onWorkout(wo);
 
@@ -321,7 +329,7 @@ void Watch::parseWO(WorkoutInfo& wo, int first, int count) {
 
         assert (it < cb.memory.end());
         SampleInfo si;
-        parseSample(si, it);
+        parseSample(wi, si, it);
         idx_wo ++;
         idx_track++;
 
@@ -452,11 +460,11 @@ void Watch::parseBlock0() {
     }
 
     // timezones:
-    // - 1.00 = 0x16
-    //   0.00 = 0x18
-    // + 1.00 = 0x1a
-    // + 2.00 = 0x1c
-    // + 2.30 = 0x1d
+    // - 1:00 = 0x16
+    //   0:00 = 0x18
+    // + 1:00 = 0x1a
+    // + 2:00 = 0x1c
+    // + 2:30 = 0x1d
     wi.timezone = *(mem_it + 3);
     wi.sample_interval = *(mem_it + 14);
     wi.selected_profile = *(mem_it + 0x10+10);
@@ -476,8 +484,7 @@ void Watch::parseBlock0() {
 
     int f = 1;
     for (auto t : wi.toc) {
-        WorkoutInfo wo;
-        parseWO(wo, f, t);
+        parseWO(wi, f, t);
         f+=t;
     }
 
