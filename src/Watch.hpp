@@ -28,9 +28,9 @@ class Watch {
     void parseGpsEle(GpsEle& l, WatchMemoryBlock::mem_it_t it);
     void parseGpsLocation(GpsLocation& l, WatchMemoryBlock::mem_it_t it);
     void parseGpsTimeUpd(GpsTimeUpd& t, WatchMemoryBlock::mem_it_t it);
-    void parseGpsTime(GpsTime& t, WatchMemoryBlock::mem_it_t it);
-    void parseSample(SampleInfo& si, WatchMemoryBlock::mem_it_t& it);
-    void parseWO(WorkoutInfo& wo, int first, int count);
+    void parseGpsTime(GpsTime& t, WatchMemoryBlock::mem_it_t it, unsigned timezone);
+    void parseSample(WatchInfo& wi, SampleInfo& si, WatchMemoryBlock::mem_it_t& it);
+    void parseWO(WatchInfo& wi, int first, int count);
     void parseToc(Toc& toc, WatchMemoryBlock::mem_it_t it);
     void parseBlock0();
 
