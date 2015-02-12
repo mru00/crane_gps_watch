@@ -8,8 +8,9 @@ Copyright (C) 2014-2015 <mru@sisyphus.teil.cc>
 
 
 Crane GPS Watch client is an unofficial, alternative open source Linux and Windows program for downloading tracks in 
-[TCX  format](http://en.wikipedia.org/wiki/Training_Center_XML)
-from the following GPS watches:
+[TCX format](http://en.wikipedia.org/wiki/Training_Center_XML).
+
+The program provides an alternative to the  "GPS Master" software which is usually shipped with the watch. It does not provide most of the features of "GPS Master", but works cross platform and from the command line.
 
 Supported Watches:
 * `1.20.22_KRIP0_00` [Crane GPS Watch from Aldi/Hofer](https://www.produktservice.info/20014414/20014414.html)
@@ -48,6 +49,11 @@ It is not valid to create GPS records without coordinates. In TCX, this is possi
 
 If you require a different output format, have a look at [gpsbabel](http://www.gpsbabel.org/).
 The program can convert between many different formats (e.g. GPX). Or file a feature request.
+
+Lap information is not yet stored in the output file. This is being worked on.
+https://github.com/mru00/crane_gps_watch/issues/8
+
+
 
 USAGE:
 ------
