@@ -66,7 +66,9 @@ GpsTime::GpsTime() : time () {
                  light  saving time is in effect, zero if it is not, and nega‐$
                  tive if the information is not available.$
     */
-    time.tm_isdst = 0;
+    // Detect DST from the current TZ system setting
+    // mktime will do this regardless, so we need it to line up
+    time.tm_isdst = -1;
 }
 
 GpsTime& GpsTime::operator=(const GpsTimeUpd& other) {
