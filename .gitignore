@@ -25,3 +25,5 @@ release/win-i686
 release/win-x86_64
 release/linux-i686
 
+src/crane_gps_watch_client
+src/gps_watch_monitor.py
