@@ -310,13 +310,13 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
     it = cb.memory.begin() + 64;
 
     // For debugging, dump the data from the laps.  Perhaps this should only be enabled via --verbose?
-    std::cout << "Lap";
+    std::cout << std::setfill(' ') << "Lap";
     for (int i = 0; i < 16; i++) {
         std::cout << std::setw(3) << i + 1 << " ";
     }
     std::cout << std::endl;
     for (unsigned int lap = 0; lap < wo.lapcount; lap++) {
-        std::cout << lap + 1 << ": ";
+        std::cout << std::setw(3) << lap + 1 << " ";
         for (int i = 0; i < 16; i++) {
             std::cout << std::setw(3) << (int) *it++ << " ";
         }
@@ -420,19 +420,26 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
         wo.lapinfo[lap].speed += *it++ << 24;
 
         double speed = wo.lapinfo[lap].speed / 10.0;
-        int pacemin;
-        int pacesec;
+        unsigned int pacemin;
+        unsigned int pacesec;
 
-        pacemin = 60 / speed;
-        pacesec = (60.0 / speed - pacemin) * 60;
-        wo.lapinfo[lap].pace = tm();
-        wo.lapinfo[lap].pace.tm_min = pacemin;
-        wo.lapinfo[lap].pace.tm_sec = pacesec;
-
-        if(pacemin > 39) {
+	if (speed > 0) {
+            pacemin = 60 / speed;
+            pacesec = (60.0 / speed - pacemin) * 60;
+	    // The watch caps this display at 39:59
+            if(pacemin > 39) {
+                pacemin = 39;
+                pacesec = 59;
+            }
+	}
+        else {
             pacemin = 39;
             pacesec = 59;
         }
+
+        wo.lapinfo[lap].pace = tm();
+        wo.lapinfo[lap].pace.tm_min = pacemin;
+        wo.lapinfo[lap].pace.tm_sec = pacesec;
 
 
         // Output the data collected.
