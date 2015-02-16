@@ -271,7 +271,7 @@ void Watch::parseLaps(WorkoutInfo& wo, WatchMemoryBlock::mem_it_t& it) {
     //now every 16 bytes is a laptime
     //1=hour 2=minutes 3=seconds 4=microseconds to be displayed as hex
     //5=average hr 6-8=blank? 9-12=lap distance 13-16=lapspeed in 100m/h
-    wo.lapinfo = new LapInfo[wo.lapcount];
+    wo.lapinfo.reserve(wo.lapcount);
     time_t wo_start = mktime(&wo.start_time.time);
 
     for (unsigned int lap = 0; lap < wo.lapcount; lap++) {

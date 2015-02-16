@@ -143,7 +143,7 @@ struct WorkoutInfo {
     double speed_avg;
     double speed_max;
     double calories;
-    LapInfo *lapinfo;
+    std::vector<LapInfo> lapinfo;
 };
 
 struct TrackInfo {
