@@ -268,29 +268,6 @@ void Watch::parseSample(WatchInfo& wi, SampleInfo& si, WatchMemoryBlock::mem_it_
     }
 }
 void Watch::parseLaps(WorkoutInfo& wo, WatchMemoryBlock::mem_it_t& it) {
-    /*// For debugging, dump the data from the laps.  Perhaps this should only be enabled via --verbose?
-    std::cout << std::setfill(' ') << "Lap";
-    for (int i = 0; i < 16; i++) {
-        std::cout << std::setw(3) << i + 1 << " ";
-    }
-    std::cout << std::endl;
-    for (unsigned int lap = 0; lap < wo.lapcount; lap++) {
-        std::cout << std::setw(3) << lap + 1 << " ";
-        for (int i = 0; i < 16; i++) {
-            std::cout << std::setw(3) << (int) *it++ << " ";
-        }
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
-
-    // Reset the it pointer back to the start of the lap data
-    it = cb.memory.begin() + 64;
-    */
-    // Add a header to the lap data output
-    std::cout << wo.start_time.format() << std::endl;
-    std::cout << "Lap Absolute Time             WorkoutTime LapTime     HR  Dist  Spd       Pace" << std::endl;
-    std::cout << "--- ------------------------- ----------- ----------- --- ----- --------- --------" << std::endl;
-
     //now every 16 bytes is a laptime
     //1=hour 2=minutes 3=seconds 4=microseconds to be displayed as hex
     //5=average hr 6-8=blank? 9-12=lap distance 13-16=lapspeed in 100m/h
@@ -398,32 +375,7 @@ void Watch::parseLaps(WorkoutInfo& wo, WatchMemoryBlock::mem_it_t& it) {
         wo.lapinfo[lap].pace = tm();
         wo.lapinfo[lap].pace.tm_min = pacemin;
         wo.lapinfo[lap].pace.tm_sec = pacesec;
-
-        // Output the data collected.
-        std::cout << std::setw(3) << std::setfill(' ') << lap + 1 << " ";
-
-        std::cout << wo.lapinfo[lap].abs_split.format() << " ";
-
-        std::cout << std::setw(2) << std::setfill('0') << wo.lapinfo[lap].split.tm_hour << ":"
-            << std::setw(2) << wo.lapinfo[lap].split.tm_min << ":"
-            << std::setw(2) << wo.lapinfo[lap].split.tm_sec << "."
-            << std::setw(2) << wo.lapinfo[lap].split_milli << " ";
-
-        std::cout << std::setw(2) << std::setfill('0') << wo.lapinfo[lap].lap.tm_hour << ":"
-            << std::setw(2) << wo.lapinfo[lap].lap.tm_min << ":"
-            << std::setw(2) << wo.lapinfo[lap].lap.tm_sec << "."
-            << std::setw(2) << wo.lapinfo[lap].lap_milli << " ";
-
-        std::cout << std::setw(3) << std::setfill(' ') << wo.lapinfo[lap].avg_hr << " ";
-
-        std::cout << std::setw(5) << std::setprecision(2) << std::fixed << wo.lapinfo[lap].distance / 10 / 1000.0 << " ";
-
-        std::cout << std::setw(5) << std::setprecision(1) << std::fixed << wo.lapinfo[lap].speed / 10.0 << "km/h ";
-
-        std::cout << std::setw(2) << pacemin << ":" << std::setw(2) << std::setfill('0') << pacesec << "/km ";
-        std::cout << std::endl;
     }
-    std::cout << std::endl;
 }
 void Watch::parseWO(WatchInfo& wi, int first, int count) {
 
