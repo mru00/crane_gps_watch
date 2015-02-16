@@ -36,6 +36,8 @@ class Watch {
 
     void readBlock(WatchMemoryBlock& b);
     void writeBlock(WatchMemoryBlock& b);
+    time_t my_timegm(struct tm *tm);
+
 
   private:
     Broadcaster br;

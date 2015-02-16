@@ -77,21 +77,8 @@ void TcxWriter::onWorkout(const WorkoutInfo &i)  {
     writer.startElement("Activity");
     writer. writeAttribute("Sport", sport);
     writer. writeElement("Id", i.start_time.format());
-    writer. startElement("Lap");
-    writer. writeAttribute("StartTime", i.start_time.format());
-    writer. writeElement("TotalTimeSeconds", "0");
-    writer. writeElement("DistanceMeters", "0");
-      {
-        std::ostringstream ss;
-        ss<< (int)(i.calories/100);
-        writer.writeElement("Calories", ss.str());
-      }
-    writer.  writeElement("Intensity", "Active");
-    writer.  writeElement("TriggerMethod", "Manual");
 }
 void TcxWriter::onWorkoutEnd(const WorkoutInfo &)  { 
-    writer.  writeElement("Notes", current_wo.start_time.format());
-    writer. endElement("Lap");
     writer.endElement("Activity");
 
     if (split_by_track) {
@@ -99,6 +86,18 @@ void TcxWriter::onWorkoutEnd(const WorkoutInfo &)  {
         writer.endElement("TrainingCenterDatabase");
         writer.endDocument();
     }
+}
+void TcxWriter::onLap(const LapInfo &i) {
+    writer.startElement("Lap");
+    writer. writeAttribute("StartTime", i.start_time.format());
+    writer.writeElement("TotalTimeSeconds", std::to_string(i.lap_seconds));
+    writer.writeElement("TriggerMethod", "Manual");
+    writer.writeElement("DistanceMeters", std::to_string(i.distance / 10));
+    writer.writeElement("AverageHeartRateBpm", std::to_string(i.avg_hr));
+}
+void TcxWriter::onLapEnd(const LapInfo &i) {
+    writer.writeElement("Notes", i.abs_split.format());
+    writer.endElement("Lap");
 }
 void TcxWriter::onTrack(const TrackInfo&) {
     writer.startElement("Track");

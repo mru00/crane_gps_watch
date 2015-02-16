@@ -112,6 +112,24 @@ struct SampleInfo {
     unsigned idx_wo, idx_track;
 };
 
+struct LapInfo {
+    GpsTime abs_split;
+    GpsTime start_time;
+
+    tm split;
+    int split_milli; // GpsTime doesn't have millisplit
+
+    tm lap;
+    int lap_milli; // GpsTime doesn't have millisplit
+    int lap_seconds;
+
+    tm pace;
+
+    long distance; // in m
+    double speed; // in km/hr
+    int avg_hr;
+};
+
 struct WorkoutInfo {
 
     // i doubt nsamples:
@@ -125,6 +143,7 @@ struct WorkoutInfo {
     double speed_avg;
     double speed_max;
     double calories;
+    LapInfo *lapinfo;
 };
 
 struct TrackInfo {

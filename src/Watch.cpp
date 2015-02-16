@@ -308,8 +308,158 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
     wo.calories+= *it++ << 24;
 
     it = cb.memory.begin() + 64;
+
+    // For debugging, dump the data from the laps.  Perhaps this should only be enabled via --verbose?
+    std::cout << "Lap";
+    for (int i = 0; i < 16; i++) {
+        std::cout << std::setw(3) << i + 1 << " ";
+    }
+    std::cout << std::endl;
+    for (unsigned int lap = 0; lap < wo.lapcount; lap++) {
+        std::cout << lap + 1 << ": ";
+        for (int i = 0; i < 16; i++) {
+            std::cout << std::setw(3) << (int) *it++ << " ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+
+    // Reset the it pointer back to the start of the lap data
+    it = cb.memory.begin() + 64;
     
-    //now every 16bytes is a laptime 1=hour 2=minutes 3=seconds 4+5=microseconds 10+9 lap distance 13=lapspeed in km/h
+    // Add a header to the lap data output
+    std::cout << wo.start_time.format() << std::endl;
+
+    std::cout << "Lap Absolutie Time            WorkoutTime Lap         HR  Dist  Spd       Pace" << std::endl;
+    std::cout << "--- ------------------------- ----------- ----------- --- ----- --------- --------" << std::endl;
+
+    //now every 16 bytes is a laptime
+    //1=hour 2=minutes 3=seconds 4=microseconds to be displayed as hex
+    //5=average hr 6-8=blank? 9-12=lap distance 13-16=lapspeed in 100m/h
+    wo.lapinfo = new LapInfo[wo.lapcount];
+    time_t wo_start = mktime(&wo.start_time.time);
+
+    for (unsigned int lap = 0; lap < wo.lapcount; lap++) {
+        // Initialise storage
+        wo.lapinfo[lap].split = tm();
+        wo.lapinfo[lap].split.tm_year = 70;
+        wo.lapinfo[lap].split.tm_mday = 1;
+        wo.lapinfo[lap].split_milli = 0;
+
+        // 1-3 time
+        wo.lapinfo[lap].split.tm_hour = *it++;
+        wo.lapinfo[lap].split.tm_min = *it++;
+        wo.lapinfo[lap].split.tm_sec = *it++;
+
+        // 4 (milli) is expected to be printed as hex. eg data 83 = 0x53 displayed
+        std::ostringstream hexstream;
+        hexstream << std::hex << (int)*it++;
+        wo.lapinfo[lap].split_milli = atoi(hexstream.str().c_str());
+
+        // Calculate lap time
+        time_t this_split;
+        time_t prev_split;
+        time_t this_lap;
+        time_t abs_split;
+        time_t start_t;
+
+        int prev_milli;
+        int this_milli;
+
+        wo.lapinfo[lap].lap = tm();
+        wo.lapinfo[lap].lap.tm_year = 70;
+        wo.lapinfo[lap].lap.tm_mday = 1;
+        wo.lapinfo[lap].lap_milli = 0;
+
+        if (lap == 0) {
+            prev_split = 0;
+            prev_milli = 0;
+        }
+        else {
+            prev_split = my_timegm(&wo.lapinfo[lap - 1].split);
+            prev_milli = wo.lapinfo[lap - 1].split_milli;
+        }
+
+        this_split = my_timegm(&wo.lapinfo[lap].split);
+        this_lap = this_split - prev_split;
+        this_milli = wo.lapinfo[lap].split_milli - prev_milli;
+
+        while (this_milli < 0) {
+            this_milli += 100;
+            this_lap--;
+        }
+
+        wo.lapinfo[lap].lap = *gmtime(&this_lap);
+        wo.lapinfo[lap].lap_milli = this_milli;
+        wo.lapinfo[lap].lap_seconds = (int) this_lap;
+
+        start_t = wo_start + prev_split;
+        abs_split = wo_start + this_split + 1;
+
+        wo.lapinfo[lap].abs_split.time = *localtime(&abs_split);
+        wo.lapinfo[lap].start_time.time = *localtime(&start_t);
+
+        // 5 HR
+        wo.lapinfo[lap].avg_hr = *it++;
+
+        // 6-8 all zero?
+        it += 3;
+
+        // 9 lap dist m
+        // 10 lap dist * 256m
+        // 11-12 etc?
+        wo.lapinfo[lap].distance = *it++;
+        wo.lapinfo[lap].distance += *it++ << 8;
+        wo.lapinfo[lap].distance += *it++ << 16;
+        wo.lapinfo[lap].distance += *it++ << 24;
+
+        // 13 lap speed, in hundreds of m/hr - divide by 10 for km/h
+        wo.lapinfo[lap].speed = *it++;
+        wo.lapinfo[lap].speed += *it++ << 8;
+        wo.lapinfo[lap].speed += *it++ << 16;
+        wo.lapinfo[lap].speed += *it++ << 24;
+
+        double speed = wo.lapinfo[lap].speed / 10.0;
+        int pacemin;
+        int pacesec;
+
+        pacemin = 60 / speed;
+        pacesec = (60.0 / speed - pacemin) * 60;
+        wo.lapinfo[lap].pace = tm();
+        wo.lapinfo[lap].pace.tm_min = pacemin;
+        wo.lapinfo[lap].pace.tm_sec = pacesec;
+
+        if(pacemin > 39) {
+            pacemin = 39;
+            pacesec = 59;
+        }
+
+
+        // Output the data collected.
+        std::cout << std::setw(3) << std::setfill(' ') << lap + 1 << " ";
+
+        std::cout << wo.lapinfo[lap].abs_split.format() << " ";
+
+        std::cout << std::setw(2) << std::setfill('0') << wo.lapinfo[lap].split.tm_hour << ":"
+            << std::setw(2) << wo.lapinfo[lap].split.tm_min << ":"
+            << std::setw(2) << wo.lapinfo[lap].split.tm_sec << "."
+            << std::setw(2) << wo.lapinfo[lap].split_milli << " ";
+
+        std::cout << std::setw(2) << std::setfill('0') << wo.lapinfo[lap].lap.tm_hour << ":"
+            << std::setw(2) << wo.lapinfo[lap].lap.tm_min << ":"
+            << std::setw(2) << wo.lapinfo[lap].lap.tm_sec << "."
+            << std::setw(2) << wo.lapinfo[lap].lap_milli << " ";
+
+        std::cout << std::setw(3) << std::setfill(' ') << wo.lapinfo[lap].avg_hr << " ";
+
+        std::cout << std::setw(5) << std::setprecision(2) << std::fixed << wo.lapinfo[lap].distance / 10 / 1000.0 << " ";
+
+        std::cout << std::setw(5) << std::setprecision(1) << std::fixed << wo.lapinfo[lap].speed / 10.0 << "km/h ";
+
+        std::cout << std::setw(2) << pacemin << ":" << std::setw(2) << std::setfill('0') << pacesec << "/km ";
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 
     br.onWorkout(wo);
 
@@ -321,8 +471,13 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
     GpsEle ele;
     unsigned idx_wo = 0;
     unsigned idx_track = 0;
+    unsigned idx_lap = 0;
     bool has_full_fix = false;
+    time_t sample_t;
+    time_t lap_t;
 
+    br.onLap(wo.lapinfo[idx_lap]);
+    lap_t = wo.lapinfo[idx_lap].abs_split.mktime();
 
     // something is wrong with nsamples - trusting "0xff" works better
     for (unsigned i =0; /*i< wo.nsamples*/;i++) {
@@ -404,6 +559,21 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
             idx_track = 1;
         }
 
+        sample_t = si.time.mktime();
+        if (sample_t > lap_t) {
+            if (track_active) {
+                track_active = false;
+                   TrackInfo i;
+                br.onTrackEnd(i);
+            }
+            br.onLapEnd(wo.lapinfo[idx_lap]);
+            if (idx_lap < wo.lapcount - 1) {
+                idx_lap++;
+            }
+            br.onLap(wo.lapinfo[idx_lap]);
+            lap_t = wo.lapinfo[idx_lap].abs_split.mktime();
+        }
+
         si.idx_track = idx_track;
         si.idx_wo = idx_wo;
         br.onSample(si);
@@ -415,7 +585,7 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
         br.onTrackEnd(i);
     }
 
-
+    br.onLapEnd(wo.lapinfo[idx_lap]);
     br.onWorkoutEnd(wo);
 }
 void Watch::parseToc(Toc& toc, WatchMemoryBlock::mem_it_t it) {
@@ -544,5 +714,22 @@ void Watch::writeBlock(WatchMemoryBlock& b) {
             mem_it += readSize;
         }
     }
+}
+
+time_t Watch::my_timegm(struct tm *tm)
+{
+    time_t ret;
+    char *tz;
+
+    tz = getenv("TZ");
+    setenv("TZ", "", 1);
+    tzset();
+    ret = mktime(tm);
+    if (tz)
+        setenv("TZ", tz, 1);
+    else
+        unsetenv("TZ");
+    tzset();
+    return ret;
 }
 

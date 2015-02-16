@@ -21,6 +21,8 @@ class TcxWriter : public Callback {
     void onWatchEnd(const WatchInfo &) override;
     void onWorkout(const WorkoutInfo &i)  override;
     void onWorkoutEnd(const WorkoutInfo &) override;
+    void onLap(const LapInfo&) override;
+    void onLapEnd(const LapInfo&) override;
     void onTrack(const TrackInfo&) override;
     void onTrackEnd(const TrackInfo&) override;
     void onSample(const SampleInfo &i) override;
