@@ -267,49 +267,8 @@ void Watch::parseSample(WatchInfo& wi, SampleInfo& si, WatchMemoryBlock::mem_it_
           }
     }
 }
-void Watch::parseWO(WatchInfo& wi, int first, int count) {
-
-    WorkoutInfo wo;
-    WatchMemoryBlock cb(first, count);
-    readBlock(cb);
-
-    WatchMemoryBlock::mem_it_t it = cb.memory.begin();
-
-    wo.nsamples = *it++;  // [0..1]
-    wo.nsamples+= (*it++) << 8;
-
-    wo.lapcount = *it++;  // [2]
-
-    // [3..8]
-    std::vector<unsigned char> reverse_time(6);
-    std::reverse_copy(it, it +6, reverse_time.begin());
-    parseGpsTime(wo.start_time, reverse_time.begin(), wi.timezone);
-
-
-    // [9..11] workout time
-    std::reverse_copy(it+6, it +9, reverse_time.begin()+3);
-    parseGpsTime(wo.workout_time, reverse_time.begin(), wi.timezone);
-
-    it += 6;
-
-    it += 3; // total workout time [9..12]
-    wo.profile = *(cb.memory.begin()+15); // profile [15]
-
-    it = cb.memory.begin() + 16;
-    it += 4; // km [16..19]
-    it += 2; // speed avg [20..21]
-    it += 2; // speed max [22..23]
-    it += 8; // ? [24..32]
-
-    it = cb.memory.begin() + 32;
-    wo.calories = *it++; // [32..33]
-    wo.calories+= *it++ << 8;
-    wo.calories+= *it++ << 16;
-    wo.calories+= *it++ << 24;
-
-    it = cb.memory.begin() + 64;
-
-    // For debugging, dump the data from the laps.  Perhaps this should only be enabled via --verbose?
+void Watch::parseLaps(WorkoutInfo& wo, WatchMemoryBlock::mem_it_t& it) {
+    /*// For debugging, dump the data from the laps.  Perhaps this should only be enabled via --verbose?
     std::cout << std::setfill(' ') << "Lap";
     for (int i = 0; i < 16; i++) {
         std::cout << std::setw(3) << i + 1 << " ";
@@ -326,11 +285,10 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
 
     // Reset the it pointer back to the start of the lap data
     it = cb.memory.begin() + 64;
-    
+    */
     // Add a header to the lap data output
     std::cout << wo.start_time.format() << std::endl;
-
-    std::cout << "Lap Absolutie Time            WorkoutTime Lap         HR  Dist  Spd       Pace" << std::endl;
+    std::cout << "Lap Absolute Time             WorkoutTime LapTime     HR  Dist  Spd       Pace" << std::endl;
     std::cout << "--- ------------------------- ----------- ----------- --- ----- --------- --------" << std::endl;
 
     //now every 16 bytes is a laptime
@@ -423,15 +381,15 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
         unsigned int pacemin;
         unsigned int pacesec;
 
-	if (speed > 0) {
+    	if (speed > 0) {
             pacemin = 60 / speed;
             pacesec = (60.0 / speed - pacemin) * 60;
-	    // The watch caps this display at 39:59
+    	    // The watch caps this display at 39:59
             if(pacemin > 39) {
                 pacemin = 39;
                 pacesec = 59;
             }
-	}
+    	}
         else {
             pacemin = 39;
             pacesec = 59;
@@ -440,7 +398,6 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
         wo.lapinfo[lap].pace = tm();
         wo.lapinfo[lap].pace.tm_min = pacemin;
         wo.lapinfo[lap].pace.tm_sec = pacesec;
-
 
         // Output the data collected.
         std::cout << std::setw(3) << std::setfill(' ') << lap + 1 << " ";
@@ -467,6 +424,49 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
         std::cout << std::endl;
     }
     std::cout << std::endl;
+}
+void Watch::parseWO(WatchInfo& wi, int first, int count) {
+
+    WorkoutInfo wo;
+    WatchMemoryBlock cb(first, count);
+    readBlock(cb);
+
+    WatchMemoryBlock::mem_it_t it = cb.memory.begin();
+
+    wo.nsamples = *it++;  // [0..1]
+    wo.nsamples+= (*it++) << 8;
+
+    wo.lapcount = *it++;  // [2]
+
+    // [3..8]
+    std::vector<unsigned char> reverse_time(6);
+    std::reverse_copy(it, it +6, reverse_time.begin());
+    parseGpsTime(wo.start_time, reverse_time.begin(), wi.timezone);
+
+
+    // [9..11] workout time
+    std::reverse_copy(it+6, it +9, reverse_time.begin()+3);
+    parseGpsTime(wo.workout_time, reverse_time.begin(), wi.timezone);
+
+    it += 6;
+
+    it += 3; // total workout time [9..12]
+    wo.profile = *(cb.memory.begin()+15); // profile [15]
+
+    it = cb.memory.begin() + 16;
+    it += 4; // km [16..19]
+    it += 2; // speed avg [20..21]
+    it += 2; // speed max [22..23]
+    it += 8; // ? [24..32]
+
+    it = cb.memory.begin() + 32;
+    wo.calories = *it++; // [32..33]
+    wo.calories+= *it++ << 8;
+    wo.calories+= *it++ << 16;
+    wo.calories+= *it++ << 24;
+
+    it = cb.memory.begin() + 64;
+    parseLaps(wo, it);
 
     br.onWorkout(wo);
 
