@@ -551,14 +551,6 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
             br.onTrackEnd(i);
         }
 
-
-        if (!track_active) {
-            TrackInfo t;
-            br.onTrack(t);
-            track_active = true;
-            idx_track = 1;
-        }
-
         sample_t = si.time.mktime();
         if (sample_t > lap_t) {
             if (track_active) {
@@ -572,6 +564,13 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
             }
             br.onLap(wo.lapinfo[idx_lap]);
             lap_t = wo.lapinfo[idx_lap].abs_split.mktime();
+        }
+
+        if (!track_active) {
+            TrackInfo t;
+            br.onTrack(t);
+            track_active = true;
+            idx_track = 1; // Should this be ++?
         }
 
         si.idx_track = idx_track;

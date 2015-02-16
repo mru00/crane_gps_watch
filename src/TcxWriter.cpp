@@ -91,9 +91,15 @@ void TcxWriter::onLap(const LapInfo &i) {
     writer.startElement("Lap");
     writer. writeAttribute("StartTime", i.start_time.format());
     writer.writeElement("TotalTimeSeconds", std::to_string(i.lap_seconds));
-    writer.writeElement("TriggerMethod", "Manual");
     writer.writeElement("DistanceMeters", std::to_string(i.distance / 10));
-    writer.writeElement("AverageHeartRateBpm", std::to_string(i.avg_hr));
+    writer.writeElement("Calories", "0");
+    if (i.avg_hr > 0) {
+        writer.startElement("AverageHeartRateBpm");
+        writer.writeElement("Value", std::to_string(i.avg_hr));
+        writer.endElement("AverageHeartRateBpm");
+    }
+    writer.writeElement("Intensity", "Active");
+    writer.writeElement("TriggerMethod", "Manual");
 }
 void TcxWriter::onLapEnd(const LapInfo &i) {
     writer.writeElement("Notes", i.abs_split.format());
