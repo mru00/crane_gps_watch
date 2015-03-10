@@ -18,13 +18,12 @@ Supported Watches:
 * `1.20.22_DLES0_00` Conrad Multi NAV-3
 * `1.20.21_KRIP0_00` [Ultrasport NavRun 500](http://www.ebay.de/itm/Ultrasport-GPS-Pulsuhr-NavRun-500-Uhr-Watch-mit-Brustgurt-/301393562885)
 * `1.20.22_KRIP0_00` [unknown model](http://www.ebay.de/itm/GPS-Uhr-mit-Herzfrequnzmessung-Kompass-PC-Download-Pulsuhr-NEU/300968440724)
-
+* [Runtastic Gps Watch](https://www.runtastic.com/shop/en/runtastic-gps-watch-with-heart-rate-monitor)
 
 As the watch is commonly rebranded, the following watches might just work:
 
 * [Latitude NAV Master II](http://www.latitude.com.hk/dbimages/document/856/gps_series_catalog.pdf) (probably the original manufacturer)
 * [Pyle Gps watch](http://www.pyleaudio.com/sku/PSWGP405BK/GPS-Watch-w-Coded-Heart-Rate-Transmission,-Navigation,-Speed,-Distance,-Workout-Memory,-Compass,--PC-link--(Black-Color))
-* [Runtastic Gps Watch](https://www.runtastic.com/shop/en/runtastic-gps-watch-with-heart-rate-monitor)
 * [Ascen Smart GPS watch GPS300](http://forums.watchuseek.com/f296/new-comer-ascen-gps-watch-comprehensive-review-pics-630057.html)
 * [Tech4O Discover GPS](http://tech4o.shptron.com/p/discover-gps/tech4o_outdoor-multifunction_gps_discover-gps?pp=8)
 
