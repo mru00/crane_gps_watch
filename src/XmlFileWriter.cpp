@@ -59,11 +59,19 @@ void XmlFileWriter::endDocument() {
 }
 
 void XmlFileWriter::startElement(const std::string& name) {
+    genxAddCharacter(w, '\n');
+    for(unsigned int i = 0; i < stack.size(); i++) {
+        genxAddCharacter(w, ' ');
+    }
     genxStartElementLiteral(w, NULL, get_str(name));
     stack.push(name);
 }
 
 void XmlFileWriter::endElement(const std::string& name) {
+    genxAddCharacter(w, '\n');
+    for(unsigned int i = 1; i < stack.size(); i++) {
+        genxAddCharacter(w, ' ');
+    }
     genxEndElement(w);
     if (name.size()) {
         if (name != stack.top()) throw std::runtime_error("XML Tag mismatch (expected a <" + stack.top() + ">, got a <" + name +">)");
@@ -76,7 +84,11 @@ void XmlFileWriter::writeAttribute(const std::string& name, const std::string& v
 }
 
 void XmlFileWriter::writeElement(const std::string& name, const std::string& value) {
-    startElement(name);
+    genxAddCharacter(w, '\n');
+    for(unsigned int i = 0; i < stack.size(); i++) {
+        genxAddCharacter(w, ' ');
+    }
+    genxStartElementLiteral(w, NULL, get_str(name));
     genxAddText(w, get_str(value));
-    endElement(name);
+    genxEndElement(w);
 }
