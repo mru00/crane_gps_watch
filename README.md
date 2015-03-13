@@ -11,7 +11,7 @@ Crane GPS Watch client is an unofficial, alternative open source Linux and Windo
 
 The program provides an alternative to the "GPS Master" software which is usually shipped with the watch. It does not provide many of the features of "GPS Master", but works cross platform and from the command line.
 
-Supported Watches:
+Supported watches and firmware version:
 * `1.20.22_KRIP0_00` [unknown model](http://www.ebay.de/itm/GPS-Uhr-mit-Herzfrequnzmessung-Kompass-PC-Download-Pulsuhr-NEU/300968440724)
 * `1.20.22_KRIP0_00` [Crane GPS Watch from Aldi/Hofer](https://www.produktservice.info/20014414/20014414.html)
 * `1.20.21_KRIP0_00` [Ultrasport NavRun 500](http://www.ebay.de/itm/Ultrasport-GPS-Pulsuhr-NavRun-500-Uhr-Watch-mit-Brustgurt-/301393562885)
