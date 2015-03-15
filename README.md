@@ -138,10 +138,10 @@ Installation:
 Crane GPS Watch client uses make to build:
 
 ```bash
-# Clone source code archive from githup repo:
+## Clone source code archive from githup repo:
 git clone https://github.com/mru00/crane_gps_watch.git
 
-# or download Zip file:
+## or download Zip file:
 
 wget https://github.com/mru00/crane_gps_watch/archive/master.zip
 unzip master.zip
@@ -149,11 +149,15 @@ unzip master.zip
 
 cd crane_gps_watch_client
 
-# build the software
+## issue #17, this is required if you get errors like 'configure: error: cannot run /bin/bash ./config.sub'
+# autoreconf --install
+
+
+## build the software
 ./configure
 make
 
-# install the software
+## install the software
 sudo make install
 ```
 
