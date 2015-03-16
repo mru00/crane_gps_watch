@@ -273,12 +273,12 @@ void Watch::parseLaps(WorkoutInfo& wo, WatchMemoryBlock::mem_it_t& it) {
     //5=average hr 6-8=blank? 9-12=lap distance 13-16=lapspeed in 100m/h
     std::cout << "Preresize:" << wo.lapinfo.size() << std::endl;
     wo.lapinfo.clear();
-    wo.lapinfo.resize(wo.lapcount);
+    wo.lapinfo.reserve(wo.lapcount);
     std::cout << "Resized:" << wo.lapinfo.size() << std::endl;
 
     time_t wo_start = mktime(&wo.start_time.time);
 
-    for (unsigned int lap = 1; lap <= wo.lapcount; lap++) {
+    for (unsigned int lap = 0; lap < wo.lapcount; lap++) {
         LapInfo info;
 
         // Initialise storage
@@ -439,7 +439,7 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
     GpsEle ele;
     unsigned idx_wo = 0;
     unsigned idx_track = 0;
-    unsigned idx_lap = 1;
+    unsigned idx_lap = 0;
     bool has_full_fix = false;
     time_t sample_t;
     time_t lap_t;
