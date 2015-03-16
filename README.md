@@ -26,7 +26,7 @@ As the watch is commonly rebranded, the following watches might just work:
 * [Ascen Smart GPS watch GPS300](http://forums.watchuseek.com/f296/new-comer-ascen-gps-watch-comprehensive-review-pics-630057.html)
 * [Tech4O Discover GPS](http://tech4o.shptron.com/p/discover-gps/tech4o_outdoor-multifunction_gps_discover-gps?pp=8)
 
-I guess that all GPS watches delivered with "GPS Master" software work.
+I guess that all GPS watches delivered with "GPS Master" software work. Please understand that this tool will not provide firmware updates for your watch. Check for updates with the original software.
 
 
 [Krippl Watches](http://www.krippl-watches.com/en/wrist-watch/) is probably the importer/brander of the Crane watch.
@@ -250,6 +250,8 @@ GPS Software:
 * [Turtle Sport](http://turtlesport.sourceforge.net/EN/home.html) does currently not work with the tcx files, due to a bug. Use gpsbabel tcx->gpx and import gpx instead.
 * [gpsbabel](http://www.gpsbabel.org/)
 * [serial port monitor](http://www.serial-port-monitor.com/)
+* [good blog post about GPS Master with the Pyle watch](http://blog.lincomatic.com/?p=1707)
+
 
 Technical links:
 
