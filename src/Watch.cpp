@@ -272,8 +272,8 @@ void Watch::parseLaps(WorkoutInfo& wo, WatchMemoryBlock::mem_it_t& it) {
     //1=hour 2=minutes 3=seconds 4=microseconds to be displayed as hex
     //5=average hr 6-8=blank? 9-12=lap distance 13-16=lapspeed in 100m/h
     std::cout << "Preresize:" << wo.lapinfo.size() << std::endl;
-    wo.lapinfo.resize(wo.lapcount);
     wo.lapinfo.clear();
+    wo.lapinfo.resize(wo.lapcount);
     std::cout << "Resized:" << wo.lapinfo.size() << std::endl;
 
     time_t wo_start = mktime(&wo.start_time.time);
