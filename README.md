@@ -25,6 +25,8 @@ As the watch is commonly rebranded, the following watches might just work:
 * [Pyle Gps watch](http://www.pyleaudio.com/sku/PSWGP405BK/GPS-Watch-w-Coded-Heart-Rate-Transmission,-Navigation,-Speed,-Distance,-Workout-Memory,-Compass,--PC-link--(Black-Color))
 * [Ascen Smart GPS watch GPS300](http://forums.watchuseek.com/f296/new-comer-ascen-gps-watch-comprehensive-review-pics-630057.html)
 * [Tech4O Discover GPS](http://tech4o.shptron.com/p/discover-gps/tech4o_outdoor-multifunction_gps_discover-gps?pp=8)
+* [New Balance NX990](http://www.amazon.com/New-Balance-Watches-Cardio-Trainer/dp/B009H9RRBU)
+
 
 I guess that all GPS watches delivered with "GPS Master" software work. Please understand that this tool will not provide firmware updates for your watch. Check for updates with the original software.
 
