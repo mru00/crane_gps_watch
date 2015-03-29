@@ -210,6 +210,20 @@ void Watch::parseSample(WatchInfo& wi, SampleInfo& si, WatchMemoryBlock::mem_it_
             parseGpsLocation(si.lon, it+8);
             parseGpsLocation(si.lat, it+12);
             parseGpsEle(si.ele, it+16);
+
+            int tmp;
+            tmp = *(it+18);
+            tmp += *(it+19) << 8;
+            si.orientation = tmp;
+
+            tmp = *(it+20);
+            tmp += *(it+21) << 8;
+            si.speed = tmp;
+
+            tmp = *(it+22);
+            tmp += *(it+23) << 8;
+            si.distance = tmp;
+
             it += 25;
             break;
           }
@@ -222,6 +236,20 @@ void Watch::parseSample(WatchInfo& wi, SampleInfo& si, WatchMemoryBlock::mem_it_
             parseGpsLocation(si.lon, it+4);
             parseGpsLocation(si.lat, it+8);
             parseGpsEle(si.ele, it+12);
+
+            int tmp;
+            tmp = *(it+14);
+            tmp += *(it+15) << 8;
+            si.orientation = tmp;
+
+            tmp = *(it+16);
+            tmp += *(it+17) << 8;
+            si.speed = tmp;
+
+            tmp = *(it+18);
+            tmp += *(it+19) << 8;
+            si.distance = tmp;
+
             it += 21;
             break;
           }
@@ -252,6 +280,20 @@ void Watch::parseSample(WatchInfo& wi, SampleInfo& si, WatchMemoryBlock::mem_it_
             parseGpsLocation(si.lon, it+8);
             parseGpsLocation(si.lat, it+12);
             parseGpsEle(si.ele, it+16);
+
+            int tmp;
+            tmp = *(it+18);
+            tmp += *(it+19) << 8;
+            si.orientation = tmp;
+
+            tmp = *(it+20);
+            tmp += *(it+21) << 8;
+            si.speed = tmp;
+
+            tmp = *(it+22);
+            tmp += *(it+23) << 8;
+            si.distance = tmp;
+
             it += 25;
             break;
           }
@@ -290,22 +332,51 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
     std::reverse_copy(it+6, it +9, reverse_time.begin()+3);
     parseGpsTime(wo.workout_time, reverse_time.begin(), wi.timezone);
 
-    it += 6;
-
-    it += 3; // total workout time [9..12]
     wo.profile = *(cb.memory.begin()+15); // profile [15]
 
     it = cb.memory.begin() + 16;
-    it += 4; // km [16..19]
-    it += 2; // speed avg [20..21]
-    it += 2; // speed max [22..23]
-    it += 8; // ? [24..32]
+
+    // km [16..19]
+    wo.total_km = *it++;
+    wo.total_km += (*it++) << 8;
+    wo.total_km += (*it++) << 16;
+    wo.total_km += (*it++) << 24;
+    
+    // speed avg [20..21]
+    wo.speed_avg = *it++;
+    wo.speed_avg += (*it++) << 8;
+
+    // speed max [22..23]
+    wo.speed_max = *it++;
+    wo.speed_max += (*it++) << 8;
+
+    it += 4; // ? [24..27]
+
+    wo.hr_avg = *it++;
+    wo.hr_max = *it++;
+    wo.hr_min = *it++;
 
     it = cb.memory.begin() + 32;
-    wo.calories = *it++; // [32..33]
+    wo.calories = *it++; // [32..35]
     wo.calories+= *it++ << 8;
     wo.calories+= *it++ << 16;
     wo.calories+= *it++ << 24;
+
+    // [36..38] time below training zone
+    std::reverse_copy(it, it +3, reverse_time.begin()+3);
+    parseGpsTime(wo.below_zone_time, reverse_time.begin(), wi.timezone);
+
+    it += 4;
+
+    // [40..42] time in training zone
+    std::reverse_copy(it, it +3, reverse_time.begin()+3);
+    parseGpsTime(wo.in_zone_time, reverse_time.begin(), wi.timezone);
+
+    it += 4;
+
+    // [44..46] time above training zone
+    std::reverse_copy(it, it +3, reverse_time.begin()+3);
+    parseGpsTime(wo.above_zone_time, reverse_time.begin(), wi.timezone);
 
     it = cb.memory.begin() + 64;
     

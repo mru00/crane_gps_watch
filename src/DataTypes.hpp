@@ -106,6 +106,9 @@ struct SampleInfo {
     GpsTimeUpd time_upd;
     GpsLocation lon, lat;
     GpsEle ele;
+    int orientation; // 0 - 359, 0 = North, 90 = East, 180 = South, 270 = West
+    int speed; // in 0.01 km/h
+    int distance; // in 0.1 meter from last Sample
     unsigned char hr;
     unsigned char fix;
     unsigned char fb, sb;
@@ -121,10 +124,16 @@ struct WorkoutInfo {
     GpsTime start_time;
     GpsTime workout_time;
     Profile profile;
-    double total_km;
-    double speed_avg;
-    double speed_max;
-    double calories;
+    long total_km;
+    int speed_avg;
+    int speed_max;
+    long calories;
+    int hr_avg;
+    int hr_max;
+    int hr_min;
+    GpsTime below_zone_time;
+    GpsTime in_zone_time;
+    GpsTime above_zone_time;
 };
 
 struct TrackInfo {
