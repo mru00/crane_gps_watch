@@ -16,12 +16,6 @@
 #include "DataTypes.hpp"
 
 
-struct fmt {
-    std::ostringstream s;
-    operator std::string() {return s.str();}
-    template<class T> fmt& operator<<(T const& v) {return s<<v, *this;}
-};
-
 put_time::put_time(const tm* time, const std::string& format) : str() {
     const size_t max_size = 800;
     char buf[max_size];

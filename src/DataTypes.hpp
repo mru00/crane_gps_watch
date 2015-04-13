@@ -12,6 +12,12 @@
 #include <ctime>
 
 
+struct fmt {
+    std::ostringstream s;
+    operator std::string() {return s.str();}
+    template<class T> fmt& operator<<(T const& v) {return s<<v, *this;}
+};
+
 
 // while we are waiting for http://en.cppreference.com/w/cpp/io/manip/put_time
 struct put_time {
