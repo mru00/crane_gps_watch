@@ -7,28 +7,28 @@ Copyright (C) 2014-2015 <mru@sisyphus.teil.cc>
 [![Build Status](https://travis-ci.org/mru00/crane_gps_watch.svg)](https://travis-ci.org/mru00/crane_gps_watch)  [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://cdn.rawgit.com/mru00/crane_gps_watch/master/donate.html)
 
 
-Crane GPS Watch client is an unofficial, alternative open source Linux and Windows program for downloading tracks in 
-[TCX format](http://en.wikipedia.org/wiki/Training_Center_XML).
+Crane GPS Watch client is an unofficial, alternative open source Linux and Windows program for downloading GPS tracks from different GPS watches.
 
-The program provides an alternative to the  "GPS Master" software which is usually shipped with the watch. It does not provide many of the features of "GPS Master", but works cross platform and from the command line.
+The program provides an alternative to the "GPS Master" software which is usually shipped with the watch. It does not provide many of the features of "GPS Master", but works cross platform and from the command line.
 
-Supported Watches:
-* `1.20.22_KRIP0_00` [Crane GPS Watch from Aldi/Hofer](https://www.produktservice.info/20014414/20014414.html)
-* `1.20.21_DLES0_00` [Conrad GPS Nav II](http://www.conrad.de/ce/de/product/372884/Multi-NAV-2-GPS-Pulsuhr-mit-Brustgurt-Schwarz)
-* `1.20.22_DLES0_00` Conrad Multi NAV-3
-* `1.20.21_KRIP0_00` [Ultrasport NavRun 500](http://www.ebay.de/itm/Ultrasport-GPS-Pulsuhr-NavRun-500-Uhr-Watch-mit-Brustgurt-/301393562885)
+Supported watches and firmware version:
 * `1.20.22_KRIP0_00` [unknown model](http://www.ebay.de/itm/GPS-Uhr-mit-Herzfrequnzmessung-Kompass-PC-Download-Pulsuhr-NEU/300968440724)
-
+* `1.20.22_KRIP0_00` [Crane GPS Watch from Aldi/Hofer](https://www.produktservice.info/20014414/20014414.html)
+* `1.20.21_KRIP0_00` [Ultrasport NavRun 500](http://www.ebay.de/itm/Ultrasport-GPS-Pulsuhr-NavRun-500-Uhr-Watch-mit-Brustgurt-/301393562885)
+* `1.20.22_DLES0_00` [Conrad Multi NAV-3](http://www.produktinfo.conrad.com/datenblaetter/300000-324999/323447-an-01-de-GPS_SPORT_PULSUHR_MULTI_NAV_3.pdf)
+* `1.20.21_DLES0_00` [Conrad GPS Nav II](http://www.conrad.de/ce/de/product/372884/Multi-NAV-2-GPS-Pulsuhr-mit-Brustgurt-Schwarz)
+* `1.20.26_RUNT0_00` [Runtastic Gps Watch](https://www.runtastic.com/shop/en/runtastic-gps-watch-with-heart-rate-monitor)
 
 As the watch is commonly rebranded, the following watches might just work:
 
-* [Latitude NAV Master II](http://www.latitude.com.hk/dbimages/document/856/gps_series_catalog.pdf) (probably the original manufacturer)
+* [Latitude NAV Master II](http://www.latitude.com.hk/dbimages/document/856/gps_series_catalog.pdf)
 * [Pyle Gps watch](http://www.pyleaudio.com/sku/PSWGP405BK/GPS-Watch-w-Coded-Heart-Rate-Transmission,-Navigation,-Speed,-Distance,-Workout-Memory,-Compass,--PC-link--(Black-Color))
-* [Runtastic Gps Watch](https://www.runtastic.com/shop/en/runtastic-gps-watch-with-heart-rate-monitor)
 * [Ascen Smart GPS watch GPS300](http://forums.watchuseek.com/f296/new-comer-ascen-gps-watch-comprehensive-review-pics-630057.html)
 * [Tech4O Discover GPS](http://tech4o.shptron.com/p/discover-gps/tech4o_outdoor-multifunction_gps_discover-gps?pp=8)
+* [New Balance NX990](http://www.amazon.com/New-Balance-Watches-Cardio-Trainer/dp/B009H9RRBU)
 
-I guess that all GPS watches delivered with "GPS Master" software work.
+
+I guess that all GPS watches delivered with "GPS Master" software work. Please understand that this tool will not provide firmware updates for your watch. Check for updates with the original software.
 
 
 [Krippl Watches](http://www.krippl-watches.com/en/wrist-watch/) is probably the importer/brander of the Crane watch.
@@ -140,10 +140,10 @@ Installation:
 Crane GPS Watch client uses make to build:
 
 ```bash
-# Clone source code archive from githup repo:
+## Clone source code archive from githup repo:
 git clone https://github.com/mru00/crane_gps_watch.git
 
-# or download Zip file:
+## or download Zip file:
 
 wget https://github.com/mru00/crane_gps_watch/archive/master.zip
 unzip master.zip
@@ -151,11 +151,15 @@ unzip master.zip
 
 cd crane_gps_watch_client
 
-# build the software
+## issue #14, this is required if you get errors like 'configure: error: cannot run /bin/bash ./config.sub'
+# autoreconf --install
+
+
+## build the software
 ./configure
 make
 
-# install the software
+## install the software
 sudo make install
 ```
 
@@ -248,6 +252,8 @@ GPS Software:
 * [Turtle Sport](http://turtlesport.sourceforge.net/EN/home.html) does currently not work with the tcx files, due to a bug. Use gpsbabel tcx->gpx and import gpx instead.
 * [gpsbabel](http://www.gpsbabel.org/)
 * [serial port monitor](http://www.serial-port-monitor.com/)
+* [good blog post about GPS Master with the Pyle watch](http://blog.lincomatic.com/?p=1707)
+
 
 Technical links:
 
