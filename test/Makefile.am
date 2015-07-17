@@ -24,6 +24,6 @@ AM_TESTS_ENVIRONMENT += \
 endif
 
 
-EXTRA_DIST = TrainingCenterDatabasev2.xsd $(TESTS) common.sh lint_images/*.bin *.bin
+EXTRA_DIST = TrainingCenterDatabasev2.xsd $(TESTS) common.sh $(wildcard lint_images/*.bin) $(wildcard *.bin)
 
 MOSTLYCLEANFILES = *.tcx 002_image2.bin *_wd/*
