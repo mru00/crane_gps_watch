@@ -72,6 +72,8 @@ std::string SerialLink::readVersion() {
 
 
 std::string SerialLink::readVersion2() {
+    // This opcode is not implemented in older firmware versions.
+    // refer to https://github.com/mru00/crane_gps_watch/issues/16
     std::vector<unsigned char> version;
     sendCommand(0x2c, std::vector<unsigned char>());
     receiveReply(0x2d, version);

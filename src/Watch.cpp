@@ -446,7 +446,9 @@ void Watch::parseBlock0() {
     WatchInfo wi;
 
     wi.version = device->readVersion();
-    wi.version2 = device->readVersion2();
+
+    // currently disabled, https://github.com/mru00/crane_gps_watch/issues/16
+    //wi.version2 = device->readVersion2();
 
     WatchMemoryBlock mb(0, 1);
     readBlock(mb);

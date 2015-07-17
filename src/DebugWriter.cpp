@@ -19,7 +19,7 @@ void DebugWriter::onWatch(const WatchInfo &i) {
       << " p=" << i.selected_profile.format()
       << " l=" << i.language.format()
       << " version='" << i.version << "'"
-      << " version2='" << i.version2 << "'"
+      //<< " version2='" << i.version2 << "'"
       << " firmware='" << i.firmware << "'"
       << " timezone=" << (int)i.timezone << "=0x" << std::hex << (int)i.timezone << std::dec
       << std::endl;
