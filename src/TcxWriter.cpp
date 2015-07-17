@@ -18,7 +18,12 @@
 #include "TcxWriter.hpp"
 
 
-TcxWriter::TcxWriter(std::string filename, bool split_by_track) :  writer(), filename(filename), current_wo(), split_by_track(split_by_track) {
+TcxWriter::TcxWriter(std::string filename, bool split_by_track) 
+    : writer()
+       , filename(filename)
+       , current_wo()
+       , split_by_track(split_by_track)
+       , distance_acc(0) {
 }
 
 TcxWriter::~TcxWriter() {
@@ -118,10 +123,17 @@ static std::ostream& operator << (std::ostream &os, const formatHMS& t) {
 
 void TcxWriter::onWorkoutEnd(const WorkoutInfo & i)  { 
 
+    distance_acc = 0;
+
     std::ostringstream ss;
     ss << "Start time: " << current_wo.start_time.format() <<std::endl
+        << "Activity: " << current_wo.profile.format() << std::endl
         << "Average speed (km/h): " << (double)(i.speed_avg)/10 << std::endl
+        << "Average max (km/h): " << (double)(i.speed_max)/10 << std::endl
+        << "Calories: " << (i.calories/100) << std::endl
         << "Minimum heart rate: " << (i.hr_min) << std::endl
+        << "Average heart rate: " << (i.hr_avg) << std::endl
+        << "Maximum heart rate: " << (i.hr_max) << std::endl
         << "Time below training zone: " << formatHMS(i.below_zone_time) << std::endl
         << "Time in training zone: "  << formatHMS(i.in_zone_time) << std::endl
         << "Time above training zone: " << formatHMS(i.above_zone_time)
@@ -156,7 +168,8 @@ void TcxWriter::onSample(const SampleInfo &i) {
         writer. endElement("Position");
         writer. writeElement("AltitudeMeters", i.ele.format());
 
-        writer. writeElement("DistanceMeters", fmt() << (double)i.distance/10);
+        writer. writeElement("DistanceMeters", fmt() << distance_acc);
+        distance_acc += (double)i.distance/10;
 
         //writer. writeElement("Speed", fmt() << (double)i.speed/100);
         //writer. writeElement("Orientation", fmt() << (int)i.orientation);

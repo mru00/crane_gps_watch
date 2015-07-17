@@ -30,4 +30,5 @@ class TcxWriter : public Callback {
     std::string filename;
     WorkoutInfo current_wo;
     bool split_by_track;
+    double distance_acc;
 };

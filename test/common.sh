@@ -7,6 +7,7 @@ workdir=$(readlink -f .)/${testname}_wd
 srcdir_abs=$(readlink -f $srcdir)
 
 # create working directory, clear automatically on exit
+[[ -d $workdir ]] && rm -rf $workdir
 mkdir -p $workdir
 
 trap '{ rm -rf $workdir; }' EXIT
