@@ -128,12 +128,12 @@ void TcxWriter::onWorkoutEnd(const WorkoutInfo & i)  {
     std::ostringstream ss;
     ss << "Start time: " << current_wo.start_time.format() <<std::endl
         << "Activity: " << current_wo.profile.format() << std::endl
-        << "Average speed (km/h): " << (double)(i.speed_avg)/10 << std::endl
-        << "Average max (km/h): " << (double)(i.speed_max)/10 << std::endl
+        << "Avg speed (km/h): " << (double)(i.speed_avg)/10 << std::endl
+        << "Max speed (km/h): " << (double)(i.speed_max)/10 << std::endl
         << "Calories: " << (i.calories/100) << std::endl
-        << "Minimum heart rate: " << (i.hr_min) << std::endl
-        << "Average heart rate: " << (i.hr_avg) << std::endl
-        << "Maximum heart rate: " << (i.hr_max) << std::endl
+        << "Min heart rate: " << (i.hr_min) << std::endl
+        << "Avg heart rate: " << (i.hr_avg) << std::endl
+        << "Max heart rate: " << (i.hr_max) << std::endl
         << "Time below training zone: " << formatHMS(i.below_zone_time) << std::endl
         << "Time in training zone: "  << formatHMS(i.in_zone_time) << std::endl
         << "Time above training zone: " << formatHMS(i.above_zone_time)
