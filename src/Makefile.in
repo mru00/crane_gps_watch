@@ -889,9 +889,11 @@ gps_watch_monitor.py: $(srcdir)/gps_watch_monitor.py.in
 	$(do_subst) < $< > $@
 	chmod +x $@
 
-@CROSS_COMPILING_TRUE@all: setup.ss
+@CROSS_COMPILING_TRUE@all: setup.ss crane_gps_watch_client.exe
 @CROSS_COMPILING_TRUE@setup.ss: $(srcdir)/setup.ss.in
 @CROSS_COMPILING_TRUE@	$(do_subst) < $< > $@
+@CROSS_COMPILING_TRUE@crane_gps_watch_client.exe: crane_gps_watch_client
+@CROSS_COMPILING_TRUE@	cp $< $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

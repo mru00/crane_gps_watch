@@ -45,8 +45,12 @@ gps_watch_monitor.py: $(srcdir)/gps_watch_monitor.py.in
 	chmod +x $@
 
 if CROSS_COMPILING
-all: setup.ss
+all: setup.ss crane_gps_watch_client.exe
 setup.ss: $(srcdir)/setup.ss.in
 	$(do_subst) < $< > $@
+
+# don't know why that is required... used to work... quick fix!
+crane_gps_watch_client.exe: crane_gps_watch_client
+	cp $< $@
 endif
 

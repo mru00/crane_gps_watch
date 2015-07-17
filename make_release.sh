@@ -1,11 +1,11 @@
 #! /bin/bash -xeu
 
-# Copyright (C) 2014 mru@sisyphus.teil.cc
+# Copyright (C) 2014 - 2015 mru@sisyphus.teil.cc
 
 
 readonly topdir=$(readlink -f $(dirname $0))
 readonly releasedir=release
-readonly iscc="$HOME/.wine/drive_c/Program Files/Inno Setup 5/ISCC.exe"
+readonly iscc="$HOME/.wine/drive_c/Program Files (x86)/Inno Setup 5/ISCC.exe"
 readonly build_cpu=$(uname -m)
 
 
@@ -50,3 +50,4 @@ release linux-i686 "--host i686-pc-linux-gnu --build ${build_cpu}-pc-linux-gnu"
 
 
 echo done
+
