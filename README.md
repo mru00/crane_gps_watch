@@ -152,9 +152,6 @@ unzip master.zip
 
 cd crane_gps_watch_client
 
-## issue #14, this is required if you get errors like 'configure: error: cannot run /bin/bash ./config.sub'
-# autoreconf --install
-
 
 ## build the software
 ./configure
