@@ -154,7 +154,7 @@ struct WatchInfo {
     std::vector<std::string> path_names;
     std::vector<std::string> profile_names;
     std::string version;
-    std::string version2;
+    //std::string version2;
     std::string firmware;
     Toc toc;
 };
