@@ -892,6 +892,8 @@ gps_watch_monitor.py: $(srcdir)/gps_watch_monitor.py.in
 @CROSS_COMPILING_TRUE@all: setup.ss crane_gps_watch_client.exe
 @CROSS_COMPILING_TRUE@setup.ss: $(srcdir)/setup.ss.in
 @CROSS_COMPILING_TRUE@	$(do_subst) < $< > $@
+
+# don't know why that is required... used to work... quick fix!
 @CROSS_COMPILING_TRUE@crane_gps_watch_client.exe: crane_gps_watch_client
 @CROSS_COMPILING_TRUE@	cp $< $@
 
