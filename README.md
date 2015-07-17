@@ -152,9 +152,6 @@ unzip master.zip
 
 cd crane_gps_watch_client
 
-## issue #14, this is required if you get errors like 'configure: error: cannot run /bin/bash ./config.sub'
-# autoreconf --install
-
 
 ## build the software
 ./configure
@@ -165,7 +162,7 @@ sudo make install
 ```
 
 Make sure you have the rights to access the serial port. Usually you have to
-be member of the `dialout` group (debian based distros). Consult a 
+be member of the `dialout` group (debian based distros) or `uucp` (Arch Linux). Consult a 
 [search engine](https://duckduckgo.com/?q=serial+port+access+group+linux) 
 to find a solution for other distros and let me know so I can update this documentation.
 
