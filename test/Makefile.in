@@ -429,7 +429,7 @@ TESTS = 000_help.sh \
 				007_output_not_writable.sh \
 				008_lint_images.sh \
 				009_expect_coordinates.sh \
-				011_assert_profile.sh
+				010_knedlyk_running_cycling.sh 011_assert_profile.sh 012_dst_time.sh
 
 
 # not passing:
@@ -696,9 +696,23 @@ recheck: all
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+010_knedlyk_running_cycling.sh.log: 010_knedlyk_running_cycling.sh
+	@p='010_knedlyk_running_cycling.sh'; \
+	b='010_knedlyk_running_cycling.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 011_assert_profile.sh.log: 011_assert_profile.sh
 	@p='011_assert_profile.sh'; \
 	b='011_assert_profile.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+012_dst_time.sh.log: 012_dst_time.sh
+	@p='012_dst_time.sh'; \
+	b='012_dst_time.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

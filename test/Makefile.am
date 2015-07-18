@@ -11,7 +11,7 @@ TESTS = 000_help.sh \
 				007_output_not_writable.sh \
 				008_lint_images.sh \
 				009_expect_coordinates.sh \
-				011_assert_profile.sh
+				010_knedlyk_running_cycling.sh 011_assert_profile.sh 012_dst_time.sh
 
 # not passing:
 # 010_knedlyk_running_cycling.sh 

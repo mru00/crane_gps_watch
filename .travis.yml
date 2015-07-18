@@ -22,7 +22,7 @@ before_install:
 install:
 # install a proper compiler, c++11 is required
   - sudo apt-get install -qq -y automake build-essential autoconf m4 gnulib
-  - sudo apt-get install -qq -y gcc-4.8 g++-4.8
+  - sudo apt-get install -qq -y gcc-4.8 g++-4.8 libfaketime
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
   - g++ --version
