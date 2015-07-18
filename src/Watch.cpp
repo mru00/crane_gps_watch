@@ -339,6 +339,9 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
 
     // 1 [15] profile idx ?
     profile_idx = *it++;
+    // this might be a solution for Issue #12; but does not work for other firmware version.
+    // XXX do we need a fw-depended exception here?
+    // profile_idx = *(cb.memory.begin() + 0x4a);
 
     // 4 [16..19]
     wo.total_km = parse_int32_advance(it);
@@ -406,9 +409,9 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
     *punk++ = *it++;
     *punk++ = *it++;
 
-    for (int* ppunk = &unknowns[0]; ppunk < punk; ppunk ++) {
-        std::cerr << "punk " << (ppunk - unknowns) << "=" << *ppunk << std::endl;
-    } 
+    //for (int* ppunk = &unknowns[0]; ppunk < punk; ppunk ++) {
+    //    std::cerr << "punk " << (ppunk - unknowns) << "=" << *ppunk << std::endl;
+    //} 
 
     it = cb.memory.begin() + 64;
 
