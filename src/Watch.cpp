@@ -169,14 +169,17 @@ void Watch::downloadEPO(const std::string& epo_fn) {
         *it++ = cs; *it++ = 0x0d; *it++ = 0x0a;
     }
 
-    // some unknown data...
+    // some unknown data... most of it seems constant
     *it++ = 0x2C; *it++ = 0x01; *it++ = 0x00; *it++ = 0x00;
     *it++ = 0x00; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
     *it++ = 0x0D; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
     *it++ = 0xF3; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
     *it++ = 0x00; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
-    *it++ = 0xB0; *it++ = 0xEE; *it++ = 0x2E; *it++ = 0x02;
-    *it++ = 0xDC; *it++ = 0xAE; *it++ = 0x57; *it++ = 0x00;
+    *it++ = 0xB0; *it++ = 0xEE; 
+    *it++ = 0x2E; // observed: not constant
+    *it++ = 0x02;
+    *it++ = 0xDC; // observed: not constant
+    *it++ = 0xAE; *it++ = 0x57; *it++ = 0x00;
     *it++ = 0x00; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
     *it++ = 0x01; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
     *it++ = 0x00; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
@@ -306,6 +309,10 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
     WatchMemoryBlock cb(first, count);
     readBlock(cb);
 
+    unsigned profile_idx;
+    int unknowns[50];
+    int* punk = unknowns;
+
     WatchMemoryBlock::mem_it_t it = cb.memory.begin();
 
     // 2 [0..1]
@@ -314,7 +321,7 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
     // 1 [2]
     wo.lapcount = *it++;  
 
-    // 6 [3..8]
+    // 6 [3..8] start time
     std::vector<unsigned char> reverse_time(6);
     std::reverse_copy(it, it +6, reverse_time.begin());
     parseGpsTime(wo.start_time, reverse_time.begin(), wi.timezone);
@@ -326,10 +333,12 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
     it += 3;
 
     // 3 [12..14] ?
-    it += 3;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
 
-    // 1 [15]
-    wo.profile = *it++;
+    // 1 [15] profile idx ?
+    profile_idx = *it++;
 
     // 4 [16..19]
     wo.total_km = parse_int32_advance(it);
@@ -341,7 +350,10 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
     wo.speed_max = parse_int16_advance(it);
 
     // 4 [24..27] ???
-    it += 4;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
 
     // 28, 29, 30
     wo.hr_avg = *it++;
@@ -349,7 +361,7 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
     wo.hr_min = *it++;
 
     // 1 [31] ???
-    it++;
+    *punk++ = *it++;
 
     // 4 [32..35]
     wo.calories = parse_int32_advance(it); 
@@ -360,7 +372,7 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
     it += 3;
 
     // 1 [39] ?
-    it++;
+    *punk++ = *it++;
 
     // 3 [40..42] time in training zone
     std::reverse_copy(it, it +3, reverse_time.begin()+3);
@@ -368,16 +380,44 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
     it += 3;
 
     // 1 [43] ?
-    it++;
+    *punk++ = *it++;
 
     // 3 [44..46] time above training zone
     std::reverse_copy(it, it +3, reverse_time.begin()+3);
     parseGpsTime(wo.above_zone_time, reverse_time.begin(), wi.timezone);
 
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+
+    for (int* ppunk = &unknowns[0]; ppunk < punk; ppunk ++) {
+        std::cerr << "punk " << (ppunk - unknowns) << "=" << *ppunk << std::endl;
+    } 
+
     it = cb.memory.begin() + 64;
 
     //now every 16bytes is a laptime 1=hour 2=minutes 3=seconds 4+5=microseconds 10+9 lap distance 13=lapspeed in km/h
 
+    if (profile_idx >= wi.profile_names.size()) {
+        throw std::runtime_error("failed to read workout; illegal profile index");
+    }
+    wo.profile = wi.profile_names[profile_idx];
     br.onWorkout(wo);
 
     it = cb.memory.begin() + 0x1000;
@@ -510,6 +550,28 @@ void Watch::parseToc(Toc& toc, WatchMemoryBlock::mem_it_t it) {
     }
 }
 
+void Watch::parseProfileNames(std::vector<Profile>& profile_names, WatchMemoryBlock::mem_it_t it) {
+    profile_names.clear();
+    // profile names are only implemented in some firmware versions;
+    // or only available when configured in the watch... anyways, sometimes the profilenames are just missing
+    if (*it != 0xff) {
+        for (unsigned idx = 0; idx < 5; idx++, it+=10) {
+            std::string name(11, '\0');
+            std::copy(it, it+10, name.begin());
+            // trick: take c_str() to strip leading "\0"
+            profile_names.push_back(name.c_str());
+        }
+    }
+    else {
+        std::cerr << "watch does not specify profile names; using defaults" << std::endl;
+        profile_names.push_back("Running");
+        profile_names.push_back("Cycling");
+        profile_names.push_back("Hiking");
+        profile_names.push_back("Sailing");
+        profile_names.push_back("Other");
+    }
+}
+
 void Watch::parseBlock0() {
 
     WatchInfo wi;
@@ -530,6 +592,8 @@ void Watch::parseBlock0() {
         throw std::runtime_error ("checksum mismatch");
     }
 
+    parseProfileNames(wi.profile_names, mb.memory.begin() + 0x900);
+
     // timezones:
     // - 1:00 = 0x16
     //   0:00 = 0x18
@@ -538,7 +602,7 @@ void Watch::parseBlock0() {
     // + 2:30 = 0x1d
     wi.timezone = *(mem_it + 3);
     wi.sample_interval = *(mem_it + 14);
-    wi.selected_profile = *(mem_it + 0x10+10);
+    wi.selected_profile = wi.profile_names[*(mem_it + 0x10+10)];
 
     wi.language = *(mem_it + 0x50 + 13);
 
@@ -546,12 +610,10 @@ void Watch::parseBlock0() {
     wi.firmware.resize(16, '\0');
     std::copy(mem_it, mem_it+16, wi.firmware.begin());
 
-
-
-    br.onWatch(wi);
-
     mem_it = mb.memory.begin() + 0x100;
     parseToc(wi.toc, mem_it);
+
+    br.onWatch(wi);
 
     int f = 1;
     for (auto t : wi.toc) {

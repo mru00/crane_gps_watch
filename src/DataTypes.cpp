@@ -90,27 +90,6 @@ std::string GpsTime::format() const {
     //return fmt() << put_time(&time, "%FT%TZ");
 }
 
-Profile& Profile::operator=(unsigned char v) {
-    profile = (Profile::profile_e) v;
-    return *this;
-}
-
-std::string Profile::format() const {
-    switch(profile) {
-      case Profile::Running:
-        return "Running";
-      case Profile::Cycling:
-        return "Cycling";
-      case Profile::Hiking:
-        return "Hiking";
-      case Profile::Sailing:
-        return "Sailing";
-      case Profile::User:
-        return "User";
-      default:
-        throw std::runtime_error("unknown profile type");
-    }
-}
 
 Language& Language::operator= (unsigned char v) {
     language = (language_t) v;

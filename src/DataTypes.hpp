@@ -79,18 +79,7 @@ struct Language {
     std::string format() const;
 };
 
-struct Profile {
-    enum profile_e {
-        Running, 
-        Cycling, 
-        Hiking,
-        Sailing,
-        User
-    } profile;
-
-    Profile& operator= (unsigned char);
-    std::string format() const;
-};
+typedef std::string Profile;
 
 // Toc is a list of numbers;
 // each entry designates one workout record.
@@ -152,7 +141,7 @@ struct WatchInfo {
     Language language;
     unsigned nblocks;
     std::vector<std::string> path_names;
-    std::vector<std::string> profile_names;
+    std::vector<Profile> profile_names;
     std::string version;
     //std::string version2;
     std::string firmware;

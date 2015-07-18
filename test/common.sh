@@ -10,7 +10,7 @@ srcdir_abs=$(readlink -f $srcdir)
 [[ -d $workdir ]] && rm -rf $workdir
 mkdir -p $workdir
 
-trap '{ rm -rf $workdir; }' EXIT
+#trap '{ rm -rf $workdir; }' EXIT
 cd $workdir
 
 pwd

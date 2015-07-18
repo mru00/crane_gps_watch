@@ -32,6 +32,7 @@ class Watch {
     void parseSample(WatchInfo& wi, SampleInfo& si, WatchMemoryBlock::mem_it_t& it);
     void parseWO(WatchInfo& wi, int first, int count);
     void parseToc(Toc& toc, WatchMemoryBlock::mem_it_t it);
+    void parseProfileNames(std::vector<std::string>&, WatchMemoryBlock::mem_it_t);
     void parseBlock0();
 
     void readBlock(WatchMemoryBlock& b);

@@ -71,16 +71,12 @@ void TcxWriter::onWorkout(const WorkoutInfo &i)  {
     }
 
     std::string sport;
-    switch (i.profile.profile) {
-        case Profile::Running:
-            sport = "Running";
-            break;
-        case Profile::Cycling:
-            sport = "Biking";
-            break;
-        default:
-            sport = "Other";
-    }
+
+    // small translation profile -> tcx activity
+    // terrible but necessary: language dependent!
+    if (i.profile == "Running" || i.profile == "Laufen") sport = "Running";
+    else if (i.profile == "Cycling" || i.profile == "Radfahren") sport = "Biking";
+    else sport = "Other";
 
     current_wo = i;
     writer.startElement("Activity");
@@ -127,7 +123,7 @@ void TcxWriter::onWorkoutEnd(const WorkoutInfo & i)  {
 
     std::ostringstream ss;
     ss << "Start time: " << current_wo.start_time.format() <<std::endl
-        << "Activity: " << current_wo.profile.format() << std::endl
+        << "Activity: " << current_wo.profile << std::endl
         << "Avg speed (km/h): " << (double)(i.speed_avg)/10 << std::endl
         << "Max speed (km/h): " << (double)(i.speed_max)/10 << std::endl
         << "Calories: " << (i.calories/100) << std::endl
