@@ -74,8 +74,8 @@ void TcxWriter::onWorkout(const WorkoutInfo &i)  {
 
     // small translation profile -> tcx activity
     // terrible but necessary: language dependent!
-    if (i.profile == "Running" || i.profile == "Laufen") sport = "Running";
-    else if (i.profile == "Cycling" || i.profile == "Radfahren") sport = "Biking";
+    if (i.profile == "Running" || i.profile == "Laufen" || i.profile == "Course" || i.profile == "Corsa" || i.profile == "Correr") sport = "Running";
+    else if (i.profile == "Cycling" || i.profile == "Radfahren" || i.profile == "Cyclisme" || i.profile == "Ciclismo") sport = "Biking";
     else sport = "Other";
 
     current_wo = i;
