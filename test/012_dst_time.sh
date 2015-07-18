@@ -13,7 +13,9 @@ if ! [[ -e $faketime ]]; then
 fi
 
 
-LD_PRELOAD=$faketime FAKETIME="2014-01-01 12:00:00" $bin --help
+export LD_PRELOAD=$faketime
+export FAKETIME="2014-01-01 12:00:00"
+$bin --help
 
 # WIP
 exit 77

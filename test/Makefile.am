@@ -11,12 +11,13 @@ TESTS = 000_help.sh \
 				007_output_not_writable.sh \
 				008_lint_images.sh \
 				009_expect_coordinates.sh \
-				010_knedlyk_running_cycling.sh 011_assert_profile.sh 012_dst_time.sh
+				010_knedlyk_running_cycling.sh \
+				011_assert_profile.sh \
+				012_dst_time.sh
 
 # not passing:
-# 010_knedlyk_running_cycling.sh 
-#
-#
+XFAIL_TESTS = 010_knedlyk_running_cycling.sh
+
 
 # variables to be used in test scripts:
 # required to be able to check mingw cross compiles

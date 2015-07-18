@@ -21,6 +21,8 @@ test/images/
 test/*.trs
 test/*.log
 
+test/*_wd
+
 release/win-i686
 release/win-x86_64
 release/linux-i686

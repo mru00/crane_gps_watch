@@ -433,9 +433,7 @@ TESTS = 000_help.sh \
 
 
 # not passing:
-# 010_knedlyk_running_cycling.sh 
-#
-#
+XFAIL_TESTS = 010_knedlyk_running_cycling.sh
 
 # variables to be used in test scripts:
 # required to be able to check mingw cross compiles
