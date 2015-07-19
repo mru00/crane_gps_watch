@@ -62,14 +62,47 @@ void DebugWriter::onWorkoutEnd(const WorkoutInfo &i) {
           << std::endl;
     }
 }
+void DebugWriter::onLap(const LapInfo &i)  {
+    if (debug_level > 0) {
+        std::cout << "  lap begin" << std::endl;
+
+        std::cout << "   Absolute Time             WorkoutTime LapTime     HR  Dist  Spd       Pace" << std::endl;
+        std::cout << "   ------------------------- ----------- ----------- --- ----- --------- --------" << std::endl;
+
+        std::cout << "   " << i.abs_split.format() << " ";
+        std::cout << std::setw(2) << std::setfill('0') << i.split.tm_hour << ":"
+            << std::setw(2) << i.split.tm_min << ":"
+            << std::setw(2) << i.split.tm_sec << "."
+            << std::setw(2) << i.split_milli << " ";
+
+        std::cout << std::setw(2) << std::setfill('0') << i.lap.tm_hour << ":"
+            << std::setw(2) << i.lap.tm_min << ":"
+            << std::setw(2) << i.lap.tm_sec << "."
+            << std::setw(2) << i.lap_milli << " ";
+
+        std::cout << std::setw(3) << std::setfill(' ') << i.avg_hr << " ";
+
+        std::cout << std::setw(5) << std::setprecision(2) << std::fixed << i.distance / 10 / 1000.0 << " ";
+
+        std::cout << std::setw(5) << std::setprecision(1) << std::fixed << i.speed / 10.0 << "km/h ";
+
+        std::cout << std::setw(2) << i.pace.tm_min << ":" << std::setw(2) << std::setfill('0') << i.pace.tm_sec << "/km ";
+        std::cout << std::endl;
+    }
+}
+void DebugWriter::onLapEnd(const LapInfo &)  {
+    if (debug_level > 0) {
+        std::cout << "  lap end" << std::endl;
+    }
+}
 void DebugWriter::onTrack(const TrackInfo &)  {
     if (debug_level > 0) {
-        std::cout << "  track begin" << std::endl;
+        std::cout << "   track begin" << std::endl;
     }
 }
 void DebugWriter::onTrackEnd(const TrackInfo &)  {
     if (debug_level > 0) {
-        std::cout << "  track end" << std::endl;
+        std::cout << "   track end" << std::endl;
     }
 }
 void DebugWriter::onSample(const SampleInfo &i) {

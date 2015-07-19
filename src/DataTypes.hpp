@@ -110,6 +110,24 @@ struct SampleInfo {
     unsigned idx_wo, idx_track;
 };
 
+struct LapInfo {
+    GpsTime abs_split;
+    GpsTime start_time;
+
+    tm split;
+    int split_milli; // GpsTime doesn't have millisplit
+
+    tm lap;
+    int lap_milli; // GpsTime doesn't have millisplit
+    int lap_seconds;
+
+    tm pace;
+
+    long distance; // in m
+    double speed; // in km/hr
+    int avg_hr;
+};
+
 struct WorkoutInfo {
 
     // i doubt nsamples:
@@ -119,16 +137,17 @@ struct WorkoutInfo {
     GpsTime start_time;
     GpsTime workout_time;
     Profile profile;
-    long total_km;
-    int speed_avg;
-    int speed_max;
-    long calories;
+    double total_km;
+    double speed_avg;
+    double speed_max;
+    double calories;
     int hr_avg;
     int hr_max;
     int hr_min;
     GpsTime below_zone_time;
     GpsTime in_zone_time;
     GpsTime above_zone_time;
+    std::vector<LapInfo> lapinfo;
 };
 
 struct TrackInfo {
