@@ -84,7 +84,7 @@ void DebugWriter::onLap(const LapInfo &i)  {
 
         std::cout << std::setw(5) << std::setprecision(2) << std::fixed << i.distance / 10 / 1000.0 << " ";
 
-        std::cout << std::setw(5) << std::setprecision(1) << std::fixed << i.speed / 10.0 << "km/h ";
+        std::cout << std::setw(5) << std::setprecision(1) << std::fixed << i.speed  << "km/h ";
 
         std::cout << std::setw(2) << i.pace.tm_min << ":" << std::setw(2) << std::setfill('0') << i.pace.tm_sec << "/km ";
         std::cout << std::endl;

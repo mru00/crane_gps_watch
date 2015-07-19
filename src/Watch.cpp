@@ -197,13 +197,16 @@ void Watch::downloadEPO(const std::string& epo_fn) {
 void Watch::parseGpsEle(GpsEle& l, WatchMemoryBlock::mem_it_t it) {
     l.ele = parse_int16(it);
 }
+
 void Watch::parseGpsLocation(GpsLocation& l, WatchMemoryBlock::mem_it_t it) {
     l.loc = parse_int32(it);
 }
+
 void Watch::parseGpsTimeUpd(GpsTimeUpd& t, WatchMemoryBlock::mem_it_t it) {
     t.mm = *it++;
     t.ss = *it++;
 }
+
 void Watch::parseGpsTime(GpsTime& t, WatchMemoryBlock::mem_it_t it, unsigned timezone) {
     // parses 6 bytes.
     t.time.tm_year = 100 + *it++;
@@ -215,6 +218,7 @@ void Watch::parseGpsTime(GpsTime& t, WatchMemoryBlock::mem_it_t it, unsigned tim
     t.time.tm_gmtoff = ((timezone - 24)/2)*3600 + ((timezone - 24)%2)*1800;
     t.mktime();
 }
+
 void Watch::parseSample(WatchInfo& wi, SampleInfo& si, WatchMemoryBlock::mem_it_t& it) {
 
     auto type = *it;
@@ -311,7 +315,10 @@ void Watch::parseLaps(WorkoutInfo& wo, WatchMemoryBlock::mem_it_t& it) {
     wo.lapinfo.clear();
     time_t wo_start = mktime(&wo.start_time.time);
 
-    for (unsigned int lap = 0; lap < wo.lapcount; lap++) {
+    int prev_milli = 0;
+    time_t prev_split = 0;
+
+    for (unsigned int lap_idx = 0; lap_idx < wo.lapcount; lap_idx++) {
         LapInfo info;
 
         // Initialise storage
@@ -331,44 +338,25 @@ void Watch::parseLaps(WorkoutInfo& wo, WatchMemoryBlock::mem_it_t& it) {
         info.split_milli = atoi(hexstream.str().c_str());
 
         // Calculate lap time
-        time_t this_split;
-        time_t prev_split;
-        time_t this_lap;
-        time_t abs_split;
-        time_t start_t;
 
-        int prev_milli;
-        int this_milli;
+        const time_t this_split = my_timegm(&info.split);
+        time_t this_lap = this_split - prev_split;
+        time_t this_milli = info.split_milli - prev_milli;
 
-        info.lap = tm();
-        info.lap.tm_year = 70;
-        info.lap.tm_mday = 1;
-        info.lap_milli = 0;
-
-        if (lap == 0) {
-            prev_split = 0;
-            prev_milli = 0;
+        if (this_milli < 0) {
+            const unsigned comp = ceil(-this_milli/100.0);
+            assert(comp > 0);
+            this_milli += comp*100;
+            this_lap -= comp;
         }
-        else {
-            prev_split = my_timegm(&wo.lapinfo[lap - 1].split);
-            prev_milli = wo.lapinfo[lap - 1].split_milli;
-        }
-
-        this_split = my_timegm(&info.split);
-        this_lap = this_split - prev_split;
-        this_milli = info.split_milli - prev_milli;
-
-        while (this_milli < 0) {
-            this_milli += 100;
-            this_lap--;
-        }
+        assert(this_milli >=0);
 
         info.lap = *gmtime(&this_lap);
         info.lap_milli = this_milli;
         info.lap_seconds = (int) this_lap;
 
-        start_t = wo_start + prev_split;
-        abs_split = wo_start + this_split + 1;
+        const time_t start_t = wo_start + prev_split;
+        const time_t abs_split = wo_start + this_split + 1;
 
         info.abs_split.time = *localtime(&abs_split);
         info.start_time.time = *localtime(&start_t);
@@ -393,20 +381,17 @@ void Watch::parseLaps(WorkoutInfo& wo, WatchMemoryBlock::mem_it_t& it) {
         info.speed += *it++ << 16;
         info.speed += *it++ << 24;
 
-        double speed = info.speed / 10.0;
+        info.speed /= 10.0;
+
         unsigned int pacemin;
         unsigned int pacesec;
 
-    	if (speed > 0) {
-            pacemin = 60 / speed;
-            pacesec = (60.0 / speed - pacemin) * 60;
-    	    // The watch caps this display at 39:59
-            if(pacemin > 39) {
-                pacemin = 39;
-                pacesec = 59;
-            }
+    	if (info.speed > 0 && (60/info.speed) < 40) {
+            pacemin = 60 / info.speed;
+            pacesec = (60.0 / info.speed - pacemin) * 60;
     	}
         else {
+            // The watch caps this display at 39:59
             pacemin = 39;
             pacesec = 59;
         }
@@ -416,6 +401,9 @@ void Watch::parseLaps(WorkoutInfo& wo, WatchMemoryBlock::mem_it_t& it) {
         info.pace.tm_sec = pacesec;
     
         wo.lapinfo.push_back(info);
+
+        prev_split = this_split;
+        prev_milli = this_milli;
     }
 }
 
@@ -622,16 +610,19 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
             si.fix = 0;
         }
 
+        // split tracks when gps is lost
         if (track_active && si.type == SampleInfo::None) {
             track_active = false;
             TrackInfo i;
             br.onTrackEnd(i);
         }
 
-        time_t sample_time = si.time.mktime();
-        //std::cerr << "st: " << sample_time << " nt: " << next_split_time << std::endl;
+        // split into laps
+        const time_t sample_time = si.time.mktime();
+        // sometimes, the reported times from samples don't add up to the
+        // reported lap times. 
+        // we just add the rest to the last lap.
         if (sample_time > next_split_time && track_active && lap_it+1 != wo.lapinfo.end()) {
-            //std::cerr << "split!" << std::endl;
             if (track_active) {
                 track_active = false;
                 TrackInfo i;
@@ -662,6 +653,7 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
     }
 
     br.onLapEnd(*lap_it);
+
     if (lap_it+1 != wo.lapinfo.end()) {
         throw std::runtime_error ("not all laps consumed");
     }
