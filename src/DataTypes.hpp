@@ -50,6 +50,7 @@ struct GpsTime {
     GpsTime& operator=(const GpsTimeUpd& other);
     time_t mktime();
     std::string format() const;
+    std::string format_no_tz() const;
 };
 
 enum DisplayItems {

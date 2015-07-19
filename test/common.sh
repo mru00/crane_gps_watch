@@ -37,7 +37,7 @@ expect_exit() {
 
   if [[ $code -ne $expected ]]; then
     echo "testcase did not exit with expected code; actual=$code, expected=$expected"
-    exit EXIT_FAIL
+    exit $EXIT_FAIL
   fi
 
 }
@@ -54,3 +54,7 @@ expect_lap_count() {
     expect_exit 0 test $(get_xml_tag_count $tcx_file Lap) -eq $count
 }
 
+expect_file_exists() {
+    local filename=$1
+    expect_exit 0 test -e $filename
+}

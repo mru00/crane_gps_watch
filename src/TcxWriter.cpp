@@ -49,7 +49,7 @@ void TcxWriter::onWatchEnd(const WatchInfo &) {
 
 void TcxWriter::onWorkout(const WorkoutInfo &i)  {
     if (split_by_track) {
-        std::string fn = i.start_time.format();
+        std::string fn = i.start_time.format_no_tz();
         fn += ".tcx";
         std::replace(fn.begin(), fn.end(), ':', '_');
         writer.open(fn);

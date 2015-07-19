@@ -92,6 +92,12 @@ std::string GpsTime::format() const {
     //return fmt() << put_time(&time, "%FT%TZ");
 }
 
+std::string GpsTime::format_no_tz() const {
+    std::string fmt_time = fmt() << put_time(&time, "%Y-%m-%dT%H:%M:%S");
+    return fmt_time;
+    // does not work with windows:
+    //return fmt() << put_time(&time, "%FT%TZ");
+}
 
 Language& Language::operator= (unsigned char v) {
     language = (language_t) v;
