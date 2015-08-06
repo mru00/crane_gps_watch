@@ -39,7 +39,7 @@ struct GpsTimeUpd {
 };
 
 struct GpsEle {
-    unsigned short ele;
+    short ele;
     GpsEle& operator += (const GpsEle& other);
     std::string format() const;
 };
