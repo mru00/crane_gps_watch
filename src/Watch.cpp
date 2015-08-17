@@ -457,7 +457,7 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
                 t.time.tm_hour ++;
                 // mktime fixes clock info, 
                 // 23:50 + 1h = 24:50; mktime increments day automatically.
-                mktime(&t.time);
+                t.mktime();
             }
             si.time = (t = si.time_upd);
         }
