@@ -14,7 +14,7 @@
 
 #ifdef  __MINGW32__
 #include "SerialPortWindows.inc"
-#elif TARGET_MAC_OS
+#elif __APPLE__
 #include "SerialPortMacOSX.inc"
 #elif __linux__
 #include "SerialPortLinux.inc"
