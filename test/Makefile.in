@@ -79,6 +79,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+XFAIL_TESTS =
 @CROSS_COMPILING_TRUE@am__append_1 = \
 @CROSS_COMPILING_TRUE@	regedit $(srcdir)/quiet.reg; 
 
@@ -429,13 +430,9 @@ TESTS = 000_help.sh \
 				007_output_not_writable.sh \
 				008_lint_images.sh \
 				009_expect_coordinates.sh \
-				010_knedlyk_running_cycling.sh \
 				011_assert_profile.sh \
 				012_dst_time.sh 013_languages.sh 014_lap_count.sh
 
-
-# not passing:
-XFAIL_TESTS = 010_knedlyk_running_cycling.sh
 
 # variables to be used in test scripts:
 # required to be able to check mingw cross compiles
@@ -692,13 +689,6 @@ recheck: all
 009_expect_coordinates.sh.log: 009_expect_coordinates.sh
 	@p='009_expect_coordinates.sh'; \
 	b='009_expect_coordinates.sh'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-010_knedlyk_running_cycling.sh.log: 010_knedlyk_running_cycling.sh
-	@p='010_knedlyk_running_cycling.sh'; \
-	b='010_knedlyk_running_cycling.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

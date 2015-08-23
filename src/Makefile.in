@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# Copyright (C) 2014 mru@sisyphus.teil.cc
+# Copyright (C) 2014 -2015 mru@sisyphus.teil.cc
 
 
 VPATH = @srcdir@
@@ -109,7 +109,7 @@ am_crane_gps_watch_client_OBJECTS =  \
 	crane_gps_watch_client-SerialPort.$(OBJEXT) \
 	crane_gps_watch_client-TcxWriter.$(OBJEXT) \
 	crane_gps_watch_client-Watch.$(OBJEXT) genx.$(OBJEXT) \
-	charProps.$(OBJEXT)
+	charProps.$(OBJEXT) crane_gps_watch_client-LapWriter.$(OBJEXT)
 crane_gps_watch_client_OBJECTS = $(am_crane_gps_watch_client_OBJECTS)
 crane_gps_watch_client_LDADD = $(LDADD)
 crane_gps_watch_client_LINK = $(CXXLD) \
@@ -324,7 +324,9 @@ crane_gps_watch_client_SOURCES = main.cpp \
  Callback.hpp GpsLint.hpp XmlFileWriter.hpp ImageWriter.hpp \
  DebugWriter.hpp DataTypes.hpp MemoryBlock.hpp \
  ImageLink.hpp SerialLink.hpp SerialPort.hpp TcxWriter.hpp Watch.hpp \
- genx.h
+ LapWriter.cpp LapWriter.hpp \
+ genx.h \
+ SerialPortWindows.inc SerialPortLinux.inc SerialPortMacOSX.inc
 
 crane_gps_watch_client_CXXFLAGS = -Wall -Wextra
 @CROSS_COMPILING_TRUE@crane_gps_watch_client_LDFLAGS = -static-libgcc -static-libstdc++ -static
@@ -473,6 +475,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-GpsLint.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-ImageLink.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-ImageWriter.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-LapWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-MemoryBlock.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-SerialLink.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crane_gps_watch_client-SerialPort.Po@am__quote@
@@ -677,6 +680,20 @@ crane_gps_watch_client-Watch.obj: Watch.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Watch.cpp' object='crane_gps_watch_client-Watch.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -c -o crane_gps_watch_client-Watch.obj `if test -f 'Watch.cpp'; then $(CYGPATH_W) 'Watch.cpp'; else $(CYGPATH_W) '$(srcdir)/Watch.cpp'; fi`
+
+crane_gps_watch_client-LapWriter.o: LapWriter.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -MT crane_gps_watch_client-LapWriter.o -MD -MP -MF $(DEPDIR)/crane_gps_watch_client-LapWriter.Tpo -c -o crane_gps_watch_client-LapWriter.o `test -f 'LapWriter.cpp' || echo '$(srcdir)/'`LapWriter.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/crane_gps_watch_client-LapWriter.Tpo $(DEPDIR)/crane_gps_watch_client-LapWriter.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='LapWriter.cpp' object='crane_gps_watch_client-LapWriter.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -c -o crane_gps_watch_client-LapWriter.o `test -f 'LapWriter.cpp' || echo '$(srcdir)/'`LapWriter.cpp
+
+crane_gps_watch_client-LapWriter.obj: LapWriter.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -MT crane_gps_watch_client-LapWriter.obj -MD -MP -MF $(DEPDIR)/crane_gps_watch_client-LapWriter.Tpo -c -o crane_gps_watch_client-LapWriter.obj `if test -f 'LapWriter.cpp'; then $(CYGPATH_W) 'LapWriter.cpp'; else $(CYGPATH_W) '$(srcdir)/LapWriter.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/crane_gps_watch_client-LapWriter.Tpo $(DEPDIR)/crane_gps_watch_client-LapWriter.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='LapWriter.cpp' object='crane_gps_watch_client-LapWriter.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) -c -o crane_gps_watch_client-LapWriter.obj `if test -f 'LapWriter.cpp'; then $(CYGPATH_W) 'LapWriter.cpp'; else $(CYGPATH_W) '$(srcdir)/LapWriter.cpp'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
