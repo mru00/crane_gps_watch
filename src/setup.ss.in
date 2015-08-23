@@ -2,7 +2,7 @@
 AppName=@PACKAGE@
 AppVersion=@PACKAGE_VERSION@ - @HOST_CPU@
 AppVerName=@PACKAGE_STRING@
-AppCopyright=Copyright (C) 2014 mru@sisyphus.teil.cc
+AppCopyright=Copyright (C) 2014 - 2015 mru@sisyphus.teil.cc
 AppContact=@PACKAGE_BUGREPORT@
 AppSupportURL=@PACKAGE_URL@
 AppPublisher=mru@sisyphus.teil.cc

@@ -1,3 +1,4 @@
+# vim: ft=sh
 # Copyright (C) 2014 mru@sisyphus.teil.cc
 
 
@@ -33,10 +34,27 @@ expect_exit() {
 
   code=$?;
 
+
   if [[ $code -ne $expected ]]; then
     echo "testcase did not exit with expected code; actual=$code, expected=$expected"
-    exit EXIT_FAIL
+    exit $EXIT_FAIL
   fi
 
 }
 
+get_xml_tag_count() {
+    local tcx_file=$1
+    local tag=$2
+    grep -c "<$tag" $tcx_file || true
+}
+
+expect_lap_count() {
+    local tcx_file=$1
+    local count=$2
+    expect_exit 0 test $(get_xml_tag_count $tcx_file Lap) -eq $count
+}
+
+expect_file_exists() {
+    local filename=$1
+    expect_exit 0 test -e $filename
+}

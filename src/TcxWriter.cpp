@@ -49,7 +49,7 @@ void TcxWriter::onWatchEnd(const WatchInfo &) {
 
 void TcxWriter::onWorkout(const WorkoutInfo &i)  {
     if (split_by_track) {
-        std::string fn = i.start_time.format();
+        std::string fn = i.start_time.format_no_tz();
         fn += ".tcx";
         std::replace(fn.begin(), fn.end(), ':', '_');
         writer.open(fn);
@@ -74,34 +74,27 @@ void TcxWriter::onWorkout(const WorkoutInfo &i)  {
 
     // small translation profile -> tcx activity
     // terrible but necessary: language dependent!
-    if (i.profile == "Running" || i.profile == "Laufen" || i.profile == "Course" || i.profile == "Corsa" || i.profile == "Correr") sport = "Running";
-    else if (i.profile == "Cycling" || i.profile == "Radfahren" || i.profile == "Cyclisme" || i.profile == "Ciclismo") sport = "Biking";
-    else sport = "Other";
+    if (i.profile == "Running"
+            || i.profile == "Laufen" 
+            || i.profile == "Course" 
+            || i.profile == "Corsa" 
+            || i.profile == "Correr") {
+        sport = "Running";
+    }
+    else if (i.profile == "Cycling" 
+            || i.profile == "Radfahren" 
+            || i.profile == "Cyclisme" 
+            || i.profile == "Ciclismo") {
+        sport = "Biking";
+    }
+    else {
+        sport = "Other";
+    }
 
     current_wo = i;
     writer.startElement("Activity");
     writer. writeAttribute("Sport", sport);
     writer. writeElement("Id", i.start_time.format());
-    writer. startElement("Lap");
-    writer. writeAttribute("StartTime", i.start_time.format());
-
-    writer. writeElement("TotalTimeSeconds", fmt() << (i.workout_time.time.tm_hour*60*60 + i.workout_time.time.tm_min*60 + i.workout_time.time.tm_sec));
-    writer. writeElement("DistanceMeters", fmt() << (double)(i.total_km)/10);
-    writer. writeElement("MaximumSpeed", fmt() << (double)(i.speed_max)/10);
-    writer. writeElement("Calories", fmt() << (int)(i.calories)/100);
-
-    if (i.hr_avg > 0 ) {
-        writer. startElement("AverageHeartRateBpm");
-        writer.  writeElement("Value", fmt() << i.hr_avg);
-        writer. endElement("AverageHeartRateBpm");
-    }
-    if (i.hr_max > 0) {
-        writer. startElement("MaximumHeartRateBpm");
-        writer.  writeElement("Value", fmt() << i.hr_max);
-        writer. endElement("MaximumHeartRateBpm");
-    }
-    writer. writeElement("Intensity", "Active");
-    writer. writeElement("TriggerMethod", "Manual");
 }
 
 
@@ -136,7 +129,6 @@ void TcxWriter::onWorkoutEnd(const WorkoutInfo & i)  {
         ;
 
     writer.  writeElement("Notes", ss.str());
-    writer. endElement("Lap");
     writer.endElement("Activity");
 
     if (split_by_track) {
@@ -144,6 +136,36 @@ void TcxWriter::onWorkoutEnd(const WorkoutInfo & i)  {
         writer.endElement("TrainingCenterDatabase");
         writer.endDocument();
     }
+}
+
+void TcxWriter::onLap(const LapInfo &i) {
+
+    writer.startElement("Lap");
+    writer. writeAttribute("StartTime", i.start_time.format());
+    writer.writeElement("TotalTimeSeconds", std::to_string(i.lap_seconds));
+
+    //writer.writeElement("Calories", fmt() << (int)(i.calories)/100);
+    writer.writeElement("DistanceMeters", fmt() << (double)(i.distance)/10);
+    writer.writeElement("Calories", "0");
+    if (i.avg_hr > 0) {
+        writer.startElement("AverageHeartRateBpm");
+        writer.writeElement("Value", fmt() << i.avg_hr);
+        writer.endElement("AverageHeartRateBpm");
+    }
+    /*
+    if (i.max_hr > 0) {
+        writer. startElement("MaximumHeartRateBpm");
+        writer.  writeElement("Value", fmt() << i.hr_max);
+        writer. endElement("MaximumHeartRateBpm");
+    }
+    */
+    writer.writeElement("Intensity", "Active");
+    writer.writeElement("TriggerMethod", "Manual");
+}
+
+void TcxWriter::onLapEnd(const LapInfo &i) {
+    writer.writeElement("Notes", i.abs_split.format());
+    writer.endElement("Lap");
 }
 
 void TcxWriter::onTrack(const TrackInfo&) {

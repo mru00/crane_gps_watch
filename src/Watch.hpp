@@ -29,6 +29,7 @@ class Watch {
     void parseGpsLocation(GpsLocation& l, WatchMemoryBlock::mem_it_t it);
     void parseGpsTimeUpd(GpsTimeUpd& t, WatchMemoryBlock::mem_it_t it);
     void parseGpsTime(GpsTime& t, WatchMemoryBlock::mem_it_t it, unsigned timezone);
+    void parseLaps(WorkoutInfo& wi, WatchMemoryBlock::mem_it_t& it);
     void parseSample(WatchInfo& wi, SampleInfo& si, WatchMemoryBlock::mem_it_t& it);
     void parseWO(WatchInfo& wi, int first, int count);
     void parseToc(Toc& toc, WatchMemoryBlock::mem_it_t it);
@@ -37,6 +38,8 @@ class Watch {
 
     void readBlock(WatchMemoryBlock& b);
     void writeBlock(WatchMemoryBlock& b);
+    time_t my_timegm(struct tm *tm);
+
 
   private:
     Broadcaster br;

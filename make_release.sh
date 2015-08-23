@@ -41,6 +41,7 @@ release() {
 autoreconf
 rm -rf $releasedir
 mkdir $releasedir
+make distclean || true
 
 
 release win-i686 "--host i686-w64-mingw32 --build ${build_cpu}-pc-linux-gnu"

@@ -62,14 +62,21 @@ void DebugWriter::onWorkoutEnd(const WorkoutInfo &i) {
           << std::endl;
     }
 }
+void DebugWriter::onLap(const LapInfo &)  {
+}
+void DebugWriter::onLapEnd(const LapInfo &)  {
+    if (debug_level > 0) {
+        std::cout << "  lap end" << std::endl;
+    }
+}
 void DebugWriter::onTrack(const TrackInfo &)  {
     if (debug_level > 0) {
-        std::cout << "  track begin" << std::endl;
+        std::cout << "   track begin" << std::endl;
     }
 }
 void DebugWriter::onTrackEnd(const TrackInfo &)  {
     if (debug_level > 0) {
-        std::cout << "  track end" << std::endl;
+        std::cout << "   track end" << std::endl;
     }
 }
 void DebugWriter::onSample(const SampleInfo &i) {

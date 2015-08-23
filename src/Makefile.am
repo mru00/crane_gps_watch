@@ -1,4 +1,4 @@
-# Copyright (C) 2014 mru@sisyphus.teil.cc
+# Copyright (C) 2014 -2015 mru@sisyphus.teil.cc
 
 bin_PROGRAMS = crane_gps_watch_client
 crane_gps_watch_client_SOURCES = main.cpp \
@@ -10,7 +10,9 @@ crane_gps_watch_client_SOURCES = main.cpp \
  Callback.hpp GpsLint.hpp XmlFileWriter.hpp ImageWriter.hpp \
  DebugWriter.hpp DataTypes.hpp MemoryBlock.hpp \
  ImageLink.hpp SerialLink.hpp SerialPort.hpp TcxWriter.hpp Watch.hpp \
- genx.h
+ LapWriter.cpp LapWriter.hpp \
+ genx.h \
+ SerialPortWindows.inc SerialPortLinux.inc SerialPortMacOSX.inc
 
 crane_gps_watch_client_CXXFLAGS = -Wall -Wextra
 

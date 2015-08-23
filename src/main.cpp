@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <stdexcept>
 
 #include <getopt.h>
 
@@ -24,6 +25,7 @@
 #include "DebugWriter.hpp"
 #include "GpsLint.hpp"
 #include "ImageWriter.hpp"
+#include "LapWriter.hpp"
 #include "Watch.hpp"
 #include "SerialLink.hpp"
 #include "ImageLink.hpp"
@@ -187,6 +189,7 @@ int main(int argc, char** argv) {
 
         Watch watch(device);
 
+        watch.addRecipient(std::make_shared<LapWriter>());
         watch.addRecipient(std::make_shared<TcxWriter>(output_fn, split_by_track));
         if (!to_image.empty()) {
             watch.addRecipient(std::make_shared<ImageWriter>(to_image));
