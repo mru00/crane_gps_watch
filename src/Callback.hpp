@@ -9,12 +9,6 @@
 #include <memory>
 
 
-class WatchInfo;
-class WorkoutInfo;
-class SampleInfo;
-
-
-
 class Callback {
   public:
     virtual ~Callback() {}
