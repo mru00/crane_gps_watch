@@ -63,6 +63,9 @@ void DebugWriter::onWorkoutEnd(const WorkoutInfo &i) {
     }
 }
 void DebugWriter::onLap(const LapInfo &)  {
+    if (debug_level > 0) {
+        std::cout << "  lap begin" << std::endl;
+    }
 }
 void DebugWriter::onLapEnd(const LapInfo &)  {
     if (debug_level > 0) {
