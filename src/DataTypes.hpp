@@ -112,6 +112,7 @@ struct SampleInfo {
 };
 
 struct LapInfo {
+    int lap_number;
     GpsTime abs_split;
     GpsTime start_time;
 
