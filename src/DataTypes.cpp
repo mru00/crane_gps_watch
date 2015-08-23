@@ -60,7 +60,11 @@ GpsTime::GpsTime() : time () {
                  light  saving time is in effect, zero if it is not, and nega‐$
                  tive if the information is not available.$
     */
-    time.tm_isdst = 0;
+    /* 
+     * Initialize tm_isdst to -1 glib's mktime() will set it to the systems dst.
+     * If tm_isdst is not equal to the systems dst, time will be off by +/- 1 hour .
+     */
+    time.tm_isdst = -1;
 }
 
 GpsTime& GpsTime::operator=(const GpsTimeUpd& other) {
@@ -71,7 +75,9 @@ GpsTime& GpsTime::operator=(const GpsTimeUpd& other) {
 }
 
 time_t GpsTime::mktime() {
+	tm timesave = time; //backup current time structure to preserve the watch's time-zone
     time_t t = ::mktime(&time);
+    time.tm_gmtoff = timesave.tm_gmtoff; //restore the watch's time-zone
     if (t == (time_t) -1) {
         throw std::runtime_error(fmt() << "failed to mktime: " << strerror(errno));
     }

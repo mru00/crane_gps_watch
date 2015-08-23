@@ -41,7 +41,7 @@ void DebugWriter::onWorkout(const WorkoutInfo &i)  {
           << std::endl
           << " workout info"
           << " p=" << i.profile
-          << " t=" << i.start_time.format()
+          << " t=" << i.start_time.format() << " dst=" << i.start_time.time.tm_isdst
           << " d=" << put_time(&i.workout_time.time, "%H:%M:%S") << "=" << i.workout_time.time.tm_hour*60*60 + i.workout_time.time.tm_min*60 +i.workout_time.time.tm_sec
           << " nsamples=" << i.nsamples << "=0x" << std::hex << i.nsamples << std::dec
           //<< " toc=" << i.toc
