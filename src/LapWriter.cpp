@@ -15,11 +15,17 @@ LapWriter::LapWriter() {
 }
 
 void LapWriter::onLap(const LapInfo &i)  {
-    std::cout 
-        << std::endl
-        << "   Absolute Time             WorkoutTime LapTime     HR  Dist  Spd       Pace" << std::endl
-        << "   ------------------------- ----------- ----------- --- ----- --------- --------" << std::endl
-        << "   " << i.abs_split.format() << " "
+    if(i.lap_number == 1) {
+        std::cout 
+            << std::endl
+            << "   Lap Absolute Time             WorkoutTime LapTime     HR  Dist  Spd       Pace" << std::endl
+            << "   --- ------------------------- ----------- ----------- --- ----- --------- --------" << std::endl;
+    }
+
+    std::cout
+        << "   " 
+        << std::setw(3) << std::setfill(' ') << i.lap_number << " "
+        << i.abs_split.format() << " "
         << std::setw(2) << std::setfill('0') << i.split.tm_hour << ":"
         << std::setw(2) << i.split.tm_min << ":"
         << std::setw(2) << i.split.tm_sec << "."
