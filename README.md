@@ -16,7 +16,7 @@ Supported watches and firmware version:
 * `1.20.21_KRIP0_00` [Ultrasport NavRun 500](http://www.ebay.de/itm/Ultrasport-GPS-Pulsuhr-NavRun-500-Uhr-Watch-mit-Brustgurt-/301393562885)
 * `1.20.03_KRIP0_02` [some other crane watch](https://www.krippl-watches.com/wp-content/uploads/2014/10/armbanduhren_gps_1.jpg)
 * `1.20.22_DLES0_00` [Conrad Multi NAV-3](http://www.produktinfo.conrad.com/datenblaetter/300000-324999/323447-an-01-de-GPS_SPORT_PULSUHR_MULTI_NAV_3.pdf)
-* `1.20.21_DLES0_00` [Conrad GPS Nav II](http://www.conrad.de/ce/de/product/372884/Multi-NAV-2-GPS-Pulsuhr-mit-Brustgurt-Schwarz) (But see Issue #12)
+* `1.20.21_DLES0_00` [Conrad GPS Nav II](http://www.conrad.de/ce/de/product/372884/Multi-NAV-2-GPS-Pulsuhr-mit-Brustgurt-Schwarz)
 * `1.20.26_RUNT0_00` [Runtastic Gps Watch](https://www.runtastic.com/shop/en/runtastic-gps-watch-with-heart-rate-monitor)
 
 As the watch is commonly rebranded, the following watches might just work:
