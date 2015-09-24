@@ -322,6 +322,8 @@ void Watch::parseLaps(WorkoutInfo& wo, WatchMemoryBlock::mem_it_t& it) {
     for (unsigned int lap_idx = 0; lap_idx < wo.lapcount; lap_idx++) {
         LapInfo info;
 
+        info.lap_number = lap_idx + 1;
+
         // Initialise storage
         info.split = tm();
         info.split.tm_year = 70;
