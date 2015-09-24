@@ -17,6 +17,7 @@
 
 #include <cassert>
 #include <ctime>
+#include <cmath>
 
 #include "DataTypes.hpp"
 #include "MemoryBlock.hpp"
