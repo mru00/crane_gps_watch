@@ -52,6 +52,7 @@ setup.ss: $(srcdir)/setup.ss.in
 	$(do_subst) < $< > $@
 
 check_arch: crane_gps_watch_client$(EXEEXT)
+	file -i $<
 	[[ $$(file -i $<) = *application/x-dosexec* ]]
 
 endif
