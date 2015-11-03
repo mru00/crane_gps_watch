@@ -32,6 +32,7 @@ EXTRA_DIST = gps_watch_monitor.py.in setup.ss.in
 
 do_subst = sed \
  -e 's,[@]datadir[@],$(datadir),g' \
+ -e 's,[@]srcdir[@],$(srcdir),g' \
  -e 's,[@]PACKAGE[@],$(PACKAGE),g' \
  -e 's,[@]PACKAGE_VERSION[@],$(PACKAGE_VERSION),g' \
  -e 's,[@]PACKAGE_STRING[@],$(PACKAGE_STRING),g' \
@@ -51,9 +52,17 @@ all: setup.ss crane_gps_watch_client$(EXEEXT) check_arch
 setup.ss: $(srcdir)/setup.ss.in
 	$(do_subst) < $< > $@
 
+# make sure cross-compilation produced a windows executable
 check_arch: crane_gps_watch_client$(EXEEXT)
 	file -i $<
 	[[ $$(file -i $<) = *application/x-dosexec* ]]
 
+windows.rc: windows.rc.in
+	$(do_subst) < $< > $@
+
+windows.res: windows.rc
+	$(host_cpu)-w64-mingw32-windres $< -O coff -o $@
+
+crane_gps_watch_client_LDADD = windows.res
 endif
 

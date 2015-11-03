@@ -111,7 +111,8 @@ am_crane_gps_watch_client_OBJECTS =  \
 	crane_gps_watch_client-Watch.$(OBJEXT) genx.$(OBJEXT) \
 	charProps.$(OBJEXT) crane_gps_watch_client-LapWriter.$(OBJEXT)
 crane_gps_watch_client_OBJECTS = $(am_crane_gps_watch_client_OBJECTS)
-crane_gps_watch_client_LDADD = $(LDADD)
+@CROSS_COMPILING_TRUE@crane_gps_watch_client_DEPENDENCIES =  \
+@CROSS_COMPILING_TRUE@	windows.res
 crane_gps_watch_client_LINK = $(CXXLD) \
 	$(crane_gps_watch_client_CXXFLAGS) $(CXXFLAGS) \
 	$(crane_gps_watch_client_LDFLAGS) $(LDFLAGS) -o $@
@@ -329,7 +330,6 @@ crane_gps_watch_client_SOURCES = main.cpp \
  SerialPortWindows.inc SerialPortLinux.inc SerialPortMacOSX.inc
 
 crane_gps_watch_client_CXXFLAGS = -Wall -Wextra 
-#CXXFLAGS=-g -ggdb -gstabs+ -gstabs
 @CROSS_COMPILING_TRUE@crane_gps_watch_client_LDFLAGS = -static-libgcc -static-libstdc++ -static
 MOSTLYCLEANFILES = *.tcx
 
@@ -339,6 +339,7 @@ CLEANFILES = $(bin_SCRIPTS)
 EXTRA_DIST = gps_watch_monitor.py.in setup.ss.in
 do_subst = sed \
  -e 's,[@]datadir[@],$(datadir),g' \
+ -e 's,[@]srcdir[@],$(srcdir),g' \
  -e 's,[@]PACKAGE[@],$(PACKAGE),g' \
  -e 's,[@]PACKAGE_VERSION[@],$(PACKAGE_VERSION),g' \
  -e 's,[@]PACKAGE_STRING[@],$(PACKAGE_STRING),g' \
@@ -348,6 +349,7 @@ do_subst = sed \
  -e 's,[@]PKGDATADIR[@],$(pkgdatadir),g' \
  -e 's,[@]HOST_CPU[@],$(host_cpu),g'
 
+@CROSS_COMPILING_TRUE@crane_gps_watch_client_LDADD = windows.res
 all: all-am
 
 .SUFFIXES:
@@ -911,8 +913,16 @@ gps_watch_monitor.py: $(srcdir)/gps_watch_monitor.py.in
 @CROSS_COMPILING_TRUE@setup.ss: $(srcdir)/setup.ss.in
 @CROSS_COMPILING_TRUE@	$(do_subst) < $< > $@
 
+# make sure cross-compilation produced a windows executable
 @CROSS_COMPILING_TRUE@check_arch: crane_gps_watch_client$(EXEEXT)
+@CROSS_COMPILING_TRUE@	file -i $<
 @CROSS_COMPILING_TRUE@	[[ $$(file -i $<) = *application/x-dosexec* ]]
+
+@CROSS_COMPILING_TRUE@windows.rc: windows.rc.in
+@CROSS_COMPILING_TRUE@	$(do_subst) < $< > $@
+
+@CROSS_COMPILING_TRUE@windows.res: windows.rc
+@CROSS_COMPILING_TRUE@	$(host_cpu)-w64-mingw32-windres $< -O coff -o $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
