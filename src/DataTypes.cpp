@@ -75,9 +75,17 @@ GpsTime& GpsTime::operator=(const GpsTimeUpd& other) {
 }
 
 time_t GpsTime::mktime() {
-	tm timesave = time; //backup current time structure to preserve the watch's time-zone
+
+    //backup current time structure to preserve the watch's time-zone
+	tm timesave = time; 
+
     time_t t = ::mktime(&time);
+
+#ifndef  __MINGW32__ 
+    // this does not work in cross-compile for windows
     time.tm_gmtoff = timesave.tm_gmtoff; //restore the watch's time-zone
+#endif
+
     if (t == (time_t) -1) {
         throw std::runtime_error(fmt() << "failed to mktime: " << strerror(errno));
     }
@@ -85,7 +93,14 @@ time_t GpsTime::mktime() {
 }
 
 std::string GpsTime::format() const {
+
+#ifdef  __MINGW32__ 
+    // windows implements a different %z - only the name of the timezone can be shown
+    std::string fmt_time = fmt() << put_time(&time, "%Y-%m-%dT%H:%M:%S+0000");
+#else
+    // linux uses %z = "+hhmm" format
     std::string fmt_time = fmt() << put_time(&time, "%Y-%m-%dT%H:%M:%S%z");
+#endif
     if(fmt_time.length() >= 24){
 	    //insert missing ':' in the time zone. put_time timezone:"+0100"
         //                                     XML      timezone:"+01:00"

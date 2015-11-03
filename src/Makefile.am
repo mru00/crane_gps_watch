@@ -14,7 +14,7 @@ crane_gps_watch_client_SOURCES = main.cpp \
  genx.h \
  SerialPortWindows.inc SerialPortLinux.inc SerialPortMacOSX.inc
 
-crane_gps_watch_client_CXXFLAGS = -Wall -Wextra
+crane_gps_watch_client_CXXFLAGS = -Wall -Wextra 
 
 if CROSS_COMPILING
 crane_gps_watch_client_LDFLAGS = -static-libgcc -static-libstdc++ -static
@@ -47,12 +47,12 @@ gps_watch_monitor.py: $(srcdir)/gps_watch_monitor.py.in
 	chmod +x $@
 
 if CROSS_COMPILING
-all: setup.ss crane_gps_watch_client.exe
+all: setup.ss crane_gps_watch_client$(EXEEXT) check_arch
 setup.ss: $(srcdir)/setup.ss.in
 	$(do_subst) < $< > $@
 
-# don't know why that is required... used to work... quick fix!
-crane_gps_watch_client.exe: crane_gps_watch_client
-	cp $< $@
+check_arch: crane_gps_watch_client$(EXEEXT)
+	[[ $$(file -i $<) = *application/x-dosexec* ]]
+
 endif
 

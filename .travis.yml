@@ -7,7 +7,7 @@ script:
   - sudo make install
 # cross compile for windows 
   - cd .. && mkdir build_2 && cd build_2
-  - ../configure --host i686-w64-mingw32 --build i686-pc-linux-gnu
+  - ../configure --host i686-w64-mingw32 --build i686-pc-linux-gnu CXX=i686-w64-mingw32-g++
   - make check
   - cat test/test-suite.log
   - cd ..

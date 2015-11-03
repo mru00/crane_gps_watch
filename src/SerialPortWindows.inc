@@ -73,6 +73,7 @@ class SerialPort::SerialPortD {
         ::QueryDosDevice(NULL, buf, bufsize);
 
         while (*buf != '\0') {
+            //std::cerr << "testing dosdevice " << buf << std::endl;
             if (_tcsncmp(buf, _T("COM"), 3) == 0 || _tcsncmp(buf, _T("\\\\.\\COM"), 7) == 0) {
                 ports.push_back(buf);
             }

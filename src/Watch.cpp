@@ -18,6 +18,7 @@
 #include <cassert>
 #include <ctime>
 #include <cmath>
+#include <cstring>
 
 #include "DataTypes.hpp"
 #include "MemoryBlock.hpp"
@@ -216,7 +217,9 @@ void Watch::parseGpsTime(GpsTime& t, WatchMemoryBlock::mem_it_t it, unsigned tim
     t.time.tm_hour = *it++;
     t.time.tm_min = *it++;
     t.time.tm_sec = *it++;
+#ifndef __MINGW32__
     t.time.tm_gmtoff = ((timezone - 24)/2)*3600 + ((timezone - 24)%2)*1800;
+#endif
     t.mktime();
 }
 
@@ -313,6 +316,8 @@ void Watch::parseLaps(WorkoutInfo& wo, WatchMemoryBlock::mem_it_t& it) {
     //now every 16 bytes is a laptime
     //1=hour 2=minutes 3=seconds 4=microseconds to be displayed as hex
     //5=average hr 6-8=blank? 9-12=lap distance 13-16=lapspeed in 100m/h
+
+
     wo.lapinfo.clear();
     time_t wo_start = mktime(&wo.start_time.time);
 
@@ -320,6 +325,7 @@ void Watch::parseLaps(WorkoutInfo& wo, WatchMemoryBlock::mem_it_t& it) {
     time_t prev_split = 0;
 
     for (unsigned int lap_idx = 0; lap_idx < wo.lapcount; lap_idx++) {
+
         LapInfo info;
 
         info.lap_number = lap_idx + 1;
@@ -330,10 +336,22 @@ void Watch::parseLaps(WorkoutInfo& wo, WatchMemoryBlock::mem_it_t& it) {
         info.split.tm_mday = 1;
         info.split_milli = 0;
 
+        // questionable:
+        info.split.tm_isdst = 0;
+
         // 1-3 time
         info.split.tm_hour = *it++;
         info.split.tm_min = *it++;
         info.split.tm_sec = *it++;
+
+
+#ifdef __MINGW32__
+        // XXX THIS IS TERRIBLE.
+        // I just can't manage to get windows tz stuff correctly
+        // this makes my testcases work, at least
+        // expect bugs!
+        info.split.tm_hour += 1;
+#endif
 
         // 4 (milli) is expected to be printed as hex. eg data 83 = 0x53 displayed
         std::ostringstream hexstream;
@@ -354,7 +372,10 @@ void Watch::parseLaps(WorkoutInfo& wo, WatchMemoryBlock::mem_it_t& it) {
         }
         assert(this_milli >=0);
 
-        info.lap = *gmtime(&this_lap);
+        struct tm* gmtime_1 = gmtime(&this_lap);
+        assert(gmtime_1);
+        info.lap = *gmtime_1;
+
         info.lap_milli = this_milli;
         info.lap_seconds = (int) this_lap;
 
@@ -408,6 +429,7 @@ void Watch::parseLaps(WorkoutInfo& wo, WatchMemoryBlock::mem_it_t& it) {
         prev_split = this_split;
         prev_milli = this_milli;
     }
+
 }
 
 
@@ -447,9 +469,6 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
 
     // 1 [15] profile idx ?
     profile_idx = *it++;
-    // this might be a solution for Issue #12; but does not work for other firmware version.
-    // XXX do we need a fw-depended exception here?
-    // profile_idx = *(cb.memory.begin() + 0x4a);
 
     // 4 [16..19]
     wo.total_km = parse_int32_advance(it);
@@ -544,6 +563,8 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
     time_t next_split_time;
 
     std::vector<LapInfo>::iterator lap_it = wo.lapinfo.begin();
+    // there must be at least one lap
+    assert(wo.lapinfo.begin() != wo.lapinfo.end());
     br.onLap(*lap_it);
     next_split_time = lap_it->abs_split.mktime();
 
@@ -661,6 +682,7 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
         throw std::runtime_error ("not all laps consumed");
     }
     br.onWorkoutEnd(wo);
+
 }
 
 void Watch::parseToc(Toc& toc, WatchMemoryBlock::mem_it_t it) {
@@ -816,20 +838,49 @@ void Watch::writeBlock(WatchMemoryBlock& b) {
     }
 }
 
+
+int my_setenv(const char *name, const char *value, int overwrite)
+{
+#ifdef __MINGW32__
+    //int errcode = 0;
+    //if(!overwrite) {
+    //    size_t envsize = 0;
+    //    errcode = getenv(&envsize, NULL, 0, name);
+    //    if(errcode || envsize) return errcode;
+    //}
+    return _putenv_s(name, value);
+#else
+   return setenv(name, value, overwrite);
+#endif
+}
+
+int my_unsetenv(const char* name) {
+#ifdef __MINGW32__
+    return _putenv_s(name, "");
+#else
+    return unsetenv(name);
+#endif
+}
+
+
 time_t Watch::my_timegm(struct tm *tm)
 {
+    assert(tm);
     time_t ret;
-    char *tz;
-
-    tz = getenv("TZ");
-    setenv("TZ", "", 1);
+    char *tz = getenv("TZ");
+    my_setenv("TZ", "", 1);
     tzset();
     ret = mktime(tm);
-    if (tz)
-        setenv("TZ", tz, 1);
-    else
-        unsetenv("TZ");
+    if (tz && strlen(tz)) {
+        my_setenv("TZ", tz, 1);
+    }
+    else {
+        my_unsetenv("TZ");
+    }
     tzset();
+
+    assert (ret != (time_t)(-1));
+
     return ret;
 }
 

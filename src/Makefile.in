@@ -328,7 +328,8 @@ crane_gps_watch_client_SOURCES = main.cpp \
  genx.h \
  SerialPortWindows.inc SerialPortLinux.inc SerialPortMacOSX.inc
 
-crane_gps_watch_client_CXXFLAGS = -Wall -Wextra
+crane_gps_watch_client_CXXFLAGS = -Wall -Wextra 
+#CXXFLAGS=-g -ggdb -gstabs+ -gstabs
 @CROSS_COMPILING_TRUE@crane_gps_watch_client_LDFLAGS = -static-libgcc -static-libstdc++ -static
 MOSTLYCLEANFILES = *.tcx
 
@@ -906,13 +907,12 @@ gps_watch_monitor.py: $(srcdir)/gps_watch_monitor.py.in
 	$(do_subst) < $< > $@
 	chmod +x $@
 
-@CROSS_COMPILING_TRUE@all: setup.ss crane_gps_watch_client.exe
+@CROSS_COMPILING_TRUE@all: setup.ss crane_gps_watch_client$(EXEEXT) check_arch
 @CROSS_COMPILING_TRUE@setup.ss: $(srcdir)/setup.ss.in
 @CROSS_COMPILING_TRUE@	$(do_subst) < $< > $@
 
-# don't know why that is required... used to work... quick fix!
-@CROSS_COMPILING_TRUE@crane_gps_watch_client.exe: crane_gps_watch_client
-@CROSS_COMPILING_TRUE@	cp $< $@
+@CROSS_COMPILING_TRUE@check_arch: crane_gps_watch_client$(EXEEXT)
+@CROSS_COMPILING_TRUE@	[[ $$(file -i $<) = *application/x-dosexec* ]]
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

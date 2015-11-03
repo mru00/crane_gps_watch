@@ -16,6 +16,9 @@ else
   exit 1
 fi
 
+which i686-w64-mingw32-g++
+which x86_64-w64-mingw32-g++
+
 
 release() {
   local title=$1
@@ -44,10 +47,11 @@ mkdir $releasedir
 make distclean || true
 
 
-release win-i686 "--host i686-w64-mingw32 --build ${build_cpu}-pc-linux-gnu"
-release win-x86_64 "--host x86_64-w64-mingw32 --build ${build_cpu}-pc-linux-gnu"
-release linux-i686 "--host i686-pc-linux-gnu --build ${build_cpu}-pc-linux-gnu"
-#release linux-x86_64 "--host x86_64-pc-linux-gnu --build ${build_cpu}-pc-linux-gnu"
+release win-i686 "--host i686-w64-mingw32 --build ${build_cpu}-pc-linux-gnu CXX=i686-w64-mingw32-g++"
+release win-x86_64 "--host x86_64-w64-mingw32 --build ${build_cpu}-pc-linux-gnu CXX=x86_64-w64-mingw32-g++"
+#release linux-i686 "--host i686-pc-linux-gnu --build ${build_cpu}-pc-linux-gnu"
+# yes, i finally installed a 64bit linux
+release linux-x86_64 "--host x86_64-pc-linux-gnu --build ${build_cpu}-pc-linux-gnu"
 
 
 echo done
