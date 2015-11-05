@@ -344,15 +344,6 @@ void Watch::parseLaps(WorkoutInfo& wo, WatchMemoryBlock::mem_it_t& it) {
         info.split.tm_min = *it++;
         info.split.tm_sec = *it++;
 
-
-#ifdef __MINGW32__
-        // XXX THIS IS TERRIBLE.
-        // I just can't manage to get windows tz stuff correctly
-        // this makes my testcases work, at least
-        // expect bugs!
-        info.split.tm_hour += 1;
-#endif
-
         // 4 (milli) is expected to be printed as hex. eg data 83 = 0x53 displayed
         std::ostringstream hexstream;
         hexstream << std::hex << (int)*it++;
@@ -868,7 +859,9 @@ time_t Watch::my_timegm(struct tm *tm)
     assert(tm);
     time_t ret;
     char *tz = getenv("TZ");
-    my_setenv("TZ", "", 1);
+
+    // setting UTC is required on windows
+    my_setenv("TZ", "UTC", 1);
     tzset();
     ret = mktime(tm);
     if (tz && strlen(tz)) {
