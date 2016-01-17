@@ -28,7 +28,7 @@ install:
   - g++ --version
   - automake --version
 # xmllint etc, required for 'make check'
-  - sudo apt-get install -qq -y libxml2-utils
+  - sudo apt-get install -qq -y -o Dpkg::Options::="--force-confold" libxml2-utils
 # windows cross compiler + wine for 'make check'
-  - sudo apt-get install -qq -y wine binutils-mingw-w64-i686 gcc-mingw-w64-i686 g++-mingw-w64-i686
+  - sudo apt-get install -qq -y -o Dpkg::Options::="--force-confold" wine binutils-mingw-w64-i686 gcc-mingw-w64-i686 g++-mingw-w64-i686
 
