@@ -149,7 +149,7 @@ wget https://github.com/mru00/crane_gps_watch/archive/master.zip
 unzip master.zip
 
 
-cd crane_gps_watch_client
+cd crane_gps_watch
 
 
 ## build the software
