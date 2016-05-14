@@ -1,0 +1,26 @@
+id ICON "@srcdir@/../data/icon.ico.in"
+
+1 VERSIONINFO
+FILEVERSION     1,0,0,0
+PRODUCTVERSION  1,0,0,0
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904E4"
+    BEGIN
+      VALUE "CompanyName", "@PACKAGE_COPYRIGHT@"
+      VALUE "FileDescription", "@PACKAGE_URL@"
+      VALUE "FileVersion", "@PACKAGE_VERSION@"
+      VALUE "InternalName", "@PACKAGE@"
+      VALUE "LegalCopyright", "@PACKAGE_COPYRIGHT@"
+      VALUE "OriginalFilename", "crane_gps_watch_client.exe"
+      VALUE "ProductName", "@PACKAGE@"
+      VALUE "ProductVersion", "@PACKAGE_VERSION@"
+    END
+  END
+
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x409, 1252
+  END
+END

@@ -1,4 +1,4 @@
-// Copyright (C) 2014 mru@sisyphus.teil.cc
+// Copyright (C) 2014 - 2015 mru@sisyphus.teil.cc
 //
 // linux client for crane gps watch, runtastic gps watch.
 //
@@ -18,8 +18,14 @@
 #include "TcxWriter.hpp"
 
 
-TcxWriter::TcxWriter(std::string filename, bool split_by_track) :  writer(), filename(filename), current_wo(), split_by_track(split_by_track) {
+TcxWriter::TcxWriter(std::string filename, bool split_by_track) 
+    : writer()
+       , filename(filename)
+       , current_wo()
+       , split_by_track(split_by_track)
+       , distance_acc(0) {
 }
+
 TcxWriter::~TcxWriter() {
     if (writer.isOpen()) {
         // XXX shouldn't happen
@@ -27,8 +33,10 @@ TcxWriter::~TcxWriter() {
         writer.close();
     }
 }
+
 void TcxWriter::onWatch(const WatchInfo &) {
 }
+
 void TcxWriter::onWatchEnd(const WatchInfo &) {
     // only close when at least one workout was written... if the writer is open
     if (!split_by_track && writer.isOpen()) {
@@ -38,9 +46,10 @@ void TcxWriter::onWatchEnd(const WatchInfo &) {
         writer.close();
     } 
 }
+
 void TcxWriter::onWorkout(const WorkoutInfo &i)  {
     if (split_by_track) {
-        std::string fn = i.start_time.format();
+        std::string fn = i.start_time.format_no_tz();
         fn += ".tcx";
         std::replace(fn.begin(), fn.end(), ':', '_');
         writer.open(fn);
@@ -62,14 +71,23 @@ void TcxWriter::onWorkout(const WorkoutInfo &i)  {
     }
 
     std::string sport;
-    switch (i.profile.profile) {
-      case Profile::Running:
+
+    // small translation profile -> tcx activity
+    // terrible but necessary: language dependent!
+    if (i.profile == "Running"
+            || i.profile == "Laufen" 
+            || i.profile == "Course" 
+            || i.profile == "Corsa" 
+            || i.profile == "Correr") {
         sport = "Running";
-        break;
-      case Profile::Cycling:
+    }
+    else if (i.profile == "Cycling" 
+            || i.profile == "Radfahren" 
+            || i.profile == "Cyclisme" 
+            || i.profile == "Ciclismo") {
         sport = "Biking";
-        break;
-      default:
+    }
+    else {
         sport = "Other";
     }
 
@@ -77,21 +95,40 @@ void TcxWriter::onWorkout(const WorkoutInfo &i)  {
     writer.startElement("Activity");
     writer. writeAttribute("Sport", sport);
     writer. writeElement("Id", i.start_time.format());
-    writer. startElement("Lap");
-    writer. writeAttribute("StartTime", i.start_time.format());
-    writer. writeElement("TotalTimeSeconds", "0");
-    writer. writeElement("DistanceMeters", "0");
-      {
-        std::ostringstream ss;
-        ss<< (int)(i.calories/100);
-        writer.writeElement("Calories", ss.str());
-      }
-    writer.  writeElement("Intensity", "Active");
-    writer.  writeElement("TriggerMethod", "Manual");
 }
-void TcxWriter::onWorkoutEnd(const WorkoutInfo &)  { 
-    writer.  writeElement("Notes", current_wo.start_time.format());
-    writer. endElement("Lap");
+
+
+struct formatHMS {
+    const GpsTime& t;
+    formatHMS(const GpsTime& t) : t(t) {}
+};
+
+static std::ostream& operator << (std::ostream &os, const formatHMS& t) {
+    os << std::setw(2) << std::setfill('0') << t.t.time.tm_hour << ":"
+        << std::setw(2) << std::setfill('0') << t.t.time.tm_min << ":"
+        << std::setw(2) << std::setfill('0') << t.t.time.tm_sec;
+    return os;
+}
+
+void TcxWriter::onWorkoutEnd(const WorkoutInfo & i)  { 
+
+    distance_acc = 0;
+
+    std::ostringstream ss;
+    ss << "Start time: " << current_wo.start_time.format() <<std::endl
+        << "Activity: " << current_wo.profile << std::endl
+        << "Avg speed (km/h): " << (double)(i.speed_avg)/10 << std::endl
+        << "Max speed (km/h): " << (double)(i.speed_max)/10 << std::endl
+        << "Calories: " << (i.calories/100) << std::endl
+        << "Min heart rate: " << (i.hr_min) << std::endl
+        << "Avg heart rate: " << (i.hr_avg) << std::endl
+        << "Max heart rate: " << (i.hr_max) << std::endl
+        << "Time below training zone: " << formatHMS(i.below_zone_time) << std::endl
+        << "Time in training zone: "  << formatHMS(i.in_zone_time) << std::endl
+        << "Time above training zone: " << formatHMS(i.above_zone_time)
+        ;
+
+    writer.  writeElement("Notes", ss.str());
     writer.endElement("Activity");
 
     if (split_by_track) {
@@ -100,12 +137,45 @@ void TcxWriter::onWorkoutEnd(const WorkoutInfo &)  {
         writer.endDocument();
     }
 }
+
+void TcxWriter::onLap(const LapInfo &i) {
+
+    writer.startElement("Lap");
+    writer. writeAttribute("StartTime", i.start_time.format());
+    writer.writeElement("TotalTimeSeconds", std::to_string(i.lap_seconds));
+
+    //writer.writeElement("Calories", fmt() << (int)(i.calories)/100);
+    writer.writeElement("DistanceMeters", fmt() << (double)(i.distance)/10);
+    writer.writeElement("Calories", "0");
+    if (i.avg_hr > 0) {
+        writer.startElement("AverageHeartRateBpm");
+        writer.writeElement("Value", fmt() << i.avg_hr);
+        writer.endElement("AverageHeartRateBpm");
+    }
+    /*
+    if (i.max_hr > 0) {
+        writer. startElement("MaximumHeartRateBpm");
+        writer.  writeElement("Value", fmt() << i.hr_max);
+        writer. endElement("MaximumHeartRateBpm");
+    }
+    */
+    writer.writeElement("Intensity", "Active");
+    writer.writeElement("TriggerMethod", "Manual");
+}
+
+void TcxWriter::onLapEnd(const LapInfo &i) {
+    writer.writeElement("Notes", i.abs_split.format());
+    writer.endElement("Lap");
+}
+
 void TcxWriter::onTrack(const TrackInfo&) {
     writer.startElement("Track");
 }
+
 void TcxWriter::onTrackEnd(const TrackInfo&) {
     writer.endElement("Track");
 }
+
 void TcxWriter::onSample(const SampleInfo &i) { 
     writer.startElement("Trackpoint");
     writer. writeElement("Time", i.time.format());
@@ -116,14 +186,15 @@ void TcxWriter::onSample(const SampleInfo &i) {
         writer. endElement("Position");
         writer. writeElement("AltitudeMeters", i.ele.format());
 
-        // required for turtle sports
-        writer. writeElement("DistanceMeters", "0");
+        writer. writeElement("DistanceMeters", fmt() << distance_acc);
+        distance_acc += (double)i.distance/10;
+
+        //writer. writeElement("Speed", fmt() << (double)i.speed/100);
+        //writer. writeElement("Orientation", fmt() << (int)i.orientation);
     }
     if (i.hr != 0) {
-        std::ostringstream ss;
-        ss << (int)i.hr;
         writer. startElement("HeartRateBpm");
-        writer.  writeElement("Value", ss.str());
+        writer.  writeElement("Value", fmt() << (int)i.hr);
         writer. endElement("HeartRateBpm");
     }
     writer.endElement("Trackpoint");

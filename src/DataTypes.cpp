@@ -1,4 +1,4 @@
-// Copyright (C) 2014 mru@sisyphus.teil.cc
+// Copyright (C) 2014 - 2015 mru@sisyphus.teil.cc
 //
 // Data Types
 //
@@ -15,12 +15,6 @@
 
 #include "DataTypes.hpp"
 
-
-struct fmt {
-    std::ostringstream s;
-    operator std::string() {return s.str();}
-    template<class T> fmt& operator<<(T const& v) {return s<<v, *this;}
-};
 
 put_time::put_time(const tm* time, const std::string& format) : str() {
     const size_t max_size = 800;
@@ -66,7 +60,11 @@ GpsTime::GpsTime() : time () {
                  light  saving time is in effect, zero if it is not, and nega‐$
                  tive if the information is not available.$
     */
-    time.tm_isdst = 0;
+    /* 
+     * Initialize tm_isdst to -1 glib's mktime() will set it to the systems dst.
+     * If tm_isdst is not equal to the systems dst, time will be off by +/- 1 hour .
+     */
+    time.tm_isdst = -1;
 }
 
 GpsTime& GpsTime::operator=(const GpsTimeUpd& other) {
@@ -77,7 +75,17 @@ GpsTime& GpsTime::operator=(const GpsTimeUpd& other) {
 }
 
 time_t GpsTime::mktime() {
+
+    //backup current time structure to preserve the watch's time-zone
+	tm timesave = time; 
+
     time_t t = ::mktime(&time);
+
+#ifndef  __MINGW32__ 
+    // this does not work in cross-compile for windows
+    time.tm_gmtoff = timesave.tm_gmtoff; //restore the watch's time-zone
+#endif
+
     if (t == (time_t) -1) {
         throw std::runtime_error(fmt() << "failed to mktime: " << strerror(errno));
     }
@@ -85,7 +93,14 @@ time_t GpsTime::mktime() {
 }
 
 std::string GpsTime::format() const {
+
+#ifdef  __MINGW32__ 
+    // windows implements a different %z - only the name of the timezone can be shown
+    std::string fmt_time = fmt() << put_time(&time, "%Y-%m-%dT%H:%M:%S+0000");
+#else
+    // linux uses %z = "+hhmm" format
     std::string fmt_time = fmt() << put_time(&time, "%Y-%m-%dT%H:%M:%S%z");
+#endif
     if(fmt_time.length() >= 24){
 	    //insert missing ':' in the time zone. put_time timezone:"+0100"
         //                                     XML      timezone:"+01:00"
@@ -96,26 +111,11 @@ std::string GpsTime::format() const {
     //return fmt() << put_time(&time, "%FT%TZ");
 }
 
-Profile& Profile::operator=(unsigned char v) {
-    profile = (Profile::profile_e) v;
-    return *this;
-}
-
-std::string Profile::format() const {
-    switch(profile) {
-      case Profile::Running:
-        return "Running";
-      case Profile::Cycling:
-        return "Cycling";
-      case Profile::Hiking:
-        return "Hiking";
-      case Profile::Sailing:
-        return "Sailing";
-      case Profile::User:
-        return "User";
-      default:
-        throw std::runtime_error("unknown profile type");
-    }
+std::string GpsTime::format_no_tz() const {
+    std::string fmt_time = fmt() << put_time(&time, "%Y-%m-%dT%H:%M:%S");
+    return fmt_time;
+    // does not work with windows:
+    //return fmt() << put_time(&time, "%FT%TZ");
 }
 
 Language& Language::operator= (unsigned char v) {

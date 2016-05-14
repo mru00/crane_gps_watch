@@ -1,4 +1,4 @@
-// Copyright (C) 2014 mru@sisyphus.teil.cc
+// Copyright (C) 2014 - 2015 mru@sisyphus.teil.cc
 //
 // linux client for crane gps watch, runtastic gps watch.
 //
@@ -25,6 +25,7 @@
 #include "DebugWriter.hpp"
 #include "GpsLint.hpp"
 #include "ImageWriter.hpp"
+#include "LapWriter.hpp"
 #include "Watch.hpp"
 #include "SerialLink.hpp"
 #include "ImageLink.hpp"
@@ -188,6 +189,7 @@ int main(int argc, char** argv) {
 
         Watch watch(device);
 
+        watch.addRecipient(std::make_shared<LapWriter>());
         watch.addRecipient(std::make_shared<TcxWriter>(output_fn, split_by_track));
         if (!to_image.empty()) {
             watch.addRecipient(std::make_shared<ImageWriter>(to_image));

@@ -1,4 +1,4 @@
-// Copyright (C) 2014 mru@sisyphus.teil.cc
+// Copyright (C) 2014 - 2015 mru@sisyphus.teil.cc
 //
 // linux client for crane gps watch, runtastic gps watch.
 //
@@ -16,6 +16,8 @@ class DebugWriter : public Callback {
     void onWatchEnd(const WatchInfo &) override;
     void onWorkout(const WorkoutInfo &i) override;
     void onWorkoutEnd(const WorkoutInfo &) override;
+    void onLap(const LapInfo &i) override;
+    void onLapEnd(const LapInfo &) override;
     void onTrack(const TrackInfo &i) override;
     void onTrackEnd(const TrackInfo &) override;
     void onSample(const SampleInfo &i) override;

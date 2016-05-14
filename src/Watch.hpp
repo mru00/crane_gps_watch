@@ -1,4 +1,4 @@
-// Copyright (C) 2014 mru@sisyphus.teil.cc
+// Copyright (C) 2014 - 2015 mru@sisyphus.teil.cc
 //
 // linux client for crane gps watch, runtastic gps watch.
 //
@@ -29,13 +29,17 @@ class Watch {
     void parseGpsLocation(GpsLocation& l, WatchMemoryBlock::mem_it_t it);
     void parseGpsTimeUpd(GpsTimeUpd& t, WatchMemoryBlock::mem_it_t it);
     void parseGpsTime(GpsTime& t, WatchMemoryBlock::mem_it_t it, unsigned timezone);
+    void parseLaps(WorkoutInfo& wi, WatchMemoryBlock::mem_it_t& it);
     void parseSample(WatchInfo& wi, SampleInfo& si, WatchMemoryBlock::mem_it_t& it);
     void parseWO(WatchInfo& wi, int first, int count);
     void parseToc(Toc& toc, WatchMemoryBlock::mem_it_t it);
+    void parseProfileNames(std::vector<std::string>&, WatchMemoryBlock::mem_it_t);
     void parseBlock0();
 
     void readBlock(WatchMemoryBlock& b);
     void writeBlock(WatchMemoryBlock& b);
+    time_t my_timegm(struct tm *tm);
+
 
   private:
     Broadcaster br;

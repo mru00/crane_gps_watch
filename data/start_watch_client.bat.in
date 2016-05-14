@@ -1,5 +1,5 @@
 @echo off
-rem Copyright (C) 2014 mru@sisyphus.teil.cc
+rem Copyright (C) 2014 - 2015 mru@sisyphus.teil.cc
 
 rem Start the client in a pre-defined directory
 
@@ -9,7 +9,7 @@ echo Starting import
 echo.
 
 rem start the client
-"C:\Program Files\crane_gps_watch_client 0.2\crane_gps_watch_client.exe" --split --verbose --device COM3
+"C:\Program Files\@PACKAGE_STRING@\crane_gps_watch_client.exe" --split --verbose --device COM3
 
 
 start .

@@ -1,4 +1,4 @@
-// Copyright (C) 2014 mru@sisyphus.teil.cc
+// Copyright (C) 2014 - 2015 mru@sisyphus.teil.cc
 //
 // Watch interface: read data from device, parse it.
 //
@@ -17,6 +17,8 @@
 
 #include <cassert>
 #include <ctime>
+#include <cmath>
+#include <cstring>
 
 #include "DataTypes.hpp"
 #include "MemoryBlock.hpp"
@@ -24,6 +26,26 @@
 
 #include "Watch.hpp"
 
+
+static int16_t parse_int16(WatchMemoryBlock::mem_it_t it) {
+    return *it + ( *(it+1) << 8 );
+}
+
+static int16_t parse_int16_advance(WatchMemoryBlock::mem_it_t& it) {
+    auto val = parse_int16(it);
+    it += 2;
+    return val;
+}
+
+static int32_t parse_int32(WatchMemoryBlock::mem_it_t it) {
+    return *it + ( *(it+1) << 8 ) + ( *(it+2) << 16 ) + ( *(it+3) << 24 );
+}
+
+static int32_t parse_int32_advance(WatchMemoryBlock::mem_it_t& it) {
+    auto val = parse_int32(it);
+    it += 4;
+    return val;
+}
 
 Watch::Watch(std::shared_ptr<DeviceInterface> device) : br(), device(device) {
 }
@@ -40,8 +62,8 @@ void Watch::clearWorkouts() {
     // ensure we are connected
     std::string version = device->readVersion();
 
-    // XXX don't read the block0 twice if read already
-
+    // XXX don't read the block0 twice if read already.
+    // as an future improvement.
 
     // read block 0, we need to write it back later
     WatchMemoryBlock cb(0, 1);
@@ -149,14 +171,17 @@ void Watch::downloadEPO(const std::string& epo_fn) {
         *it++ = cs; *it++ = 0x0d; *it++ = 0x0a;
     }
 
-    // some unknown data...
+    // some unknown data... most of it seems constant
     *it++ = 0x2C; *it++ = 0x01; *it++ = 0x00; *it++ = 0x00;
     *it++ = 0x00; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
     *it++ = 0x0D; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
     *it++ = 0xF3; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
     *it++ = 0x00; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
-    *it++ = 0xB0; *it++ = 0xEE; *it++ = 0x2E; *it++ = 0x02;
-    *it++ = 0xDC; *it++ = 0xAE; *it++ = 0x57; *it++ = 0x00;
+    *it++ = 0xB0; *it++ = 0xEE; 
+    *it++ = 0x2E; // observed: not constant
+    *it++ = 0x02;
+    *it++ = 0xDC; // observed: not constant
+    *it++ = 0xAE; *it++ = 0x57; *it++ = 0x00;
     *it++ = 0x00; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
     *it++ = 0x01; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
     *it++ = 0x00; *it++ = 0x00; *it++ = 0x00; *it++ = 0x00;
@@ -164,7 +189,7 @@ void Watch::downloadEPO(const std::string& epo_fn) {
 
     // download data
     writeBlock(mb);
-    
+
     // update "valid through" of agps data.
     // i think this value is only for display purposes (menu..gps..agps..expiry).
     device->setEpoEol(epo_eol.tm_year - 100, epo_eol.tm_mon + 1, epo_eol.tm_mday);
@@ -172,145 +197,349 @@ void Watch::downloadEPO(const std::string& epo_fn) {
 
 
 void Watch::parseGpsEle(GpsEle& l, WatchMemoryBlock::mem_it_t it) {
-    l.ele = *it++;
-    l.ele+= *it++ << 8;
+    l.ele = parse_int16(it);
 }
+
 void Watch::parseGpsLocation(GpsLocation& l, WatchMemoryBlock::mem_it_t it) {
-    l.loc = *it++;
-    l.loc+= *it++ << 8;
-    l.loc+= *it++ << 16;
-    l.loc+= *it++ << 24;
+    l.loc = parse_int32(it);
 }
+
 void Watch::parseGpsTimeUpd(GpsTimeUpd& t, WatchMemoryBlock::mem_it_t it) {
     t.mm = *it++;
     t.ss = *it++;
 }
+
 void Watch::parseGpsTime(GpsTime& t, WatchMemoryBlock::mem_it_t it, unsigned timezone) {
+    // parses 6 bytes.
     t.time.tm_year = 100 + *it++;
     t.time.tm_mon = *it++ - 1;
     t.time.tm_mday = *it++;
     t.time.tm_hour = *it++;
     t.time.tm_min = *it++;
     t.time.tm_sec = *it++;
+#ifndef __MINGW32__
     t.time.tm_gmtoff = ((timezone - 24)/2)*3600 + ((timezone - 24)%2)*1800;
+#endif
     t.mktime();
 }
+
 void Watch::parseSample(WatchInfo& wi, SampleInfo& si, WatchMemoryBlock::mem_it_t& it) {
 
     auto type = *it;
     si.fb = type;
     si.sb = *(it+1);
     switch (type) {
-      case 0x00: 
-          {
-            si.type = SampleInfo::Full;
-            si.hr = *(it+24);
-            si.fix = si.sb;
-            parseGpsTime(si.time, it+2, wi.timezone);
-            parseGpsLocation(si.lon, it+8);
-            parseGpsLocation(si.lat, it+12);
-            parseGpsEle(si.ele, it+16);
-            it += 25;
-            break;
-          }
-      case 0x01: 
-          {
-            si.type = SampleInfo::Diff;
-            si.hr = *(it+20);
-            si.fix = si.sb;
-            parseGpsTimeUpd(si.time_upd, it+2);
-            parseGpsLocation(si.lon, it+4);
-            parseGpsLocation(si.lat, it+8);
-            parseGpsEle(si.ele, it+12);
-            it += 21;
-            break;
-          }
-      case 0x02: 
-          {
-            si.type = SampleInfo::TimeOnly;
-            si.hr = 0;
-            si.fix = 0;
-            parseGpsTimeUpd(si.time_upd, it+1);
-            it += 3;
-            break;
-          }
-      case 0x03: 
-          {
-            si.type = SampleInfo::HrOnly;
-            si.hr = *(it+7);
-            si.fix = 0;
-            parseGpsTime(si.time, it+1, wi.timezone);
-            it += 8;
-            break;
-          }
-      case 0x80: 
-          {
-            si.type = SampleInfo::None;
-            si.hr = *(it+24);
-            si.fix = si.sb;
-            parseGpsTime(si.time, it+2, wi.timezone);
-            parseGpsLocation(si.lon, it+8);
-            parseGpsLocation(si.lat, it+12);
-            parseGpsEle(si.ele, it+16);
-            it += 25;
-            break;
-          }
-      case 0xff: 
-          {
-            si.type = SampleInfo::End;
-            it += 0;
-            break;
-          }
-      default: 
-          {
-            assert(0 && type);
-          }
+        case 0x00: 
+            {
+                si.type = SampleInfo::Full;
+                si.hr = *(it+24);
+                si.fix = si.sb;
+                parseGpsTime(si.time, it+2, wi.timezone);
+                parseGpsLocation(si.lon, it+8);
+                parseGpsLocation(si.lat, it+12);
+                parseGpsEle(si.ele, it+16);
+
+                si.orientation = parse_int16(it+18);
+                si.speed = parse_int16(it+20);
+                si.distance = parse_int16(it+22);
+
+                it += 25;
+                break;
+            }
+        case 0x01: 
+            {
+                si.type = SampleInfo::Diff;
+                si.hr = *(it+20);
+                si.fix = si.sb;
+                parseGpsTimeUpd(si.time_upd, it+2);
+                parseGpsLocation(si.lon, it+4);
+                parseGpsLocation(si.lat, it+8);
+                parseGpsEle(si.ele, it+12);
+
+                si.orientation = parse_int16(it+14);
+                si.speed = parse_int16(it+16);
+                si.distance = parse_int16(it+18);
+
+                it += 21;
+                break;
+            }
+        case 0x02: 
+            {
+                si.type = SampleInfo::TimeOnly;
+                si.hr = 0;
+                si.fix = 0;
+                parseGpsTimeUpd(si.time_upd, it+1);
+                it += 3;
+                break;
+            }
+        case 0x03: 
+            {
+                si.type = SampleInfo::HrOnly;
+                si.hr = *(it+7);
+                si.fix = 0;
+                parseGpsTime(si.time, it+1, wi.timezone);
+                it += 8;
+                break;
+            }
+        case 0x80: 
+            {
+                si.type = SampleInfo::None;
+                si.hr = *(it+24);
+                si.fix = si.sb;
+                parseGpsTime(si.time, it+2, wi.timezone);
+                parseGpsLocation(si.lon, it+8);
+                parseGpsLocation(si.lat, it+12);
+                parseGpsEle(si.ele, it+16);
+
+                si.orientation = parse_int16(it+18);
+                si.speed = parse_int16(it+20);
+                si.distance = parse_int16(it+22);
+
+                it += 25;
+                break;
+            }
+        case 0xff: 
+            {
+                si.type = SampleInfo::End;
+                it += 0;
+                break;
+            }
+        default: 
+            {
+                assert(0 && type);
+            }
     }
 }
+
+
+void Watch::parseLaps(WorkoutInfo& wo, WatchMemoryBlock::mem_it_t& it) {
+    //now every 16 bytes is a laptime
+    //1=hour 2=minutes 3=seconds 4=microseconds to be displayed as hex
+    //5=average hr 6-8=blank? 9-12=lap distance 13-16=lapspeed in 100m/h
+
+
+    wo.lapinfo.clear();
+    time_t wo_start = mktime(&wo.start_time.time);
+
+    int prev_milli = 0;
+    time_t prev_split = 0;
+
+    for (unsigned int lap_idx = 0; lap_idx < wo.lapcount; lap_idx++) {
+
+        LapInfo info;
+
+        info.lap_number = lap_idx + 1;
+
+        // Initialise storage
+        info.split = tm();
+        info.split.tm_year = 70;
+        info.split.tm_mday = 1;
+        info.split_milli = 0;
+
+        // questionable:
+        info.split.tm_isdst = 0;
+
+        // 1-3 time
+        info.split.tm_hour = *it++;
+        info.split.tm_min = *it++;
+        info.split.tm_sec = *it++;
+
+        // 4 (milli) is expected to be printed as hex. eg data 83 = 0x53 displayed
+        std::ostringstream hexstream;
+        hexstream << std::hex << (int)*it++;
+        info.split_milli = atoi(hexstream.str().c_str());
+
+        // Calculate lap time
+
+        const time_t this_split = my_timegm(&info.split);
+        time_t this_lap = this_split - prev_split;
+        time_t this_milli = info.split_milli - prev_milli;
+
+        if (this_milli < 0) {
+            const unsigned comp = ceil(-this_milli/100.0);
+            assert(comp > 0);
+            this_milli += comp*100;
+            this_lap -= comp;
+        }
+        assert(this_milli >=0);
+
+        struct tm* gmtime_1 = gmtime(&this_lap);
+        assert(gmtime_1);
+        info.lap = *gmtime_1;
+
+        info.lap_milli = this_milli;
+        info.lap_seconds = (int) this_lap;
+
+        const time_t start_t = wo_start + prev_split;
+        const time_t abs_split = wo_start + this_split + 1;
+
+        info.abs_split.time = *localtime(&abs_split);
+        info.start_time.time = *localtime(&start_t);
+
+        // 5 HR
+        info.avg_hr = *it++;
+
+        // 6-8 all zero?
+        it += 3;
+
+        // 9 lap dist m
+        // 10 lap dist * 256m
+        // 11-12 etc?
+        info.distance = *it++;
+        info.distance += *it++ << 8;
+        info.distance += *it++ << 16;
+        info.distance += *it++ << 24;
+
+        // 13 lap speed, in hundreds of m/hr - divide by 10 for km/h
+        info.speed = *it++;
+        info.speed += *it++ << 8;
+        info.speed += *it++ << 16;
+        info.speed += *it++ << 24;
+
+        info.speed /= 10.0;
+
+        unsigned int pacemin;
+        unsigned int pacesec;
+
+    	if (info.speed > 0 && (60/info.speed) < 40) {
+            pacemin = 60 / info.speed;
+            pacesec = (60.0 / info.speed - pacemin) * 60;
+    	}
+        else {
+            // The watch caps this display at 39:59
+            pacemin = 39;
+            pacesec = 59;
+        }
+
+        info.pace = tm();
+        info.pace.tm_min = pacemin;
+        info.pace.tm_sec = pacesec;
+    
+        wo.lapinfo.push_back(info);
+
+        prev_split = this_split;
+        prev_milli = this_milli;
+    }
+
+}
+
+
 void Watch::parseWO(WatchInfo& wi, int first, int count) {
 
     WorkoutInfo wo;
     WatchMemoryBlock cb(first, count);
     readBlock(cb);
 
+    unsigned profile_idx;
+    int unknowns[50];
+    int* punk = unknowns;
+
     WatchMemoryBlock::mem_it_t it = cb.memory.begin();
 
-    wo.nsamples = *it++;  // [0..1]
-    wo.nsamples+= (*it++) << 8;
+    // 2 [0..1]
+    wo.nsamples = parse_int16_advance(it);  
 
-    wo.lapcount = *it++;  // [2]
+    // 1 [2]
+    wo.lapcount = *it++;  
 
-    // [3..8]
+    // 6 [3..8] start time
     std::vector<unsigned char> reverse_time(6);
     std::reverse_copy(it, it +6, reverse_time.begin());
     parseGpsTime(wo.start_time, reverse_time.begin(), wi.timezone);
-
-
-    // [9..11] workout time
-    std::reverse_copy(it+6, it +9, reverse_time.begin()+3);
-    parseGpsTime(wo.workout_time, reverse_time.begin(), wi.timezone);
-
     it += 6;
 
-    it += 3; // total workout time [9..12]
-    wo.profile = *(cb.memory.begin()+15); // profile [15]
+    // 3 [9..11] workout time
+    std::reverse_copy(it, it +3, reverse_time.begin()+3);
+    parseGpsTime(wo.workout_time, reverse_time.begin(), wi.timezone);
+    it += 3;
 
-    it = cb.memory.begin() + 16;
-    it += 4; // km [16..19]
-    it += 2; // speed avg [20..21]
-    it += 2; // speed max [22..23]
-    it += 8; // ? [24..32]
+    // 3 [12..14] ?
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
 
-    it = cb.memory.begin() + 32;
-    wo.calories = *it++; // [32..33]
-    wo.calories+= *it++ << 8;
-    wo.calories+= *it++ << 16;
-    wo.calories+= *it++ << 24;
+    // 1 [15] profile idx ?
+    profile_idx = *it++;
+
+    // 4 [16..19]
+    wo.total_km = parse_int32_advance(it);
+
+    // 2 [20..21]
+    wo.speed_avg = parse_int16_advance(it);
+
+    // 2 [22..23]
+    wo.speed_max = parse_int16_advance(it);
+
+    // 4 [24..27] ???
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+
+    // 28, 29, 30
+    wo.hr_avg = *it++;
+    wo.hr_max = *it++;
+    wo.hr_min = *it++;
+
+    // 1 [31] ???
+    *punk++ = *it++;
+
+    // 4 [32..35]
+    wo.calories = parse_int32_advance(it); 
+
+    // 3 [36..38] time below training zone
+    std::reverse_copy(it, it +3, reverse_time.begin()+3);
+    parseGpsTime(wo.below_zone_time, reverse_time.begin(), wi.timezone);
+    it += 3;
+
+    // 1 [39] ?
+    *punk++ = *it++;
+
+    // 3 [40..42] time in training zone
+    std::reverse_copy(it, it +3, reverse_time.begin()+3);
+    parseGpsTime(wo.in_zone_time, reverse_time.begin(), wi.timezone);
+    it += 3;
+
+    // 1 [43] ?
+    *punk++ = *it++;
+
+    // 3 [44..46] time above training zone
+    std::reverse_copy(it, it +3, reverse_time.begin()+3);
+    parseGpsTime(wo.above_zone_time, reverse_time.begin(), wi.timezone);
+
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+    *punk++ = *it++;
+
+    //for (int* ppunk = &unknowns[0]; ppunk < punk; ppunk ++) {
+    //    std::cerr << "punk " << (ppunk - unknowns) << "=" << *ppunk << std::endl;
+    //} 
 
     it = cb.memory.begin() + 64;
-    
-    //now every 16bytes is a laptime 1=hour 2=minutes 3=seconds 4+5=microseconds 10+9 lap distance 13=lapspeed in km/h
 
+    //now every 16bytes is a laptime 1=hour 2=minutes 3=seconds 4+5=microseconds 10+9 lap distance 13=lapspeed in km/h
+    parseLaps(wo, it);
+
+    if (profile_idx >= wi.profile_names.size()) {
+        throw std::runtime_error("failed to read workout; illegal profile index");
+    }
+    wo.profile = wi.profile_names[profile_idx];
     br.onWorkout(wo);
 
     it = cb.memory.begin() + 0x1000;
@@ -322,7 +551,13 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
     unsigned idx_wo = 0;
     unsigned idx_track = 0;
     bool has_full_fix = false;
+    time_t next_split_time;
 
+    std::vector<LapInfo>::iterator lap_it = wo.lapinfo.begin();
+    // there must be at least one lap
+    assert(wo.lapinfo.begin() != wo.lapinfo.end());
+    br.onLap(*lap_it);
+    next_split_time = lap_it->abs_split.mktime();
 
     // something is wrong with nsamples - trusting "0xff" works better
     for (unsigned i =0; /*i< wo.nsamples*/;i++) {
@@ -347,7 +582,7 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
                 t.time.tm_hour ++;
                 // mktime fixes clock info, 
                 // 23:50 + 1h = 24:50; mktime increments day automatically.
-                mktime(&t.time);
+                t.mktime();
             }
             si.time = (t = si.time_upd);
         }
@@ -390,18 +625,35 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
             si.fix = 0;
         }
 
+        // split tracks when gps is lost
         if (track_active && si.type == SampleInfo::None) {
             track_active = false;
             TrackInfo i;
             br.onTrackEnd(i);
         }
 
+        // split into laps
+        const time_t sample_time = si.time.mktime();
+        // sometimes, the reported times from samples don't add up to the
+        // reported lap times. 
+        // we just add the rest to the last lap.
+        if (sample_time > next_split_time && track_active && lap_it+1 != wo.lapinfo.end()) {
+            if (track_active) {
+                track_active = false;
+                TrackInfo i;
+                br.onTrackEnd(i);
+            }
+            br.onLapEnd(*lap_it);
+            lap_it++;
+            br.onLap(*lap_it);
+            next_split_time = lap_it->abs_split.mktime();
+        }
 
         if (!track_active) {
             TrackInfo t;
             br.onTrack(t);
             track_active = true;
-            idx_track = 1;
+            idx_track = 1; // Should this be ++?
         }
 
         si.idx_track = idx_track;
@@ -415,9 +667,15 @@ void Watch::parseWO(WatchInfo& wi, int first, int count) {
         br.onTrackEnd(i);
     }
 
+    br.onLapEnd(*lap_it);
 
+    if (lap_it+1 != wo.lapinfo.end()) {
+        throw std::runtime_error ("not all laps consumed");
+    }
     br.onWorkoutEnd(wo);
+
 }
+
 void Watch::parseToc(Toc& toc, WatchMemoryBlock::mem_it_t it) {
     toc.clear();
 
@@ -441,12 +699,37 @@ void Watch::parseToc(Toc& toc, WatchMemoryBlock::mem_it_t it) {
         ++it;
     }
 }
+
+void Watch::parseProfileNames(std::vector<Profile>& profile_names, WatchMemoryBlock::mem_it_t it) {
+    profile_names.clear();
+    // profile names are only implemented in some firmware versions;
+    // or only available when configured in the watch... anyways, sometimes the profilenames are just missing
+    if (*it != 0xff) {
+        for (unsigned idx = 0; idx < 5; idx++, it+=10) {
+            std::string name(11, '\0');
+            std::copy(it, it+10, name.begin());
+            // trick: take c_str() to strip leading "\0"
+            profile_names.push_back(name.c_str());
+        }
+    }
+    else {
+        std::cerr << "watch does not specify profile names; using defaults" << std::endl;
+        profile_names.push_back("Running");
+        profile_names.push_back("Cycling");
+        profile_names.push_back("Hiking");
+        profile_names.push_back("Sailing");
+        profile_names.push_back("Other");
+    }
+}
+
 void Watch::parseBlock0() {
 
     WatchInfo wi;
 
     wi.version = device->readVersion();
-    wi.version2 = device->readVersion2();
+
+    // currently disabled, https://github.com/mru00/crane_gps_watch/issues/16
+    //wi.version2 = device->readVersion2();
 
     WatchMemoryBlock mb(0, 1);
     readBlock(mb);
@@ -459,6 +742,8 @@ void Watch::parseBlock0() {
         throw std::runtime_error ("checksum mismatch");
     }
 
+    parseProfileNames(wi.profile_names, mb.memory.begin() + 0x900);
+
     // timezones:
     // - 1:00 = 0x16
     //   0:00 = 0x18
@@ -467,7 +752,7 @@ void Watch::parseBlock0() {
     // + 2:30 = 0x1d
     wi.timezone = *(mem_it + 3);
     wi.sample_interval = *(mem_it + 14);
-    wi.selected_profile = *(mem_it + 0x10+10);
+    wi.selected_profile = wi.profile_names[*(mem_it + 0x10+10)];
 
     wi.language = *(mem_it + 0x50 + 13);
 
@@ -475,12 +760,10 @@ void Watch::parseBlock0() {
     wi.firmware.resize(16, '\0');
     std::copy(mem_it, mem_it+16, wi.firmware.begin());
 
-
-
-    br.onWatch(wi);
-
     mem_it = mb.memory.begin() + 0x100;
     parseToc(wi.toc, mem_it);
+
+    br.onWatch(wi);
 
     int f = 1;
     for (auto t : wi.toc) {
@@ -544,5 +827,53 @@ void Watch::writeBlock(WatchMemoryBlock& b) {
             mem_it += readSize;
         }
     }
+}
+
+
+int my_setenv(const char *name, const char *value, int overwrite)
+{
+#ifdef __MINGW32__
+    //int errcode = 0;
+    //if(!overwrite) {
+    //    size_t envsize = 0;
+    //    errcode = getenv(&envsize, NULL, 0, name);
+    //    if(errcode || envsize) return errcode;
+    //}
+    return _putenv_s(name, value);
+#else
+   return setenv(name, value, overwrite);
+#endif
+}
+
+int my_unsetenv(const char* name) {
+#ifdef __MINGW32__
+    return _putenv_s(name, "");
+#else
+    return unsetenv(name);
+#endif
+}
+
+
+time_t Watch::my_timegm(struct tm *tm)
+{
+    assert(tm);
+    time_t ret;
+    char *tz = getenv("TZ");
+
+    // setting UTC is required on windows
+    my_setenv("TZ", "UTC", 1);
+    tzset();
+    ret = mktime(tm);
+    if (tz && strlen(tz)) {
+        my_setenv("TZ", tz, 1);
+    }
+    else {
+        my_unsetenv("TZ");
+    }
+    tzset();
+
+    assert (ret != (time_t)(-1));
+
+    return ret;
 }
 

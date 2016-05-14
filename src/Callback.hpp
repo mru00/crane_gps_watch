@@ -1,4 +1,4 @@
-// Copyright (C) 2014 mru@sisyphus.teil.cc
+// Copyright (C) 2014 - 2015 mru@sisyphus.teil.cc
 //
 // linux client for crane gps watch, runtastic gps watch.
 //
@@ -9,12 +9,6 @@
 #include <memory>
 
 
-class WatchInfo;
-class WorkoutInfo;
-class SampleInfo;
-
-
-
 class Callback {
   public:
     virtual ~Callback() {}
@@ -22,6 +16,8 @@ class Callback {
     virtual void onWatchEnd(const WatchInfo &) {}
     virtual void onWorkout(const WorkoutInfo &) {}
     virtual void onWorkoutEnd(const WorkoutInfo &) {}
+    virtual void onLap(const LapInfo&) {}
+    virtual void onLapEnd(const LapInfo&) {}
     virtual void onTrack(const TrackInfo&) {}
     virtual void onTrackEnd(const TrackInfo&) {}
     virtual void onSample(const SampleInfo &) {}
@@ -48,6 +44,12 @@ class Broadcaster : public Callback {
     }
     void onWorkoutEnd(const WorkoutInfo &i) override {
         for (auto c : recipients) c->onWorkoutEnd(i);
+    }
+    void onLap(const LapInfo &i) override {
+        for (auto c : recipients) c->onLap(i);
+    }
+    void onLapEnd(const LapInfo &i) override {
+        for (auto c : recipients) c->onLapEnd(i);
     }
     void onTrack(const TrackInfo &i) override {
         for (auto c : recipients) c->onTrack(i);

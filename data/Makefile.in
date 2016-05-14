@@ -246,6 +246,17 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 dist_pkgdata_SCRIPTS = gps_watch_onconnect.sh
 dist_pkgdata_DATA = gps_watch_monitor.desktop
+@CROSS_COMPILING_TRUE@do_subst = sed \
+@CROSS_COMPILING_TRUE@ -e 's,[@]datadir[@],$(datadir),g' \
+@CROSS_COMPILING_TRUE@ -e 's,[@]PACKAGE[@],$(PACKAGE),g' \
+@CROSS_COMPILING_TRUE@ -e 's,[@]PACKAGE_VERSION[@],$(PACKAGE_VERSION),g' \
+@CROSS_COMPILING_TRUE@ -e 's,[@]PACKAGE_STRING[@],$(PACKAGE_STRING),g' \
+@CROSS_COMPILING_TRUE@ -e 's,[@]PACKAGE_URL[@],$(PACKAGE_URL),g' \
+@CROSS_COMPILING_TRUE@ -e 's,[@]PACKAGE_BUGREPORT[@],$(PACKAGE_BUGREPORT),g' \
+@CROSS_COMPILING_TRUE@ -e 's,[@]PACKAGE_COPYRIGHT[@],mru@sisyphus.teil.cc,g' \
+@CROSS_COMPILING_TRUE@ -e 's,[@]PKGDATADIR[@],$(pkgdatadir),g' \
+@CROSS_COMPILING_TRUE@ -e 's,[@]HOST_CPU[@],$(host_cpu),g'
+
 all: all-am
 
 .SUFFIXES:
@@ -491,9 +502,12 @@ uninstall-am: uninstall-dist_pkgdataDATA uninstall-dist_pkgdataSCRIPTS
 	uninstall-dist_pkgdataDATA uninstall-dist_pkgdataSCRIPTS
 
 
-@CROSS_COMPILING_TRUE@all: start_watch_client.bat
+@CROSS_COMPILING_TRUE@all: start_watch_client.bat icon.ico
 @CROSS_COMPILING_TRUE@start_watch_client.bat: $(srcdir)/start_watch_client.bat.in
-@CROSS_COMPILING_TRUE@	unix2dos -n $< $@
+@CROSS_COMPILING_TRUE@	$(do_subst) < $< | unix2dos -n > $@
+
+@CROSS_COMPILING_TRUE@icon.ico: $(srcdir)/icon.ico.in
+@CROSS_COMPILING_TRUE@	cp $< $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

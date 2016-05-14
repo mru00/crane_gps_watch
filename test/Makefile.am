@@ -10,7 +10,12 @@ TESTS = 000_help.sh \
 				006_invalid_serial_device.sh \
 				007_output_not_writable.sh \
 				008_lint_images.sh \
-				009_expect_coordinates.sh
+				009_expect_coordinates.sh \
+				011_assert_profile.sh \
+				012_dst_time.sh 013_languages.sh 014_lap_count.sh
+
+# not passing:
+XFAIL_TESTS = 
 
 
 # variables to be used in test scripts:
@@ -24,6 +29,6 @@ AM_TESTS_ENVIRONMENT += \
 endif
 
 
-EXTRA_DIST = TrainingCenterDatabasev2.xsd $(TESTS) common.sh $(wildcard lint_images/*.bin *.bin)
+EXTRA_DIST = TrainingCenterDatabasev2.xsd $(TESTS) common.sh $(wildcard lint_images/*.bin) $(wildcard *.bin)
 
-MOSTLYCLEANFILES = *.tcx 002_image2.bin
+MOSTLYCLEANFILES = *.tcx 002_image2.bin *_wd/*

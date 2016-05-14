@@ -1,4 +1,4 @@
-# Copyright (C) 2014 mru@sisyphus.teil.cc
+# Copyright (C) 2014 -2015 mru@sisyphus.teil.cc
 
 bin_PROGRAMS = crane_gps_watch_client
 crane_gps_watch_client_SOURCES = main.cpp \
@@ -10,9 +10,11 @@ crane_gps_watch_client_SOURCES = main.cpp \
  Callback.hpp GpsLint.hpp XmlFileWriter.hpp ImageWriter.hpp \
  DebugWriter.hpp DataTypes.hpp MemoryBlock.hpp \
  ImageLink.hpp SerialLink.hpp SerialPort.hpp TcxWriter.hpp Watch.hpp \
- genx.h
+ LapWriter.cpp LapWriter.hpp \
+ genx.h \
+ SerialPortWindows.inc SerialPortLinux.inc SerialPortMacOSX.inc
 
-crane_gps_watch_client_CXXFLAGS = -Wall -Wextra
+crane_gps_watch_client_CXXFLAGS = -Wall -Wextra 
 
 if CROSS_COMPILING
 crane_gps_watch_client_LDFLAGS = -static-libgcc -static-libstdc++ -static
@@ -30,6 +32,7 @@ EXTRA_DIST = gps_watch_monitor.py.in setup.ss.in
 
 do_subst = sed \
  -e 's,[@]datadir[@],$(datadir),g' \
+ -e 's,[@]srcdir[@],$(srcdir),g' \
  -e 's,[@]PACKAGE[@],$(PACKAGE),g' \
  -e 's,[@]PACKAGE_VERSION[@],$(PACKAGE_VERSION),g' \
  -e 's,[@]PACKAGE_STRING[@],$(PACKAGE_STRING),g' \
@@ -45,8 +48,21 @@ gps_watch_monitor.py: $(srcdir)/gps_watch_monitor.py.in
 	chmod +x $@
 
 if CROSS_COMPILING
-all: setup.ss
+all: setup.ss crane_gps_watch_client$(EXEEXT) check_arch
 setup.ss: $(srcdir)/setup.ss.in
 	$(do_subst) < $< > $@
+
+# make sure cross-compilation produced a windows executable
+check_arch: crane_gps_watch_client$(EXEEXT)
+	file -i $<
+	[[ $$(file -i $<) = *application/x-dosexec* ]]
+
+windows.rc: windows.rc.in
+	$(do_subst) < $< > $@
+
+windows.res: windows.rc
+	$(host_cpu)-w64-mingw32-windres $< -O coff -o $@
+
+crane_gps_watch_client_LDADD = windows.res
 endif
 

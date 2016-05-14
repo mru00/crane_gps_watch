@@ -7,7 +7,7 @@ script:
   - sudo make install
 # cross compile for windows 
   - cd .. && mkdir build_2 && cd build_2
-  - ../configure --host i686-w64-mingw32 --build i686-pc-linux-gnu
+  - ../configure --host i686-w64-mingw32 --build i686-pc-linux-gnu CXX=i686-w64-mingw32-g++ CC=i686-w64-mingw32-gcc
   - make check
   - cat test/test-suite.log
   - cd ..
@@ -22,13 +22,13 @@ before_install:
 install:
 # install a proper compiler, c++11 is required
   - sudo apt-get install -qq -y automake build-essential autoconf m4 gnulib
-  - sudo apt-get install -qq -y gcc-4.8 g++-4.8
+  - sudo apt-get install -qq -y gcc-4.8 g++-4.8 libfaketime
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
   - g++ --version
   - automake --version
 # xmllint etc, required for 'make check'
-  - sudo apt-get install -qq -y libxml2-utils
+  - sudo apt-get install -qq -y -o Dpkg::Options::="--force-confold" libxml2-utils
 # windows cross compiler + wine for 'make check'
-  - sudo apt-get install -qq -y wine binutils-mingw-w64-i686 gcc-mingw-w64-i686 g++-mingw-w64-i686
+  - sudo apt-get install -qq -y -o Dpkg::Options::="--force-confold" wine binutils-mingw-w64-i686 gcc-mingw-w64-i686 g++-mingw-w64-i686
 

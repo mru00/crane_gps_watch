@@ -1,4 +1,4 @@
-// Copyright (C) 2014 mru@sisyphus.teil.cc
+// Copyright (C) 2014 - 2015 mru@sisyphus.teil.cc
 //
 // Data Types
 //
@@ -11,6 +11,12 @@
 
 #include <ctime>
 
+
+struct fmt {
+    std::ostringstream s;
+    operator std::string() {return s.str();}
+    template<class T> fmt& operator<<(T const& v) {return s<<v, *this;}
+};
 
 
 // while we are waiting for http://en.cppreference.com/w/cpp/io/manip/put_time
@@ -33,7 +39,7 @@ struct GpsTimeUpd {
 };
 
 struct GpsEle {
-    unsigned short ele;
+    short ele;
     GpsEle& operator += (const GpsEle& other);
     std::string format() const;
 };
@@ -44,6 +50,7 @@ struct GpsTime {
     GpsTime& operator=(const GpsTimeUpd& other);
     time_t mktime();
     std::string format() const;
+    std::string format_no_tz() const;
 };
 
 enum DisplayItems {
@@ -73,18 +80,7 @@ struct Language {
     std::string format() const;
 };
 
-struct Profile {
-    enum profile_e {
-        Running, 
-        Cycling, 
-        Hiking,
-        Sailing,
-        User
-    } profile;
-
-    Profile& operator= (unsigned char);
-    std::string format() const;
-};
+typedef std::string Profile;
 
 // Toc is a list of numbers;
 // each entry designates one workout record.
@@ -106,10 +102,32 @@ struct SampleInfo {
     GpsTimeUpd time_upd;
     GpsLocation lon, lat;
     GpsEle ele;
+    int orientation; // 0 - 359, 0 = North, 90 = East, 180 = South, 270 = West
+    int speed; // in 0.01 km/h
+    int distance; // in 0.1 meter from last Sample
     unsigned char hr;
     unsigned char fix;
     unsigned char fb, sb;
     unsigned idx_wo, idx_track;
+};
+
+struct LapInfo {
+    int lap_number;
+    GpsTime abs_split;
+    GpsTime start_time;
+
+    tm split;
+    int split_milli; // GpsTime doesn't have millisplit
+
+    tm lap;
+    int lap_milli; // GpsTime doesn't have millisplit
+    int lap_seconds;
+
+    tm pace;
+
+    long distance; // in m
+    double speed; // in km/hr
+    int avg_hr;
 };
 
 struct WorkoutInfo {
@@ -125,6 +143,13 @@ struct WorkoutInfo {
     double speed_avg;
     double speed_max;
     double calories;
+    int hr_avg;
+    int hr_max;
+    int hr_min;
+    GpsTime below_zone_time;
+    GpsTime in_zone_time;
+    GpsTime above_zone_time;
+    std::vector<LapInfo> lapinfo;
 };
 
 struct TrackInfo {
@@ -137,9 +162,9 @@ struct WatchInfo {
     Language language;
     unsigned nblocks;
     std::vector<std::string> path_names;
-    std::vector<std::string> profile_names;
+    std::vector<Profile> profile_names;
     std::string version;
-    std::string version2;
+    //std::string version2;
     std::string firmware;
     Toc toc;
 };

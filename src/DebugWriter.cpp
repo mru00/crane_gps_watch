@@ -1,4 +1,4 @@
-// Copyright (C) 2014 mru@sisyphus.teil.cc
+// Copyright (C) 2014 - 2015 mru@sisyphus.teil.cc
 //
 // linux client for crane gps watch, runtastic gps watch.
 //
@@ -16,13 +16,18 @@ DebugWriter::DebugWriter(int level) : debug_level(level) , wo_samples_with_coord
 
 void DebugWriter::onWatch(const WatchInfo &i) {
     std::cout << "watch begin"
-      << " p=" << i.selected_profile.format()
+      << " p=" << i.selected_profile
       << " l=" << i.language.format()
       << " version='" << i.version << "'"
-      << " version2='" << i.version2 << "'"
+      //<< " version2='" << i.version2 << "'"
       << " firmware='" << i.firmware << "'"
       << " timezone=" << (int)i.timezone << "=0x" << std::hex << (int)i.timezone << std::dec
-      << std::endl;
+      << " profiles: ";
+
+    for (auto pn : i.profile_names) {
+        std::cout << pn << " ";
+    }
+    std::cout << std::endl;
 }
 void DebugWriter::onWatchEnd(const WatchInfo &) {
     if (debug_level > 0) {
@@ -35,8 +40,8 @@ void DebugWriter::onWorkout(const WorkoutInfo &i)  {
         std::cout 
           << std::endl
           << " workout info"
-          << " p=" << i.profile.format()
-          << " t=" << i.start_time.format()
+          << " p=" << i.profile
+          << " t=" << i.start_time.format() << " dst=" << i.start_time.time.tm_isdst
           << " d=" << put_time(&i.workout_time.time, "%H:%M:%S") << "=" << i.workout_time.time.tm_hour*60*60 + i.workout_time.time.tm_min*60 +i.workout_time.time.tm_sec
           << " nsamples=" << i.nsamples << "=0x" << std::hex << i.nsamples << std::dec
           //<< " toc=" << i.toc
@@ -57,14 +62,24 @@ void DebugWriter::onWorkoutEnd(const WorkoutInfo &i) {
           << std::endl;
     }
 }
+void DebugWriter::onLap(const LapInfo &)  {
+    if (debug_level > 0) {
+        std::cout << "  lap begin" << std::endl;
+    }
+}
+void DebugWriter::onLapEnd(const LapInfo &)  {
+    if (debug_level > 0) {
+        std::cout << "  lap end" << std::endl;
+    }
+}
 void DebugWriter::onTrack(const TrackInfo &)  {
     if (debug_level > 0) {
-        std::cout << "  track begin" << std::endl;
+        std::cout << "   track begin" << std::endl;
     }
 }
 void DebugWriter::onTrackEnd(const TrackInfo &)  {
     if (debug_level > 0) {
-        std::cout << "  track end" << std::endl;
+        std::cout << "   track end" << std::endl;
     }
 }
 void DebugWriter::onSample(const SampleInfo &i) {
