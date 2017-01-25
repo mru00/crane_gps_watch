@@ -1,7 +1,7 @@
 Crane GPS Watch client for Linux and Windows
 ===============================================
 
-Copyright (C) 2014-2015 <mru@sisyphus.teil.cc>
+Copyright (C) 2014-2015 <rudolf.muehlbauer@gmail.com>
 
 
 [![Build Status](https://travis-ci.org/mru00/crane_gps_watch.svg?branch=master)](https://travis-ci.org/mru00/crane_gps_watch)  [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.me/Muehlbauer)
@@ -275,3 +275,4 @@ Thanks:
 * Yarema
 * Wolfram
 * Peter
+* All contributors!
